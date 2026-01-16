@@ -1,0 +1,284 @@
+\chapter{Terminology and Problem Description}
+
+In this chapter, we will focus on the formal description of the extended 3D Bin Packing Problem.
+To make this possible, we first need to introduce the terminology related to the representation of 3D space and the objects within it.
+
+
+
+\section{Coordinates}
+
+A \textit{Coordinates} is defined as a triplet $(x, y, z)$, representing a position relative to the origin $(0, 0, 0)$, where:
+\begin{itemize}
+    \item $x$ denotes the position along the horizontal axis,
+    \item $y$ denotes the position along the vertical axis,
+    \item $z$ denotes the position along the depth axis.
+\end{itemize}
+
+Each coordinate value must be a non-negative integer:
+\[
+x, y, z \in \mathbb{Z}_{\geq 0}.
+\]
+
+The origin $(0, 0, 0)$ serves as the reference point from which all coordinates are measured.
+
+
+
+\section{Sizes}
+
+A \textit{Sizes} of a rectangular object is defined as a triplet $(X, Y, Z)$, where:
+
+\begin{itemize}
+    \item $X$ denotes the length of the edge along the horizontal axis (X-axis),
+    \item $Y$ denotes the length of the edge along the vertical axis (Y-axis),
+    \item $Z$ denotes the length of the edge along the depth axis (Z-axis).
+\end{itemize}
+
+Each of these values must be a non-negative integer:
+\[
+X, Y, Z \in \mathbb{Z}_{\geq 0}.
+\]
+
+
+
+
+\section{Region}
+
+A \textit{region} is a rectangular object defined by a pair of coordinates $(\mathit{Start}, \mathit{End})$, where:
+
+\begin{itemize}
+    \item $\mathit{start}$ denotes the coordinates of the vertex that is closest to the origin $(0, 0, 0)$,
+    \item $\mathit{end}$ coordinates denotes the vertex that is furthest from the origin $(0, 0, 0)$.
+\end{itemize}
+
+It is required that the start coordinate is less than or equal to the end coordinate along each axis:
+\[
+\mathit{Start}_x \leq \mathit{End}_x, \quad \text{and} \quad  
+\mathit{Start}_y \leq \mathit{End}_y, \quad \text{and} \quad 
+\mathit{Start}_z \leq \mathit{End}_z.
+\]
+
+
+\section{Rotation}
+
+A \textit{Rotation} of an item is defined by permuting its dimensions $(X, Y, Z)$ according to the orientation, represented by an element of the set:
+\[
+\{ XYZ, XZY, YXZ, YZX, ZXY, ZYX \}
+\]
+where each orientation corresponds to a rearrangement of the dimensions:
+
+\[
+\begin{aligned}
+XYZ &\to (X, Y, Z) \\
+XZY &\to (X, Z, Y) \\
+YXZ &\to (Y, X, Z) \\
+YZX &\to (Y, Z, X) \\
+ZXY &\to (Z, X, Y) \\
+ZYX &\to (Z, Y, X).
+\end{aligned}
+\]
+
+This approach maintains the values as non-negative integers but changes their assignment to axes, effectively rotating the item in discrete 90-degree steps.
+
+
+
+
+
+\section{Relationships Between \textit{Regions}}
+
+Given two \textit{regions} $A = (A_\text{start}, A_\text{end})$  and $B = (B_\text{start}, B_\text{end})$, we define several spatial relationships.  
+
+All comparisons between coordinates are interpreted componentwise, for instance, $A_\text{start} \leq B_\text{start}$ means:
+\[
+A_\text{start}^x \leq B_\text{start}^x \quad \text{and} \quad A_\text{start}^y \leq B_\text{start}^y \quad \text{and} \quad A_\text{start}^z \leq B_\text{start}^z.
+\]
+
+\subsection*{Subregion}
+We say that region $A$ is a \emph{subregion} of region $B$ if:
+\[
+A_\text{start} \geq B_\text{start} \quad \text{and} \quad A_\text{end} \leq B_\text{end},
+\]
+meaning that $A$ lies entirely within the boundaries of $B$ in all three dimensions. We write $A \subseteq B$.
+
+\subsection*{Overregion}
+We say that region $A$ is an \emph{overregion} of region $B$ if $B$ is a subregion of $A$:
+\[
+A_\text{start} \leq B_\text{start} \quad \text{and} \quad A_\text{end} \geq B_\text{end}.
+\]
+We write $A \supseteq B$.
+
+
+\subsection*{Intersection}
+Two regions $A$ and $B$ \emph{intersect} if there is a non-empty volume that they share.
+
+Formally, define open intervals for each dimension:
+\[
+I_A^d = (A_\text{start}^d, A_\text{end}^d), \quad I_B^d = (B_\text{start}^d, B_\text{end}^d), \quad \text{for } d \in \{x, y, z\}.
+\]
+
+The regions intersect if and only if the intersection of intervals is non-empty in all dimensions:
+\[
+A \cap B \neq \emptyset \iff \forall d \in \{x, y, z\}: I_A^d \cap I_B^d \neq \emptyset.
+\]
+
+This definition ensures that the overlapping region has strictly positive volume.
+
+
+
+\subsection*{Volume Function}
+
+We define a \emph{volume function} $\mathrm{V}$ that returns the volume of \textit{Sizes} or \textit{Regions}:
+
+\begin{itemize}
+    \item given \textbf{dimensions} $D = (X, Y, Z)$, the volume is:
+    \[
+    \mathrm{V}(D) = X \cdot Y \cdot Z,
+    \]
+    
+    \item given a \textbf{region} $R = (R_\text{start}, R_\text{end})$, the volume is defined as:
+    \[
+    \mathrm{V}(R) = (R_\text{end}^x - R_\text{start}^x) \cdot (R_\text{end}^y - R_\text{start}^y) \cdot (R_\text{end}^z - R_\text{start}^z).
+    \]
+\end{itemize}
+
+The result of $\mathrm{V}$ is always a non-negative integer (possibly zero).
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Problem Description}
+
+
+
+We are given a rectangular \emph{input container} $C_in$ with sizes $S$ and a maximum allowed weight $W_\text{max}$, and a set of $k$ rectangular \emph{input boxes}. We call this pair the \emph{packing input}. Each input box $i = 1, \dots, k$ has sizes $s_i$ and weight $w_i$.
+We model the container as a \textit{region} $R_c = (\mathbf{0}, D)$, where $\mathbf{0} = (0, 0, 0)$ denotes the origin, and $R$ determines the \textit{end} coordinate of the container region.
+Similarly, when a box $i$ is placed inside the container with a valid rotation $Rot$, it occupies a region $r_i = (p_i, p_i + Rot(d_i))$, where $p_i$ is the start coordinate of the input box within the container. We require that $r_i$ is a subregion of $R_c$ as an effect of constraint C2 below.
+
+
+Let $B_c$ denote the set of boxes placed in container $c$. We define the following:
+
+
+\begin{itemize}
+    \item the total weight of container $c$ is:
+    \[
+    W_c = \sum_{i \in B_c} w_i,
+    \]
+    
+    \item the extension of the volume function for total volume occupied in container $c$ is:
+    \[
+    V(c) = \sum_{i \in B_c} \mathrm{V}(r_i).
+    \]
+\end{itemize}
+
+
+
+
+
+
+\subsection*{Constraints}
+
+We impose the following constraints:
+
+\begin{itemize}
+    \item[\textbf{(C1)}] each box $i$ is placed in exactly one container,
+    
+    \item[\textbf{(C2)}] each box $i$ must lie entirely within its container $c$:
+         \[r_i \subseteq R_c,\]
+    
+    \item[\textbf{(C3)}] no two boxes $i$ and $j$ within the same container $c$ may intersect:
+    \[
+    \forall i \neq j \in B_c: \quad s_i \cap s_j = \emptyset,
+    \]
+    
+    \item[\textbf{(C4)}] the total weight of any container $c$ does not exceed its weight limit:
+    \[
+    W_c \leq W_\text{max}
+    \],
+    
+    \item[\textbf{(C5)}] boxes may only be rotated by 90° along any axis,
+    
+    \item[\textbf{(C6)}] every coordinate of a box’s base must coincide either with a coordinate of the container floor or with a coordinate on the top surface of another box.
+\end{itemize}
+
+\subsection*{Objective}
+
+The goal is to assign all boxes to containers in a way that satisfies all constraints (C1)--(C6), while minimizing the number of containers used $N$.
+Compared to the classical 3D bin packing problem, this version introduces two key additional constraints: the maximum weight limit (C4), and the full-support condition (C6) that ensures physical stability of stacked boxes.
+
+
+
+
+\section{Fitness Function}
+
+The objective of the fitness function is to numericaly represent the quality of the solution. 
+The lower the fitness, the better the solution should be. 
+The primary optimization goal is to minimize the number of containers used $N$. 
+In case two solutions use the same number of containers, the one that utilizes the space more efficiently—i.e., with a higher minimum fill ratio (volume or weight) is considered better.
+Combining these two requirements gives us the following formula:
+
+let \( \mathcal{U} \) be the set of used (i.e., opened and non-empty) containers,
+
+then the fitness function is defined as:
+\[
+\text{fitness} = N + \min_{c \in \mathcal{U}} \left( \max \left( \frac{V(c)}{V(D)}, \frac{W_c}{W_\text{max}} \right) \right).
+\]
+
+
+TODO: nejnizsi odhad
+TODO: kdy neni solution
+
+
+\section{Data Representation}
+
+\subsection{Input}
+
+The input consists of a description of the input container and a list of input boxes. 
+The container is defined by its dimensions \( D = (X, Y, Z) \) and its maximum weight \( W_\text{max} \). 
+Each input box $i$ is described by a unique identifier, its dimensions \( d_i = (x, y, z) \), and its weight \( w_i \).
+The input is provided in JSON format, where all numerical values are expressed in the same units.
+Example inputs can be found here: 
+
+\url{https://gitlab.mff.cuni.cz/teaching/nprg045/fink/jan_burda/-/tree/master/Code/TestInputs?ref_type=heads}.
+
+\subsection{Output}
+
+The output is a JSON object containing an array of containers.
+
+Each container includes:
+\begin{itemize}
+    \item its unique identifier,
+    \item total weight,
+    \item total occupied volume,
+    \item a list of packed boxes.
+\end{itemize}
+
+Each box entry includes:
+\begin{itemize}
+    \item the box identifier,
+    \item applied rotation,
+    \item the region it occupies.
+\end{itemize}
+
+All numerical values are expressed in the same unit system as the input.
+An example output can be found here: 
+
+\url{https://gitlab.mff.cuni.cz/teaching/nprg045/fink/jan_burda/-/blob/master/Code/Documentation/OutputExample.json?ref_type=heads}.
+
+\subsection{Datasets}
+Part of the datasets was generated randomly. 
+The method consists of creating random input boxes within predefined sizes limits, 
+and assigning their weights based on a randomly generated density, 
+ensuring a consistent relationship between volume and weight.
+
+
+
+
+
