@@ -1,0 +1,124 @@
+@startuml
+
+' =========================
+' DATA CLASSES
+' =========================
+
+class PackingInput {
+  - ContainerProperties containerProperties
+  - List<BoxProperties> boxPropertiesList
+}
+
+class BoxProperties {
+  - string Id
+  - Sizes Sizes
+  - long Weight
+}
+
+class ContainerProperties {
+  - Sizes Sizes
+  - long MaxWeight
+}
+
+class PackingRules {
+  - List<PackingRulesCell> Cells
+}
+
+class PackingRulesCell {
+  - double Value (0..1)
+}
+
+class PackingSetting {
+  - string[] SelectedPlacementHeuristics
+  - bool AllowRotations
+  - string? SelectedPackingOrderHeuristic
+}
+
+class PendingBox {
+  - BoxProperties BoxProperties
+  - Rotation Rotation
+  - string PlacementHeuristic
+}
+
+class PlacedBox {
+  - PlacementInfo PlacementInfo
+  - BoxProperties BoxProperties
+  - Rotation Rotation
+}
+
+class PlacementInfo {
+  - int ContainerID
+  - Region OccupiedRegion
+}
+
+class Region {
+  - Coordinates Start
+  - Coordinates End
+}
+
+class ContainerData {
+  - int ID
+  - long Weight
+  - long OccupiedVolume
+  - List<Region> EMR
+  - List<PlacedBox> PlacedBoxes
+  - ContainerProperties ContainerProperties
+}
+
+' =========================
+' SERVICE CLASSES
+' =========================
+
+class PackingRulesDecoder {
+  + PackingRulesDecoder(PackingSetting, PackingInput)
+  + List<PendingBox> Decode(PackingRules rules)
+}
+
+class BoxPacker {
+  + List<ContainerData> Containers
+  + BoxPacker(ContainerProperties)
+  + void PackBox(PendingBox box)
+  + void PackBoxes(List<PendingBox> boxes)
+}
+
+class PackingSolver {
+  + PackingSolver(PackingInput, PackingSetting)
+  + List<ContainerData> Solve(PackingRules rules)
+}
+
+interface PlacementHeuristic {
+  + PlacementInfo? Apply(List<ContainerData>, PendingBox)
+}
+
+' =========================
+' RELATIONSHIPS
+' =========================
+
+PackingInput *-- ContainerProperties
+PackingInput *-- BoxProperties
+
+PackingRules *-- PackingRulesCell
+
+PendingBox --> BoxProperties
+PlacedBox --> BoxProperties
+PlacedBox --> PlacementInfo
+PlacementInfo --> Region
+
+ContainerData *-- PlacedBox
+ContainerData *-- Region
+ContainerData --> ContainerProperties
+
+PackingRulesDecoder --> PackingInput
+PackingRulesDecoder --> PackingSetting
+PackingRulesDecoder --> PendingBox
+
+BoxPacker --> PendingBox
+BoxPacker --> ContainerData
+BoxPacker --> PlacementHeuristic
+
+PackingSolver --> PackingRulesDecoder
+PackingSolver --> BoxPacker
+PackingSolver --> PackingRules
+PackingSolver --> ContainerData
+
+@enduml

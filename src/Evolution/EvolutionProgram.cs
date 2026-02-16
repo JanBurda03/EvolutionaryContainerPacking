@@ -60,7 +60,7 @@ public static class EvolutionProgram
         {
             var containerRegion = container.ContainerProperties.Sizes.ToRegion(new Coordinates(0, 0, 0));
 
-            IReadOnlyList<PackedBox> packedBoxes = container.PackedBoxes;
+            IReadOnlyList<PackedBox> packedBoxes = container.PlacedBoxes;
 
             for (int i = 0; i < packedBoxes.Count; i++) 
             { 

@@ -2,12 +2,12 @@
 {
     // evaluating the fitness of packing rules firstly by finding a solution to it (filling the containers and returning list of them) and then evaluationg fitness of that solution
     private readonly IFitnessEvaluator<IReadOnlyList<ContainerData>> _containersFitnessEvaluator;
-    private readonly PackingRulesSolver _packingRulesSolver;
+    private readonly PackingSolver _packingRulesSolver;
     private FitnessComparer _fitnessComparer;
 
     public bool Minimizing { get; }
 
-    public PackingRulesFitnessEvaluator(IFitnessEvaluator<IReadOnlyList<ContainerData>> containersFitnessEvaluator, PackingRulesSolver packingRulesSolver)
+    public PackingRulesFitnessEvaluator(IFitnessEvaluator<IReadOnlyList<ContainerData>> containersFitnessEvaluator, PackingSolver packingRulesSolver)
     {
         _containersFitnessEvaluator = containersFitnessEvaluator;
         _packingRulesSolver = packingRulesSolver;
@@ -48,7 +48,7 @@
 
     public static PackingRulesFitnessEvaluator Create(PackingInput inputData, PackingSetting packingSetting)
     {
-        PackingRulesSolver packingVectorSolver = PackingProgram.CreateSolver(inputData, packingSetting);
+        PackingSolver packingVectorSolver = PackingProgram.CreateSolver(inputData, packingSetting);
         ContainersFitnessEvaluator containersFitnessEvaluator = new ContainersFitnessEvaluator();
         PackingRulesFitnessEvaluator packingVectorFintessEvaluator = new PackingRulesFitnessEvaluator(containersFitnessEvaluator, packingVectorSolver);
         return packingVectorFintessEvaluator;

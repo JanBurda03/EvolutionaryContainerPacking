@@ -18,9 +18,9 @@ public static class ContainerExtensionForExport
     {
         return new ContainerExport(
             container.ID, 
-            container.CurrentWeight, 
+            container.Weight, 
             container.OccupiedVolume, 
-            (from box in container.PackedBoxes select box.ExportPackedBox()).ToList());
+            (from box in container.PlacedBoxes select box.ExportPackedBox()).ToList());
     }
 }
 
