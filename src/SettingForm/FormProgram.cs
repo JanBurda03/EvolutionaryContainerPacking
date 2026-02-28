@@ -1,4 +1,8 @@
-﻿public static class FormProgram
+﻿namespace EvolutionaryContainerPacking.Forms;
+
+using EvolutionaryContainerPacking.Evolution.Setting;
+
+public static class FormProgram
 {
     [STAThread]
     public static void Main() { Run(); }
@@ -13,18 +17,18 @@
             if (form.ShowDialog() == DialogResult.OK)
             {
                 AlgorithmSettingForm algorithmSettingForm;
-                if (AlgorithmSettingsForms.TryGetValue(form.EvolutionSetting.AlgorithmName, out algorithmSettingForm))
+                if (AlgorithmSettingsForms.TryGetValue(form.AlgorithmName, out algorithmSettingForm))
                 {
                     if (algorithmSettingForm.ShowDialog() == DialogResult.OK)
                     {
-                        return new ProgramSetting(form.IOSetting, form.PackingSetting, form.EvolutionSetting, algorithmSettingForm.EvolutionaryAlgorithmSetting);
+                        return new ProgramSetting(form.SourceFile, form.OutputFile, form.EvolutionStatisticsFile, form.AlgorithmName, form.PackingSetting,  algorithmSettingForm.EvolutionaryAlgorithmSetting);
                     }                  
                     return null;
                     
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new Exception("No algorithm with given name found!");
                 }
             }
             return null;
@@ -36,7 +40,7 @@
     = new Dictionary<string, AlgorithmSettingForm>
     {
         { "Elitist Genetic", new ElitistGeneticSettingForm() },
-        { "Hill Descending", new HillDescendingSettingForm() },
+        { "Hill Climbing", new ProbabilisticHillClimbingSettingForm() },
     };
 }
 

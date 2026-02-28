@@ -1,4 +1,15 @@
-﻿
+﻿namespace EvolutionaryContainerPacking.PackingTests.DecoderTests;
+
+using EvolutionaryContainerPacking.Packing;
+using EvolutionaryContainerPacking.Packing.Architecture.Geometry;
+using EvolutionaryContainerPacking.Packing.Architecture.Containers;
+using EvolutionaryContainerPacking.Packing.Architecture.Boxes;
+using EvolutionaryContainerPacking.Packing.Architecture.Placements;
+using EvolutionaryContainerPacking.Packing.Rules;
+using EvolutionaryContainerPacking.Packing.Rules.Decoding;
+using EvolutionaryContainerPacking.Packing.Rules.Decoding.PartDecoders;
+using EvolutionaryContainerPacking.Packing.Rules.Decoding.Sorting;
+
 public class DecoderTests
 {
     [Fact]
@@ -11,15 +22,15 @@ public class DecoderTests
 
         PackingRulesDecoder decoder;
 
-        IPackingVectorPartDecoder<Rotation> rotationDecoder;
+        IPackingRulesPartDecoder<Rotation> rotationDecoder;
         Rotation expectedRotation;
 
-        IPackingVectorPartDecoder<PlacementHeuristic> placementDecoder;
+        IPackingRulesPartDecoder<PlacementHeuristic> placementDecoder;
         PlacementHeuristic expectedHeuristics;
 
-        IBoxToBePackedSorter boxToBePackedSorter;
+        IPendingBoxSorter pendingBoxSorter;
 
-        IReadOnlyList<BoxToBePacked> decoded;
+        IReadOnlyList<PendingBox> decoded;
 
         var packingVector = PackingRules.CreateRandom(3);
 
@@ -29,11 +40,11 @@ public class DecoderTests
             {
                 if (a == 0)
                 {
-                    boxToBePackedSorter = new HeuristicalBoxSorter(new OrderHeuristics.HighVolumeFirstHeuristic());
+                    pendingBoxSorter = new HeuristicalBoxSorter(OrderHeuristics.GetOrderHeuristic("High Volume First Heuristic"));
                 }
                 else
                 {
-                    boxToBePackedSorter = new PackingVectorUsingBoxSorter();
+                    pendingBoxSorter = new PackingRulesUsingBoxSorter();
 
                 }
 
@@ -65,8 +76,8 @@ public class DecoderTests
                     {
                         if (c == 0)
                         {
-                            placementDecoder = new OnePlacementDecoder(PlacementHeuristics.FirstFit);
-                            expectedHeuristics = PlacementHeuristics.FirstFit;
+                            placementDecoder = new OnePlacementDecoder(PlacementHeuristics.BestFit);
+                            expectedHeuristics = PlacementHeuristics.BestFit;
 
                         }
                         else
@@ -82,9 +93,9 @@ public class DecoderTests
                             }
                         }
 
-                        decoder = new PackingRulesDecoder(placementDecoder, rotationDecoder, boxToBePackedSorter, input);
+                        decoder = new PackingRulesDecoder(placementDecoder, rotationDecoder, pendingBoxSorter, input);
 
-                        Assert.Equal(a + b + c, decoder.PackingVectorMinimalLength);
+                        Assert.Equal(a + b + c, decoder.PackingRulesMinimalLength);
 
                         decoded = decoder.Decode(packingVector);
 

@@ -1,81 +1,80 @@
-﻿
-using System.Text;
+﻿namespace EvolutionaryContainerPacking.Evolution;
 
+using EvolutionaryContainerPacking.Packing.Architecture.Containers;
+using EvolutionaryContainerPacking.Packing;
+using EvolutionaryContainerPacking.Packing.Rules;
+using EvolutionaryContainerPacking.Evolution.Fitness;
+using EvolutionaryContainerPacking.Evolution.EvolutionStatistics;
+using EvolutionaryContainerPacking.Evolution.Setting;
+using EvolutionaryContainerPacking.Evolution.Architecture.Population;
+
+/// <summary>
+/// Entry point for executing the evolutionary container packing process.
+/// </summary>
+/// <remarks>
+/// This class orchestrates the complete workflow:
+/// <list type="number">
+/// <item>Create fitness evaluator.</item>
+/// <item>Create population factory.</item>
+/// <item>Instantiate the selected evolutionary algorithm.</item>
+/// <item>Run evolution to obtain the best individual.</item>
+/// <item>Use the best evolved packing rules to compute the final packing solution.</item>
+/// </list>
+/// </remarks>
 public static class EvolutionProgram
 {
-    public static void Main() { }
-
-    public static IReadOnlyList<ContainerData> Run(ProgramSetting setting, PackingInput packingInput)
+    /// <summary>
+    /// Executes the selected evolutionary algorithm and returns the final packing solution
+    /// together with evolution statistics.
+    /// </summary>
+    /// <param name="setting">
+    /// High-level program configuration including algorithm selection, solver setting, input/ouput information
+    /// and evolutionary parameters.
+    /// </param>
+    /// <param name="packingInput">
+    /// Input data describing containers and boxes to be packed.
+    /// </param>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    /// <item>
+    /// The computed packing solution (containers with placed boxes).
+    /// </item>
+    /// <item>
+    /// Evolution statistics collected during the run.
+    /// </item>
+    /// </list>
+    /// </returns>
+    public static (IReadOnlyList<ContainerData> solution, IEvolutionStatistics<PackingRules> statistics) Run(ProgramSetting setting, PackingInput packingInput)
     {
-        var initialPopulation = CreateInitialPopulation(packingInput, setting.PackingSetting, setting.EvolutionSetting.NumberOfIndividuals);
-        var evaluator = PackingRulesFitnessEvaluator.Create(packingInput, setting.PackingSetting);
+        // Create fitness evaluator responsible for scoring individuals
+        var fitnessEvaluator = new PackingRulesFitnessEvaluator(packingInput, setting.PackingSetting);
 
-        var evolutionStatistics = new EvolutionStatistics<PackingRules>();
+        // Initialize statistics collector
+        IEvolutionStatistics<PackingRules> evolutionStatistics = 
+            (setting.EvolutionStatisticsFile != null) ? 
+            new EvolutionStatistics<PackingRules>() : 
+            new EmptyStatistics<PackingRules>();
 
-        var evolutionary = EvolutionaryAlgorithms.GetEvolutionaryAlgorithm(setting.EvolutionSetting.AlgorithmName, initialPopulation, evaluator, setting.EvolutionAlgorithmSetting, evolutionStatistics);
+        // Create factory responsible for generating populations
+        var populationFactory = new PackingRulesPopulationFactory(PackingSolver.GetPackingRulesMinimalLength(packingInput, setting.PackingSetting));
 
+        // Instantiate selected evolutionary algorithm
+        var evolutionaryAlgorithm = EvolutionaryAlgorithms.GetEvolutionaryAlgorithm(
+            setting.AlgorithmName,
+            populationFactory,
+            fitnessEvaluator,
+            setting.EvolutionAlgorithmSetting,
+            evolutionStatistics);
 
-        evolutionary.Evolve(setting.EvolutionSetting.NumberOfGenerations);
-        var best = evolutionary.GlobalBest.Individual;
+        // Execute evolutionary process and obtain best evolved individual (packing rules)
+        var bestIndividual = evolutionaryAlgorithm.Run();
 
-        var solution = PackingProgram.Solve(best, packingInput, setting.PackingSetting);
+        // Use best evolved packing rules to construct final packing solution
+        var solver = new PackingSolver(packingInput, setting.PackingSetting);
+        var solution = solver.Solve(bestIndividual);
 
-        PackingValidityChecker(solution);
-
-        SaveStatisticsCsv(evolutionStatistics, setting.EvolutionSetting.IterationStatisticsFile);
-
-        return solution;
-    }
-
-    public static void SaveStatisticsCsv(EvolutionStatistics<PackingRules> s, string fileName)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("Generation;Best;Average");
-
-        foreach (var i in s.IterationScore)
-        {
-            sb.AppendLine(
-                $"{i.IterationNumber};{i.BestScore};{i.AverageScore}"
-            );
-        }
-
-        File.WriteAllText(fileName, sb.ToString());
-    }
-
-
-
-
-
-    public static IReadOnlyList<PackingRules> CreateInitialPopulation(PackingInput packingInput, PackingSetting packingSetting, int populationSize)
-    {
-        IPopulationFactory<PackingRules> packingVectorFactory = new PackingRulesPopulationFactory(PackingProgram.GetPackingVectorExpectedMinimalLength(packingInput, packingSetting));
-        return packingVectorFactory.CreatePopulation(populationSize);
-        
-    }
-
-    public static void PackingValidityChecker(IReadOnlyList<ContainerData> containers)
-    {
-
-        foreach (ContainerData container in containers)
-        {
-            var containerRegion = container.ContainerProperties.Sizes.ToRegion(new Coordinates(0, 0, 0));
-
-            IReadOnlyList<PackedBox> packedBoxes = container.PlacedBoxes;
-
-            for (int i = 0; i < packedBoxes.Count; i++) 
-            { 
-                for (int j = i+1;  j < packedBoxes.Count; j++)
-                {
-                    var box1 = packedBoxes[i];
-                    var box2 = packedBoxes[j];
-
-                    if (box1.PlacementInfo.OccupiedRegion.IntersectsWith(box2.PlacementInfo.OccupiedRegion) || !box1.PlacementInfo.OccupiedRegion.IsSubregionOf(containerRegion) || !box2.PlacementInfo.OccupiedRegion.IsSubregionOf(containerRegion))
-                    {
-                        throw new Exception($"Fatal packing program error, in container {container.ID}, box {box1} intersects with {box2}!");
-                    }
-                }
-            }
-        }
+        return (solution, evolutionStatistics);
     }
 }
 

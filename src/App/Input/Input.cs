@@ -1,4 +1,6 @@
-﻿
+﻿namespace EvolutionaryContainerPacking.App.Input;
+
+using EvolutionaryContainerPacking.Packing;
 using System.Text.Json;
 
 public static class PackingInputLoader

@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿namespace EvolutionaryContainerPacking.App.Output;
 
+using System.Text.Json;
+using EvolutionaryContainerPacking.Packing.Architecture.Containers;
 
 public static class PackingOutputSaver
 {

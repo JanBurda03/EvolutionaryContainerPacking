@@ -1,391 +1,381 @@
-﻿
+﻿namespace EvolutionaryContainerPacking.Forms;
+
+using EvolutionaryContainerPacking.Evolution;
+using EvolutionaryContainerPacking.Packing.Architecture.Placements;
+using EvolutionaryContainerPacking.Packing.Rules.Decoding.Sorting;
+using EvolutionaryContainerPacking.Packing;
 public class SettingsForm : Form
 {
+    // ================================
+    // IO
+    // ================================
     private TextBox sourceJsonTextBox;
     private TextBox outputJsonTextBox;
     private TextBox evolutionStatisticsCsvTextBox;
+    private CheckBox exportStatisticsCheckBox;
 
+    // ================================
+    // Packing
+    // ================================
     private CheckedListBox placementHeuristicsCheckedListBox;
-
     private CheckBox allowRotationsCheckBox;
 
+    private CheckBox usePackingOrderCheckBox;
     private ComboBox packingOrderComboBox;
-    private ComboBox algorithmComboBox;
 
-    private NumericUpDown numberOfIndividualsNumeric;
-    private NumericUpDown numberOfGenerationsNumeric;
+    // ================================
+    // Algorithm
+    // ================================
+    private ComboBox algorithmComboBox;
 
     private Button okButton;
     private Button cancelButton;
 
+    // ============================================================
+    // Publicly exposed configuration parts
+    // ============================================================
 
-    public IOSetting IOSetting { get; private set; }
+    public string SourceFile => sourceJsonTextBox.Text;
+    public string OutputFile => outputJsonTextBox.Text;
+    public string? EvolutionStatisticsFile =>
+        exportStatisticsCheckBox.Checked ? evolutionStatisticsCsvTextBox.Text : null;
+
+    public string AlgorithmName => algorithmComboBox.SelectedItem!.ToString()!;
+
     public PackingSetting PackingSetting { get; private set; }
-    public EvolutionSetting EvolutionSetting { get; private set; }
 
     public SettingsForm()
     {
-        Text = "Program Setting";
+        Text = "Program Settings";
         Width = 600;
-        Height = 500;
+        Height = 520;
         StartPosition = FormStartPosition.CenterScreen;
 
         InitializeComponents();
-
-
         WindowDesign.SetDesign(this);
     }
 
     private void InitializeComponents()
     {
-        int labelWidth = 180;
-        int controlWidth = 350;
+        int labelWidth = 220;     // widened labels
+        int leftInput = 240;      // pushed inputs to the right
+        int controlWidth = 320;   // adjusted width to fit nicely
         int top = 10;
         int spacing = 30;
 
-        AddSourceJSON();
-        outputJsonTextBox = AddOutputJSON("Outpot JSON:", "output.json");
-        evolutionStatisticsCsvTextBox = AddOutputCSV("Evolution Statistics CSV:", "evolutionStatistics.csv");
+        // ============================================================
+        // SOURCE JSON
+        // ============================================================
 
-        // Placement heuristics
+        AddLabel("Source JSON:", 10, top, labelWidth);
+
+        sourceJsonTextBox = new TextBox
+        {
+            Left = leftInput,
+            Top = top,
+            Width = controlWidth - 90,
+            ReadOnly = true
+        };
+
+        var browseSourceButton = new Button
+        {
+            Text = "Browse...",
+            Left = leftInput + controlWidth - 85,
+            Top = top - 1,
+            Width = 80
+        };
+
+        browseSourceButton.Click += (s, e) =>
+        {
+            using var ofd = new OpenFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+            };
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+                sourceJsonTextBox.Text = ofd.FileName;
+        };
+
+        Controls.Add(sourceJsonTextBox);
+        Controls.Add(browseSourceButton);
+        top += spacing;
+
+        // ============================================================
+        // OUTPUT JSON
+        // ============================================================
+
+        AddLabel("Output JSON:", 10, top, labelWidth);
+
+        outputJsonTextBox = CreateSaveFileTextBox(
+            top,
+            leftInput,
+            controlWidth,
+            "output.json",
+            "JSON files (*.json)|*.json|All files (*.*)|*.*");
+
+        top += spacing;
+
+        // ============================================================
+        // STATISTICS EXPORT
+        // ============================================================
+
+        exportStatisticsCheckBox = new CheckBox
+        {
+            Text = "Export Evolution Statistics (CSV)",
+            Left = 10,
+            Top = top,
+            Width = 300
+        };
+
+        Controls.Add(exportStatisticsCheckBox);
+        top += spacing;
+
+        AddLabel("Statistics CSV:", 10, top, labelWidth);
+
+        evolutionStatisticsCsvTextBox = CreateSaveFileTextBox(
+            top,
+            leftInput,
+            controlWidth,
+            "evolutionStatistics.csv",
+            "CSV files (*.csv)|*.csv|All files (*.*)|*.*");
+
+        evolutionStatisticsCsvTextBox.Enabled = false;
+
+        exportStatisticsCheckBox.CheckedChanged += (s, e) =>
+        {
+            evolutionStatisticsCsvTextBox.Enabled = exportStatisticsCheckBox.Checked;
+        };
+
+        top += spacing;
+
+        // ============================================================
+        // PLACEMENT HEURISTICS
+        // ============================================================
+
         AddLabel("Placement Heuristics:", 10, top, labelWidth);
+
         placementHeuristicsCheckedListBox = new CheckedListBox
         {
-            Left = 200,
+            Left = leftInput,
             Top = top,
             Width = controlWidth,
             Height = 80
         };
-        placementHeuristicsCheckedListBox.Items.AddRange(PlacementHeuristics.PlacementHeuristicsList.ToArray());
+
+        placementHeuristicsCheckedListBox.Items
+            .AddRange(PlacementHeuristics.PlacementHeuristicsList.ToArray());
+
         placementHeuristicsCheckedListBox.SetItemChecked(0, true);
+
         Controls.Add(placementHeuristicsCheckedListBox);
         top += 90;
 
-        // Allow rotations
         allowRotationsCheckBox = new CheckBox
         {
-            Left = 200,
+            Left = leftInput,
             Top = top,
             Text = "Allow Rotations",
-            AutoSize = true,
-            Checked = true
+            Checked = true,
+            AutoSize = true
         };
-        this.Controls.Add(allowRotationsCheckBox);
+
+        Controls.Add(allowRotationsCheckBox);
         top += spacing;
 
+        // ============================================================
+        // PACKING ORDER
+        // ============================================================
 
+        usePackingOrderCheckBox = new CheckBox
+        {
+            Text = "Use Packing Order Heuristic",
+            Left = 10,
+            Top = top,
+            Width = 250
+        };
 
-        // Packing order heuristic
-        AddLabel("Packing Order Heuristics:", 10, top, labelWidth);
+        Controls.Add(usePackingOrderCheckBox);
+        top += spacing;
+
+        AddLabel("Packing Order Heuristic:", 10, top, labelWidth);
+
         packingOrderComboBox = new ComboBox
         {
-            Left = 200,
+            Left = leftInput,
+            Top = top,
+            Width = controlWidth,
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Enabled = false
+        };
+
+        packingOrderComboBox.Items
+            .AddRange(OrderHeuristics.OrderHeuristicsList.ToArray());
+
+        if (packingOrderComboBox.Items.Count > 0)
+            packingOrderComboBox.SelectedIndex = 0;
+
+        Controls.Add(packingOrderComboBox);
+
+        usePackingOrderCheckBox.CheckedChanged += (s, e) =>
+        {
+            packingOrderComboBox.Enabled = usePackingOrderCheckBox.Checked;
+        };
+
+        top += spacing;
+
+        // ============================================================
+        // ALGORITHM
+        // ============================================================
+
+        AddLabel("Algorithm:", 10, top, labelWidth);
+
+        algorithmComboBox = new ComboBox
+        {
+            Left = leftInput,
             Top = top,
             Width = controlWidth,
             DropDownStyle = ComboBoxStyle.DropDownList
         };
 
-        
+        algorithmComboBox.Items
+            .AddRange(EvolutionaryAlgorithms.EvolutionaryAlgorithmsArray);
 
-        packingOrderComboBox.Items.AddRange((new[] { "None" })
-        .Concat(OrderHeuristics.OrderHeuristicsList)
-        .ToArray());
-        packingOrderComboBox.SelectedIndex = 0;
-        this.Controls.Add(packingOrderComboBox);
-        top += spacing;
-
-
-        // Algorithm name
-        AddLabel("Algorithm:", 10, top, labelWidth);
-        algorithmComboBox = new ComboBox
-        {
-            Left = 200,
-            Top = top,
-            Width = controlWidth,
-            DropDownStyle = ComboBoxStyle.DropDownList,
-        };
-        algorithmComboBox.Items.AddRange(EvolutionaryAlgorithms.EvolutionaryAlgorithmsArray);
         algorithmComboBox.SelectedIndex = 0;
-        this.Controls.Add(algorithmComboBox);
+
+        Controls.Add(algorithmComboBox);
         top += spacing;
 
-        // Number of Individuals
-        AddLabel("Number of Individuals:", 10, top, labelWidth);
-        numberOfIndividualsNumeric = new NumericUpDown
-        {
-            Left = 200,
-            Top = top,
-            Width = 100,
-            Minimum = 1,
-            Maximum = 100000,
-            Value = 1000,
-        };
-        Controls.Add(numberOfIndividualsNumeric);
-        top += spacing;
+        // ============================================================
+        // BUTTONS
+        // ============================================================
 
-        // Number of Generations
-        AddLabel("Number of Generations:", 10, top, labelWidth);
-        numberOfGenerationsNumeric = new NumericUpDown
-        {
-            Left = 200,
-            Top = top,
-            Width = 100,
-            Minimum = 1,
-            Maximum = 100000,
-            Value = 100
-        };
-        Controls.Add(numberOfGenerationsNumeric);
-        top += spacing;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // OK Button
         okButton = new Button
         {
             Text = "OK",
-            Left = 200,
+            Left = leftInput,
             Top = top,
             Width = 100
         };
+
         okButton.Click += OkButton_Click;
         Controls.Add(okButton);
 
-        // Cancel Button
         cancelButton = new Button
         {
             Text = "Cancel",
-            Left = 310,
+            Left = leftInput + 110,
             Top = top,
             Width = 100
         };
-        cancelButton.Click += (s, e) => { DialogResult = DialogResult.Cancel; Close(); };
+
+        cancelButton.Click += (s, e) =>
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        };
+
         Controls.Add(cancelButton);
+    }
 
-
-        
-
-
-
-        void AddSourceJSON()
-        {
-            AddLabel("Source JSON:", 10, top, labelWidth);
-            sourceJsonTextBox = new TextBox
-            {
-                Left = 200,
-                Top = top,
-                Width = controlWidth - 90,
-                ReadOnly = true
-            };
-            var browseSourceButton = new Button
-            {
-                Text = "Browse...",
-                Left = 200 + controlWidth - 85,
-                Top = top - 1,
-                Width = 80
-            };
-            browseSourceButton.Click += (s, e) =>
-            {
-                using var ofd = new OpenFileDialog
-                {
-                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                    Title = "Choose Input JSON File"
-                };
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    sourceJsonTextBox.Text = ofd.FileName;
-                }
-            };
-            Controls.Add(sourceJsonTextBox);
-            Controls.Add(browseSourceButton);
-            top += spacing;
-        }
-
-
-        
-
-        TextBox AddOutputJSON(string text, string defaultName)
-        {
-            string defaultPath = Path.Combine(
+    private TextBox CreateSaveFileTextBox(
+        int top,
+        int leftInput,
+        int controlWidth,
+        string defaultName,
+        string filter)
+    {
+        string defaultPath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             defaultName);
 
-            AddLabel(text, 10, top, labelWidth);
-            TextBox tb = new TextBox
-            {
-                Left = 200,
-                Top = top,
-                Width = controlWidth - 90,
-                ReadOnly = true,
-                Text = defaultPath
-            };
-            var browseOutputButton = new Button
-            {
-                Text = "Browse",
-                Left = 200 + controlWidth - 85,
-                Top = top - 1,
-                Width = 80
-            };
-            browseOutputButton.Click += (s, e) =>
-            {
-                using var sfd = new SaveFileDialog
-                {
-                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
-                    Title = "Choose Output JSON File"
-                };
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    tb.Text = sfd.FileName;
-                }
-            };
-            Controls.Add(tb);
-            Controls.Add(browseOutputButton);
-            top += spacing;
-            return tb;
-        }
-
-        TextBox AddOutputCSV(string text, string defaultName)
+        var tb = new TextBox
         {
-            string defaultPath = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                defaultName);
-
-            AddLabel(text, 10, top, labelWidth);
-
-            TextBox tb = new TextBox
-            {
-                Left = 200,
-                Top = top,
-                Width = controlWidth - 90,
-                ReadOnly = true,
-                Text = defaultPath
-            };
-
-            var browseOutputButton = new Button
-            {
-                Text = "Browse",
-                Left = 200 + controlWidth - 85,
-                Top = top - 1,
-                Width = 80
-            };
-
-            browseOutputButton.Click += (s, e) =>
-            {
-                using var sfd = new SaveFileDialog
-                {
-                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
-                    Title = "Choose Output CSV File",
-                    DefaultExt = "csv",
-                    AddExtension = true
-                };
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    tb.Text = sfd.FileName;
-                }
-            };
-
-            Controls.Add(tb);
-            Controls.Add(browseOutputButton);
-
-            top += spacing;
-            return tb;
-        }
-
-
-
-    }
-
-    private void AddLabel(string text, int left, int top, int width)
-    {
-        var label = new Label
-        {
-            Text = text,
-            Left = left,
-            Top = top + 3,
-            Width = width
+            Left = leftInput,
+            Top = top,
+            Width = controlWidth - 90,
+            ReadOnly = true,
+            Text = defaultPath
         };
-        Controls.Add(label);
-    }
 
+        var browseButton = new Button
+        {
+            Text = "Browse",
+            Left = leftInput + controlWidth - 85,
+            Top = top - 1,
+            Width = 80
+        };
+
+        browseButton.Click += (s, e) =>
+        {
+            using var sfd = new SaveFileDialog
+            {
+                Filter = filter
+            };
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+                tb.Text = sfd.FileName;
+        };
+
+        Controls.Add(tb);
+        Controls.Add(browseButton);
+
+        return tb;
+    }
 
     private void OkButton_Click(object sender, EventArgs e)
     {
-
-        if (Errors())
-        {
+        if (HasErrors())
             return;
-        }
 
-        
+        string[] selectedPlacementHeuristics =
+            placementHeuristicsCheckedListBox.CheckedItems.Cast<string>().ToArray();
 
- 
+        string? packingOrder =
+            usePackingOrderCheckBox.Checked
+                ? packingOrderComboBox.SelectedItem?.ToString()
+                : null;
 
-        // IO setting
-        IOSetting = new IOSetting(sourceJsonTextBox.Text, outputJsonTextBox.Text);
-
-
-
-
-        // evolution setting
-        string algorithmName = algorithmComboBox.SelectedItem.ToString();
-
-        int numberOfIndividuals = (int)numberOfIndividualsNumeric.Value;
-        int numberOfGenerations = (int)numberOfGenerationsNumeric.Value;
-
-
-        
-        EvolutionSetting = new EvolutionSetting(algorithmName, numberOfIndividuals, numberOfGenerations, evolutionStatisticsCsvTextBox.Text);
-
-
-
-        // packing setting
-        bool allowRotations = allowRotationsCheckBox.Checked;
-        string[] selectedPlacementHeuristics = placementHeuristicsCheckedListBox.CheckedItems.Cast<string>().ToArray();
-        string selectedPackingOrderHeuristic = packingOrderComboBox.SelectedItem.ToString();
-        string? onlySelectedPackingOrderHeuristics = selectedPackingOrderHeuristic == "None" ? null : selectedPackingOrderHeuristic;
-        PackingSetting = new PackingSetting(selectedPlacementHeuristics, allowRotations, onlySelectedPackingOrderHeuristics);
-
+        PackingSetting = new PackingSetting(
+            selectedPlacementHeuristics,
+            allowRotationsCheckBox.Checked,
+            packingOrder
+        );
 
         DialogResult = DialogResult.OK;
         Close();
     }
 
-    private bool Errors()
+    private bool HasErrors()
     {
         if (string.IsNullOrWhiteSpace(sourceJsonTextBox.Text))
         {
-            MessageBox.Show("Please select a source JSON file.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Please select a source JSON file.");
             return true;
         }
 
         if (string.IsNullOrWhiteSpace(outputJsonTextBox.Text))
         {
-            MessageBox.Show("Please select an output JSON file.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return true;
-        }
-
-        if (string.IsNullOrWhiteSpace(evolutionStatisticsCsvTextBox.Text))
-        {
-            MessageBox.Show("Please select an evolution statistics JSON file.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Please select an output JSON file.");
             return true;
         }
 
         if (placementHeuristicsCheckedListBox.CheckedItems.Count == 0)
         {
-            MessageBox.Show("Please select at least one placement heuristic.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Please select at least one placement heuristic.");
             return true;
         }
+
         return false;
+    }
+
+    private void AddLabel(string text, int left, int top, int width)
+    {
+        Controls.Add(new Label
+        {
+            Text = text,
+            Left = left,
+            Top = top + 3,
+            Width = width
+        });
     }
 }

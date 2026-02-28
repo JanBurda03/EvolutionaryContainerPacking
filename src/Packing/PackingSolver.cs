@@ -5,6 +5,7 @@ using EvolutionaryContainerPacking.Packing.Rules;
 using EvolutionaryContainerPacking.Packing.Architecture.Boxes;
 using EvolutionaryContainerPacking.Packing.Architecture;
 using EvolutionaryContainerPacking.Packing.Architecture.Containers;
+using EvolutionaryContainerPacking.Packing.Architecture.Geometry;
 
 /// <summary>
 /// Main entry point for solving a bin packing problem using a set of packing rules.
@@ -61,6 +62,8 @@ public class PackingSolver
         BoxPacker boxPacker = new BoxPacker(_packingInput.ContainerProperties);
         IReadOnlyList<ContainerData> containers = boxPacker.PackBoxes(boxesToBePacked);
 
+        CheckPackingValidity(containers);
+
         return containers;
     }
 
@@ -105,6 +108,55 @@ public class PackingSolver
             volume / packingInput.ContainerProperties.Sizes.GetVolume()
             )
             );
+    }
+
+    /// <summary>
+    /// Validates that the packing result is geometrically correct.
+    /// </summary>
+    /// <remarks>
+    /// This method checks two fundamental constraints:
+    /// <list type="bullet">
+    /// <item>
+    /// No two boxes within the same container overlap.
+    /// </item>
+    /// <item>
+    /// Every placed box lies completely inside the container boundaries.
+    /// </item>
+    /// </list>
+    /// 
+    /// If any violation is detected, an exception is thrown,
+    /// indicating a critical error in the packing algorithm.
+    /// </remarks>
+    /// <param name="containers">
+    /// List of containers with their placed boxes to be validated.
+    /// </param>
+    /// <exception cref="Exception">
+    /// Thrown when overlapping boxes are detected or when a box exceeds
+    /// the container boundaries.
+    /// </exception>
+    public static void CheckPackingValidity(IReadOnlyList<ContainerData> containers)
+    {
+
+        foreach (ContainerData container in containers)
+        {
+            var containerRegion = container.ContainerProperties.Sizes.ToRegion(new Coordinates(0, 0, 0));
+
+            IReadOnlyList<PlacedBox> packedBoxes = container.PlacedBoxes;
+
+            for (int i = 0; i < packedBoxes.Count; i++)
+            {
+                for (int j = i + 1; j < packedBoxes.Count; j++)
+                {
+                    var box1 = packedBoxes[i];
+                    var box2 = packedBoxes[j];
+
+                    if (box1.Placement.OccupiedRegion.IntersectsWith(box2.Placement.OccupiedRegion) || !box1.Placement.OccupiedRegion.IsSubregionOf(containerRegion) || !box2.Placement.OccupiedRegion.IsSubregionOf(containerRegion))
+                    {
+                        throw new Exception($"Fatal packing program error, in container {container.ID}, box {box1} intersects with {box2}!");
+                    }
+                }
+            }
+        }
     }
 }
 

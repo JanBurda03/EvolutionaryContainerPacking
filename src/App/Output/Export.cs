@@ -1,4 +1,10 @@
-﻿public record class ContainerExport(
+﻿namespace EvolutionaryContainerPacking.App.Output;
+
+using EvolutionaryContainerPacking.Packing.Architecture.Geometry;
+using EvolutionaryContainerPacking.Packing.Architecture.Containers;
+using EvolutionaryContainerPacking.Packing.Architecture.Boxes;
+
+public record class ContainerExport(
     int ContainerID,
     long CurrentWeight,
     long OccupiedVolume,
@@ -25,11 +31,11 @@ public static class ContainerExtensionForExport
 }
 
 
-public static class PackedBoxExtensionForExport
+public static class PlacedBoxExtensionForExport
 {
-    public static PackedBoxExport ExportPackedBox(this PackedBox packedBox)
+    public static PackedBoxExport ExportPackedBox(this PlacedBox box)
     {
-        return new PackedBoxExport(packedBox.BoxProperties.ID, packedBox.Rotation.ToString(), packedBox.PlacementInfo.OccupiedRegion);
+        return new PackedBoxExport(box.BoxProperties.ID, box.Rotation.ToString(), box.Placement.OccupiedRegion);
     }
 }
 

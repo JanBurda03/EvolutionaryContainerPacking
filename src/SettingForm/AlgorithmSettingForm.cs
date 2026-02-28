@@ -1,4 +1,8 @@
-﻿public abstract class AlgorithmSettingForm : Form
+﻿namespace EvolutionaryContainerPacking.Forms;
+
+using EvolutionaryContainerPacking.Evolution.Setting.EvolutionaryAlgorithmSettings;
+
+public abstract class AlgorithmSettingForm : Form
 {
     public EvolutionaryAlgorithmSetting EvolutionaryAlgorithmSetting { get; protected set; }
 

@@ -11,11 +11,11 @@ public static class OrderHeuristics
     private static readonly IReadOnlyDictionary<string, IComparer<PendingBox>> OrderHeuristicsDictionary =
         new Dictionary<string, IComparer<PendingBox>>
         {
-            {"HighVolumeFirstHeuristic", new HighVolumeFirstHeuristic() },
-            {"HighAreaBaseFirstHeuristic", new HighAreaBaseFirstHeuristic()},
-            {"LongestFirstHeuristic", new LongestFirstHeuristic()},
-            {"HighWeightFirstHeuristic", new HighWeightFirstHeuristic()},
-            {"HighSurfaceAreaFirstHeuristic", new HighSurfaceAreaFirstHeuristic()}
+            {"High Volume First Heuristic", new HighVolumeFirstHeuristic() },
+            {"High Area Base First Heuristic", new HighAreaBaseFirstHeuristic()},
+            {"Longest First Heuristic", new LongestFirstHeuristic()},
+            {"High Weight First Heuristic", new HighWeightFirstHeuristic()},
+            {"High Surface Area FirstHeuristic", new HighSurfaceAreaFirstHeuristic()}
         };
 
     /// <summary>

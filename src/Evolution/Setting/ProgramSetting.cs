@@ -1,53 +1,58 @@
-﻿
-public readonly record struct ProgramSetting
-{
-    public ProgramSetting(IOSetting iOSetting, PackingSetting packingSetting, EvolutionSetting evolutionSetting, EvolutionaryAlgorithmSetting evolutionAlgorithmSetting)
-    {
-        IOSetting = iOSetting;
-        PackingSetting = packingSetting;
-        EvolutionSetting = evolutionSetting;
-        EvolutionAlgorithmSetting = evolutionAlgorithmSetting;
-    }
+﻿namespace EvolutionaryContainerPacking.Evolution.Setting;
 
-    public IOSetting IOSetting { get; init; }
-    public PackingSetting PackingSetting { get; init; }
+using EvolutionaryContainerPacking.Evolution.Setting.EvolutionaryAlgorithmSettings;
+using EvolutionaryContainerPacking.Packing;
 
-    public EvolutionSetting EvolutionSetting { get; init; }
+/// <summary>
+/// Represents the complete high-level configuration of the application.
+/// </summary>
+/// <remarks>
+/// This configuration defines:
+/// <list type="bullet">
+/// <item>The input packing problem (JSON file).</item>
+/// <item>The output packing solution (JSON file).</item>
+/// <item>Optional export of evolutionary statistics (CSV file).</item>
+/// <item>The selected evolutionary algorithm and its parameters.</item>
+/// <item>Packing-specific solver settings.</item>
+/// </list>
+/// </remarks>
+public sealed record class ProgramSetting(
 
-    public EvolutionaryAlgorithmSetting EvolutionAlgorithmSetting { get; init; }
+    /// <summary>
+    /// Path to the input JSON file.
+    /// The file must contain a serialized <see cref="PackingInput"/> instance.
+    /// </summary>
+    string SourceFile,
 
-    
-}
+    /// <summary>
+    /// Path to the output JSON file.
+    /// The file will contain a serialized list of <see cref="ContainerData"/>
+    /// representing the resulting packing solution.
+    /// </summary>
+    string OutputFile,
 
-public readonly record struct IOSetting
-{ 
-    public IOSetting(string sourceJson, string outputJson)
-    {
-        SourceJson = sourceJson;
-        OutputJson = outputJson;
-    }
-    public string SourceJson { get; init; }
-    public string OutputJson { get; init; }
-}
+    /// <summary>
+    /// Optional path to a CSV file where evolution statistics will be exported.
+    /// If null, statistics export is skipped.
+    /// </summary>
+    string? EvolutionStatisticsFile,
 
-public readonly record struct EvolutionSetting
-{
-    public string AlgorithmName { get; init; }
+    /// <summary>
+    /// Name of the evolutionary algorithm to use.
+    /// Typically used by a factory to select a specific algorithm implementation.
+    /// </summary>
+    string AlgorithmName,
 
-    public int NumberOfIndividuals { get; init; }
+    /// <summary>
+    /// Configuration settings controlling packing constraints
+    /// and solver behavior.
+    /// </summary>
+    PackingSetting PackingSetting,
 
-    public int NumberOfGenerations { get; init; }
-
-
-
-    public string IterationStatisticsFile { get; init; }
-
-
-    public EvolutionSetting(string algorithmName, int numberOfIndividuals, int numberOfGenerations, string iterationStatisticsFile)
-    {
-        AlgorithmName = algorithmName;
-        NumberOfIndividuals = numberOfIndividuals;
-        NumberOfGenerations = numberOfGenerations;
-        IterationStatisticsFile = iterationStatisticsFile;
-    }
-}
+    /// <summary>
+    /// Configuration of the evolutionary algorithm.
+    /// May be the base <see cref="EvolutionaryAlgorithmSettings"/>
+    /// or a derived type containing algorithm-specific parameters.
+    /// </summary>
+    EvolutionaryAlgorithmSetting EvolutionAlgorithmSetting
+);

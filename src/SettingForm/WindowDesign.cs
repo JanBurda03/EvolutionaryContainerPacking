@@ -1,4 +1,6 @@
-﻿public static class WindowDesign
+﻿namespace EvolutionaryContainerPacking.Forms;
+
+public static class WindowDesign
 {
     public static void SetDesign(Form form)
     {
