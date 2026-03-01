@@ -1,4 +1,4 @@
-﻿namespace EvolutionaryContainerPacking.PackingTests.DecoderTests;
+﻿namespace EvolutionaryContainerPacking.Tests.DecoderTests;
 
 using EvolutionaryContainerPacking.Packing;
 using EvolutionaryContainerPacking.Packing.Architecture.Geometry;

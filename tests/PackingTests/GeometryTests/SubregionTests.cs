@@ -1,4 +1,4 @@
-﻿namespace EvolutionaryContainerPacking.PackingTests.GeometryTests;
+﻿namespace EvolutionaryContainerPacking.Tests.GeometryTests;
 
 using EvolutionaryContainerPacking.Packing.Architecture.Geometry;
 using Xunit;

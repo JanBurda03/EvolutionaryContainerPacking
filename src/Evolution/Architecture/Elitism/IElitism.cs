@@ -13,7 +13,7 @@ public interface IElitism<T>
     /// <param name="population">The population to select elites from.</param>
     /// <param name="numberOfElites">How many elites to return.</param>
     /// <returns>List of elite individuals.</returns>
-    IReadOnlyList<EvaluatedIndividual<T>> GetElites(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites);
+    IReadOnlyList<EvaluatedIndividual<T>> GetElite(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites);
 
     /// <summary>
     /// Returns the best individual from the given population.

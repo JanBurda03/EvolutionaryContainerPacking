@@ -31,7 +31,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
     // Memetic extension
     // ============================================================
     private NumericUpDown hillClimbingIterationsNumeric;
-    private NumericUpDown hillClimbingAverageElementsMutatedNumeric;
+    private NumericUpDown hillClimbingPercentageOfElementsMutatedNumeric;
 
     private Button okButton;
     private Button cancelButton;
@@ -195,24 +195,24 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
         Controls.Add(hillClimbingIterationsNumeric);
         top += spacing;
 
-        AddLabel("Hill Climbing Avg. Elements Mutated:", 10, top, labelWidth);
-        hillClimbingAverageElementsMutatedNumeric = new NumericUpDown
+        AddLabel("Hill Climbing Perc. of Element Mutated:", 10, top, labelWidth);
+        hillClimbingPercentageOfElementsMutatedNumeric = new NumericUpDown
         {
             Left = leftInput,
             Top = top,
             Width = 120,
             DecimalPlaces = 2,
-            Increment = 0.1M,
+            Increment = 0.01M,
             Minimum = 0,
-            Maximum = 1000,
+            Maximum = 1,
             Enabled = false,
-            Value = 1.0M
+            Value = 0.05M
         };
-        Controls.Add(hillClimbingAverageElementsMutatedNumeric);
+        Controls.Add(hillClimbingPercentageOfElementsMutatedNumeric);
 
         hillClimbingIterationsNumeric.ValueChanged += (s, e) =>
         {
-            hillClimbingAverageElementsMutatedNumeric.Enabled =
+            hillClimbingPercentageOfElementsMutatedNumeric.Enabled =
                 hillClimbingIterationsNumeric.Value > 0;
         };
 
@@ -272,7 +272,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             (double)percentageOfElementsMutatedNumeric.Value,
             random,
             (int)hillClimbingIterationsNumeric.Value,
-            (double)hillClimbingAverageElementsMutatedNumeric.Value
+            (double)hillClimbingPercentageOfElementsMutatedNumeric.Value
         );
 
         DialogResult = DialogResult.OK;

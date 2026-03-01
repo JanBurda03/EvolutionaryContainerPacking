@@ -2,6 +2,7 @@
 
 using EvolutionaryContainerPacking.Evolution.Architecture.Mutation;
 using EvolutionaryContainerPacking.Evolution.Architecture.Crossover;
+using EvolutionaryContainerPacking.Evolution.Architecture.Memetic;
 using EvolutionaryContainerPacking.Evolution.Architecture.Selection;
 using EvolutionaryContainerPacking.Evolution.Architecture.Population;
 using EvolutionaryContainerPacking.Evolution.Fitness;
@@ -23,6 +24,9 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
     // Crossover operator for combining two individuals
     protected readonly ICrossover<T> _crossover;
 
+    // Memetic operator for improving the elites
+    protected readonly IMemetic<T> _memetic;
+
     // Selection mechanism for picking individuals randomly
     protected readonly ISelection<T> _randomSelection;
 
@@ -31,6 +35,9 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
 
     // Number of elite individuals to preserve each generation
     protected readonly int _numberOfEliteIndividuals;
+
+    // Number of non-elite individuals
+    protected readonly int _numberOfNonEliteIndividuals;
 
     // Number of individuals to select and apply crossover/mutation
     protected readonly int _numberOfSelectedIndividuals;
@@ -42,6 +49,7 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
         IPopulationFactory<T> populationFactory,
         IFitnessEvaluator<T> fitnessEvaluator,
         IElitism<T> elitism,
+        IMemetic<T> memetic,
         ICrossover<T> crossover,
         IMutation<T> mutation,
         ElitistGeneticAlgorithmSetting setting,
@@ -52,7 +60,9 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
         _numberOfRandomIndividuals = (int)Math.Ceiling(setting.PercentageOfRandomIndividuals * Population.Count);
         _numberOfEliteIndividuals = (int)Math.Ceiling(setting.PercentageOfEliteIndividuals * Population.Count);
         _numberOfSelectedIndividuals = Population.Count - _numberOfRandomIndividuals - _numberOfEliteIndividuals;
+        _numberOfNonEliteIndividuals = Population.Count - _numberOfEliteIndividuals;
 
+        _memetic = memetic;
         _crossover = crossover;
         _mutation = mutation;
 
@@ -64,15 +74,19 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
     /// </summary>
     protected override void NextGeneration()
     {
-        // preserve elite individuals
-        var elites = _elitism.GetElites(Population, _numberOfEliteIndividuals);
+        // divide population into elites and non elites
+        var elites = _elitism.GetElite(Population, _numberOfEliteIndividuals);
+        var nonElites = _elitism.GetWorst(Population, _numberOfNonEliteIndividuals);
+
+        // improve elites by memetic
+        elites = _memetic.Memetic(elites);
 
         // select individuals from elites and non-elites for crossover
         var selectedElites = _randomSelection.Select(elites, _numberOfSelectedIndividuals);
-        var selected = _randomSelection.Select(Population, _numberOfSelectedIndividuals);
+        var selectedNonElites = _randomSelection.Select(nonElites, _numberOfSelectedIndividuals);
 
         // apply crossover between elite and non-elite selections
-        var crossovered = _crossover.Crossover(selectedElites, selected);
+        var crossovered = _crossover.Crossover(selectedElites, selectedNonElites);
 
         // apply mutation to the crossovered individuals
         var mutated = _mutation.Mutate(crossovered);
@@ -81,10 +95,10 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
         var added = _populationFactory.CreatePopulation(_numberOfRandomIndividuals);
 
         // combine mutated and new individuals
-        var result = mutated.Concat(added).ToList();
+        var newNonElites = mutated.Concat(added).ToList();
 
         // evaluate the new generation and append preserved elites
-        Population = (_fitnessEvaluator.GenerateEvaluated(result)).Concat(elites).ToList();
+        Population = (_fitnessEvaluator.GenerateEvaluated(newNonElites)).Concat(elites).ToList();
     }
 }
 

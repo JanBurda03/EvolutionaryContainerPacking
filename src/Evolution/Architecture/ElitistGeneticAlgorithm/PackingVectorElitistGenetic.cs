@@ -1,6 +1,7 @@
 ﻿namespace EvolutionaryContainerPacking.Evolution.Architecture.ElitistGenetic;
 
 using EvolutionaryContainerPacking.Evolution.Architecture.Population;
+using EvolutionaryContainerPacking.Evolution.Architecture.Memetic;
 using EvolutionaryContainerPacking.Evolution.Architecture.Elitism;
 using EvolutionaryContainerPacking.Evolution.Architecture.Crossover;
 using EvolutionaryContainerPacking.Evolution.Architecture.Mutation;
@@ -18,6 +19,14 @@ public class PackingRulesElitistGeneticAlgorithm : ElitistGeneticAlgorithm<Packi
         IEvolutionStatistics<PackingRules> evolutionStatistics
         ) 
         
-        : base(populationFactory, fitnessEvaluator, new Elitism<PackingRules>(fitnessEvaluator.Minimizing), new PackingRulesUniformCrossover(setting.PercentageOfElementsFromElite), new PackingRulesMutation(setting.PercentageOfElementsMutated),setting, evolutionStatistics)
+        : base(
+            populationFactory, 
+            fitnessEvaluator, 
+            new Elitism<PackingRules>(fitnessEvaluator.Minimizing), 
+            new HillClimbingMemetic<PackingRules>(new PackingRulesMutation(setting.HillClimbingPercentageOfElementsMutated), fitnessEvaluator, setting.HillClimbingIterations), 
+            new PackingRulesUniformCrossover(setting.PercentageOfElementsFromElite), 
+            new PackingRulesMutation(setting.PercentageOfElementsMutated),
+            setting, 
+            evolutionStatistics)
     {}
 }

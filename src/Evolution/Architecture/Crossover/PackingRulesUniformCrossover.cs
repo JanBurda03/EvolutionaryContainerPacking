@@ -38,13 +38,10 @@ public class PackingRulesUniformCrossover : ICrossover<PackingRules>
         if (a.Count != b.Count)
             throw new ArgumentException("PackingRules must have the same length!");
 
-        double prob = Math.Min(1.0, _percentageOfElementsChangedToFirst / a.Count);
-
         double[] result = new double[a.Count];
         for (int i = 0; i < a.Count; i++)
         {
-            // Each gene is chosen from parent a with probability 'prob', else from b
-            result[i] = _random.NextDouble() < prob ? a[i] : b[i];
+            result[i] = _random.NextDouble() < _percentageOfElementsChangedToFirst ? a[i] : b[i];
         }
         return new PackingRules(result);
     }

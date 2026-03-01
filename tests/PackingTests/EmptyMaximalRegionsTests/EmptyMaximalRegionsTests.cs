@@ -1,4 +1,4 @@
-﻿namespace EvolutionaryContainerPacking.PackingTests.EMRTests;
+﻿namespace EvolutionaryContainerPacking.Tests.EMRTests;
 using EvolutionaryContainerPacking.Packing.Architecture.EMR;
 using EvolutionaryContainerPacking.Packing.Architecture.Geometry;
 public class EmptyMaximalRegionsTests

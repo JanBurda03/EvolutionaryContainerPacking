@@ -56,7 +56,7 @@ public class Elitism<T> : IElitism<T>
     /// <exception cref="ArgumentException">
     /// Thrown when the population is null or contains fewer individuals than requested.
     /// </exception>
-    public IReadOnlyList<EvaluatedIndividual<T>> GetElites(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites)
+    public IReadOnlyList<EvaluatedIndividual<T>> GetElite(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites)
     {
         return GetExtremes(population, numberOfElites, _fitnessComparer);
     }
@@ -162,10 +162,6 @@ public class Elitism<T> : IElitism<T>
 
         for (int i = 1; i < individuals.Count; i++)
         {
-            // NOTE:
-            // Here we invert logic:
-            // if current worst is "better" than candidate,
-            // then candidate becomes new worst.
             if (comparer.Compare(individuals[worstIndex], individuals[i]) < 0)
                 worstIndex = i;
         }

@@ -85,13 +85,13 @@ public sealed record class ElitistGeneticAlgorithmSetting(
     int HillClimbingIterations,
 
     /// <summary>
-    /// Average number of elements mutated during
+    /// Percentage of elements mutated during
     /// each hill climbing step.
     /// </summary>
     /// <remarks>
     /// Only used if <see cref="HillClimbingIterations"/> is greater than zero.
     /// </remarks>
-    double HillClimbingAverageElementsMutated
+    double HillClimbingPercentageOfElementsMutated
 
 ) : EvolutionaryAlgorithmSetting(
         TargetFitness,

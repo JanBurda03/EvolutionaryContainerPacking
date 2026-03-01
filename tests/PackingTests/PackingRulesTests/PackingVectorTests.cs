@@ -1,4 +1,4 @@
-﻿namespace EvolutionaryContainerPacking.PackingTests.PackingRulesTests;
+﻿namespace EvolutionaryContainerPacking.Tests.PackingRulesTests;
 
 using EvolutionaryContainerPacking.Packing.Rules;
 
