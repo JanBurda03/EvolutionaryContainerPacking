@@ -22,7 +22,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
     private NumericUpDown numberOfGenerationsNumeric;
 
     // === Mutation parameter ===
-    private NumericUpDown averageElementsChangedNumeric;
+    private NumericUpDown percentageOfElementsChangedNumeric;
 
     // === Probabilistic acceptance parameters ===
     private CheckBox useProbabilisticCheckBox;
@@ -125,21 +125,21 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
         // MUTATION STRENGTH
         // ============================================================
 
-        AddLabel("Average Elements Changed:", 10, top, labelWidth);
+        AddLabel("Percentage of Elements Changed:", 10, top, labelWidth);
 
-        averageElementsChangedNumeric = new NumericUpDown
+        percentageOfElementsChangedNumeric = new NumericUpDown
         {
             Left = leftInput,
             Top = top,
             Width = 120,
             DecimalPlaces = 2,
-            Increment = 0.1M,
+            Increment = 0.01M,
             Minimum = 0,
-            Maximum = 1000,
-            Value = 1.5M
+            Maximum = 1,
+            Value = 0.1M
         };
 
-        Controls.Add(averageElementsChangedNumeric);
+        Controls.Add(percentageOfElementsChangedNumeric);
         top += spacing;
 
         // ============================================================
@@ -268,7 +268,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
         int numberOfGenerations = (int)numberOfGenerationsNumeric.Value;
 
         // --- Mutation parameter ---
-        double averageElementsChanged = (double)averageElementsChangedNumeric.Value;
+        double percentageOfElementsChanged = (double)percentageOfElementsChangedNumeric.Value;
 
         // --- Probabilistic parameters ---
         double start = (double)startAcceptanceProbabilityNumeric.Value;
@@ -309,7 +309,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             targetFitness,
             numberOfIndividuals,
             numberOfGenerations,
-            averageElementsChanged,
+            percentageOfElementsChanged,
             start,
             end,
             decay

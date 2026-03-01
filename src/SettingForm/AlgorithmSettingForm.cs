@@ -10,7 +10,7 @@ public abstract class AlgorithmSettingForm : Form
     {
         Text = "Algorithm Setting";
         Width = 400;
-        Height = 300;
+        Height = 420;
         StartPosition = FormStartPosition.CenterScreen;
 
         InitializeComponents();

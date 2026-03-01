@@ -3,24 +3,18 @@
 using EvolutionaryContainerPacking.Evolution.Architecture;
 
 /// <summary>
-/// Collects statistical data during the evolutionary process.
-/// <para>
-/// Stores per-iteration information such as best fitness and average fitness,
-/// which can later be used for analysis or visualization (e.g., charts).
-/// </para>
+/// Writes on console statistical data during the evolutionary process.
 /// </summary>
 /// <typeparam name="T">Type of the individual.</typeparam>
-public class EvolutionStatistics<T> : IEvolutionStatistics<T>
+public class ConsoleOnlyEvolutionStatistics<T> : IEvolutionStatistics<T>
 {
-    private readonly List<StatisticalData> _evolutionStatisticalData = new();
-
     /// <summary>
-    /// Gets read-only statistical data collected during evolution.
+    /// Always returns an empty collection
     /// </summary>
-    public IReadOnlyList<StatisticalData> EvolutionStatisticalData => _evolutionStatisticalData.AsReadOnly();
+    public IReadOnlyList<StatisticalData> EvolutionStatisticalData => Array.Empty<StatisticalData>();
 
     /// <summary>
-    /// Updates statistics for the current iteration.
+    /// Writes statistics for the current iteration.
     /// </summary>
     /// <param name="currentIteration">Current iteration index.</param>
     /// <param name="population">Evaluated population.</param>
@@ -34,13 +28,8 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
             throw new ArgumentException("Population must not be empty.", nameof(population));
 
         var fitnessValues = EvaluatedIndividual<T>.GetFitnesses(population);
-
         double average = fitnessValues.Average();
-
-        _evolutionStatisticalData.Add(new StatisticalData(currentIteration, best.Fitness, average));
 
         Console.WriteLine($"Iteration {currentIteration}: Best = {best.Fitness}, Avg = {average}");
     }
 }
-
-

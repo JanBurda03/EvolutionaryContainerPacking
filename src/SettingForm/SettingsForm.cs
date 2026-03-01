@@ -48,7 +48,7 @@ public class SettingsForm : Form
     {
         Text = "Program Settings";
         Width = 600;
-        Height = 520;
+        Height = 420;
         StartPosition = FormStartPosition.CenterScreen;
 
         InitializeComponents();
@@ -165,7 +165,7 @@ public class SettingsForm : Form
         placementHeuristicsCheckedListBox.Items
             .AddRange(PlacementHeuristics.PlacementHeuristicsList.ToArray());
 
-        placementHeuristicsCheckedListBox.SetItemChecked(0, true);
+        placementHeuristicsCheckedListBox.SetItemChecked(1, true);
 
         Controls.Add(placementHeuristicsCheckedListBox);
         top += 90;

@@ -9,12 +9,12 @@ using EvolutionaryContainerPacking.Packing.Rules;
 /// </summary>
 public class PackingRulesMutation : IMutation<PackingRules>
 {
-    private readonly double _averageElementsChanged;
+    private readonly double _mutationProbability;
     private readonly Random _random;
 
-    public PackingRulesMutation(double averageElementsChanged)
+    public PackingRulesMutation(double mutationProbability)
     {
-        _averageElementsChanged = averageElementsChanged;
+        _mutationProbability = mutationProbability;
         _random = new Random();
     }
 
@@ -23,13 +23,11 @@ public class PackingRulesMutation : IMutation<PackingRules>
     /// </summary>
     public PackingRules Mutate(PackingRules p)
     {
-        double prob = Math.Min(1.0, _averageElementsChanged / p.Count);
-
         double[] result = new double[p.Count];
 
         for (int i = 0; i < p.Count; i++)
         {
-            if (_random.NextDouble() < prob)
+            if (_random.NextDouble() < _mutationProbability)
             {
                 result[i] = _random.NextDouble();
             }

@@ -31,9 +31,9 @@ public class ProbabilisticHillClimbing<T> : EvolutionaryBase<T>
 
         : base(populationFactory, fitnessEvaluator, elitism, setting, evolutionStatistics)
     {
-        if (setting.AcceptanceDecayFactor <= 0 || setting.AcceptanceDecayFactor > 1)
+        if (setting.AcceptanceDecayFactor < 0 || setting.AcceptanceDecayFactor > 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(setting.AcceptanceDecayFactor), "Must be > 0 and <= 1.");
+            throw new ArgumentOutOfRangeException(nameof(setting.AcceptanceDecayFactor), "Must be >= 0 and <= 1.");
         }
 
         _mutator = mutator;

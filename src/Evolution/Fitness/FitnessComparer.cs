@@ -8,7 +8,7 @@ using EvolutionaryContainerPacking.Evolution.Architecture;
 /// </summary>
 public class FitnessComparer
 {
-    private readonly bool _minimizing;
+    public readonly bool Minimizing;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FitnessComparer"/> class.
@@ -19,7 +19,7 @@ public class FitnessComparer
     /// </param>
     public FitnessComparer(bool minimizing)
     {
-        _minimizing = minimizing;
+        Minimizing = minimizing;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class FitnessComparer
     public int Compare(double x, double y)
     {
         int comparison = x.CompareTo(y);
-        return _minimizing ? comparison : -comparison;
+        return Minimizing ? comparison : -comparison;
     }
 
     /// <summary>
@@ -53,6 +53,6 @@ public class FitnessComparer
     public int Compare<T>(EvaluatedIndividual<T> x, EvaluatedIndividual<T> y)
     {
         int comparison = x.Fitness.CompareTo(y.Fitness);
-        return _minimizing ? comparison : -comparison;
+        return Minimizing ? comparison : -comparison;
     }
 }

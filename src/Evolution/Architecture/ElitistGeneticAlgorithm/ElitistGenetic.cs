@@ -64,26 +64,26 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
     /// </summary>
     protected override void NextGeneration()
     {
-        // 1. Preserve elite individuals
+        // preserve elite individuals
         var elites = _elitism.GetElites(Population, _numberOfEliteIndividuals);
 
-        // 2. Select individuals from elites and non-elites for crossover
+        // select individuals from elites and non-elites for crossover
         var selectedElites = _randomSelection.Select(elites, _numberOfSelectedIndividuals);
-        var selectedNonElites = _randomSelection.Select(Population, _numberOfSelectedIndividuals);
+        var selected = _randomSelection.Select(Population, _numberOfSelectedIndividuals);
 
-        // 3. Apply crossover between elite and non-elite selections
-        var crossovered = _crossover.Crossover(selectedNonElites, selectedElites);
+        // apply crossover between elite and non-elite selections
+        var crossovered = _crossover.Crossover(selectedElites, selected);
 
-        // 4. Apply mutation to the crossovered individuals
+        // apply mutation to the crossovered individuals
         var mutated = _mutation.Mutate(crossovered);
 
-        // 5. Add entirely new random individuals to maintain diversity
+        // add entirely new random individuals to maintain diversity
         var added = _populationFactory.CreatePopulation(_numberOfRandomIndividuals);
 
-        // 6. Combine mutated and new individuals
+        // combine mutated and new individuals
         var result = mutated.Concat(added).ToList();
 
-        // 7. Evaluate the new generation and append preserved elites
+        // evaluate the new generation and append preserved elites
         Population = (_fitnessEvaluator.GenerateEvaluated(result)).Concat(elites).ToList();
     }
 }

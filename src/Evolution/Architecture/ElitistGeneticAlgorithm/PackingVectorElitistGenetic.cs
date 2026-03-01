@@ -18,6 +18,6 @@ public class PackingRulesElitistGeneticAlgorithm : ElitistGeneticAlgorithm<Packi
         IEvolutionStatistics<PackingRules> evolutionStatistics
         ) 
         
-        : base(populationFactory, fitnessEvaluator, new Elitism<PackingRules>(fitnessEvaluator.Minimizing), new PackingRulesUniformCrossover(setting.AverageElementsFromNonElite), new PackingRulesMutation(setting.AverageElementsMutated),setting, evolutionStatistics)
+        : base(populationFactory, fitnessEvaluator, new Elitism<PackingRules>(fitnessEvaluator.Minimizing), new PackingRulesUniformCrossover(setting.PercentageOfElementsFromElite), new PackingRulesMutation(setting.PercentageOfElementsMutated),setting, evolutionStatistics)
     {}
 }

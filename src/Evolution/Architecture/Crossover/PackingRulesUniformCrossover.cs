@@ -9,19 +9,24 @@ using EvolutionaryContainerPacking.Packing.Rules;
 /// </summary>
 public class PackingRulesUniformCrossover : ICrossover<PackingRules>
 {
-    private readonly double _averageElementsChangedToFirst;
+    private readonly double _percentageOfElementsChangedToFirst;
     private readonly Random _random;
 
     /// <summary>
     /// Initializes the crossover with a probability controlling
     /// inheritance from the first parent.
     /// </summary>
-    /// <param name="averageElementsChangedToFirst">
-    /// Average number of elements inherited from the first parent.
+    /// <param name="percentageOfElementsChangedToFirst">
+    /// Percentage of elements inherited from the first parent.
     /// </param>
-    public PackingRulesUniformCrossover(double averageElementsChangedToFirst)
+    public PackingRulesUniformCrossover(double percentageOfElementsChangedToFirst)
     {
-        _averageElementsChangedToFirst = averageElementsChangedToFirst;
+        if (percentageOfElementsChangedToFirst < 0 || percentageOfElementsChangedToFirst > 1)
+        {
+            throw new Exception("Percentage of elements inherited from the first parent must always be between 0 and 1");
+        }
+
+        _percentageOfElementsChangedToFirst = percentageOfElementsChangedToFirst;
         _random = new Random();
     }
 
@@ -33,7 +38,7 @@ public class PackingRulesUniformCrossover : ICrossover<PackingRules>
         if (a.Count != b.Count)
             throw new ArgumentException("PackingRules must have the same length!");
 
-        double prob = Math.Min(1.0, _averageElementsChangedToFirst / a.Count);
+        double prob = Math.Min(1.0, _percentageOfElementsChangedToFirst / a.Count);
 
         double[] result = new double[a.Count];
         for (int i = 0; i < a.Count; i++)

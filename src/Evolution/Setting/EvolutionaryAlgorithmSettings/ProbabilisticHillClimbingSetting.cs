@@ -34,12 +34,13 @@ public record class ProbabilisticHillClimbingSetting(
     int NumberOfGenerations,
 
     /// <summary>
-    /// Average number of elements (genes) modified when generating a neighboring solution.
+    /// Percentage of elements (genes) modified when generating a neighboring solution.
     /// </summary>
     /// <remarks>
     /// Higher values increase exploration but may destabilize convergence.
+    /// Must be in range [0, 1].
     /// </remarks>
-    double AverageElementsChanged,
+    double PercentageOfElementsChanged,
 
     /// <summary>
     /// Probability of accepting a worse solution at the beginning of evolution.

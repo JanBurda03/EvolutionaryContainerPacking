@@ -10,13 +10,12 @@ using EvolutionaryContainerPacking.Evolution.Architecture;
 /// </para>
 /// </summary>
 /// <typeparam name="T">Type of the individual.</typeparam>
-public sealed class EmptyStatistics<T> : IEvolutionStatistics<T>
+public sealed class EmptyEvolutionStatistics<T> : IEvolutionStatistics<T>
 {
     /// <summary>
     /// Always returns an empty collection
     /// </summary>
-    public IReadOnlyList<StatisticalData> EvolutionStatisticalData =>
-        Array.Empty<StatisticalData>();
+    public IReadOnlyList<StatisticalData> EvolutionStatisticalData => Array.Empty<StatisticalData>();
 
     /// <summary>
     /// Does nothing

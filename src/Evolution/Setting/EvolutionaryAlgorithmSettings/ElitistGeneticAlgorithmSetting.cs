@@ -43,28 +43,24 @@ public sealed record class ElitistGeneticAlgorithmSetting(
     double PercentageOfEliteIndividuals,
 
     /// <summary>
-    /// Average number of elements inherited from the non-elite parent
+    /// Percentage of elements inherited from the elite parent
     /// during uniform crossover.
     /// </summary>
     /// <remarks>
     /// Controls exploration.
-    /// Lower values increase bias toward elite traits.
+    /// Higher values increase bias toward elite traits.
+    /// Must be in range [0,1].
     /// </remarks>
-    double AverageElementsFromNonElite,
+    double PercentageOfElementsFromElite,
 
     /// <summary>
-    /// Average number of elements mutated in each offspring.
+    /// Percentage of elements mutated in each offspring.
     /// </summary>
     /// <remarks>
-    /// Defines mutation strength independently of genome length.
+    /// Defines mutation strength.
+    /// Must be in range [0,1].
     /// </remarks>
-    double AverageElementsMutated,
-
-    /// <summary>
-    /// Tournament size used when selecting a parent
-    /// from the elite subset.
-    /// </summary>
-    int TournamentSize,
+    double PercentageOfElementsMutated,
 
     /// <summary>
     /// Percentage of entirely new random individuals introduced

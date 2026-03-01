@@ -23,9 +23,8 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
     // Genetic parameters
     // ============================================================
     private NumericUpDown percentageOfEliteNumeric;
-    private NumericUpDown averageElementsFromNonEliteNumeric;
-    private NumericUpDown averageElementsMutatedNumeric;
-    private NumericUpDown tournamentSizeNumeric;
+    private NumericUpDown percentageOfElementsFromEliteNumeric;
+    private NumericUpDown percentageOfElementsMutatedNumeric;
     private NumericUpDown percentageOfRandomNumeric;
 
     // ============================================================
@@ -134,47 +133,34 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
         Controls.Add(percentageOfEliteNumeric);
         top += spacing;
 
-        AddLabel("Average Elements From Non-Elite:", 10, top, labelWidth);
-        averageElementsFromNonEliteNumeric = new NumericUpDown
+        AddLabel("Percentage of Elements From Elite:", 10, top, labelWidth);
+        percentageOfElementsFromEliteNumeric = new NumericUpDown
         {
             Left = leftInput,
             Top = top,
             Width = 120,
             DecimalPlaces = 2,
-            Increment = 0.1M,
+            Increment = 0.01M,
             Minimum = 0,
-            Maximum = 1000,
-            Value = 1.5M
+            Maximum = 1,
+            Value = 0.7M
         };
-        Controls.Add(averageElementsFromNonEliteNumeric);
+        Controls.Add(percentageOfElementsFromEliteNumeric);
         top += spacing;
 
-        AddLabel("Average Elements Mutated:", 10, top, labelWidth);
-        averageElementsMutatedNumeric = new NumericUpDown
+        AddLabel("Percentage of Elements Mutated:", 10, top, labelWidth);
+        percentageOfElementsMutatedNumeric = new NumericUpDown
         {
             Left = leftInput,
             Top = top,
             Width = 120,
             DecimalPlaces = 2,
-            Increment = 0.1M,
+            Increment = 0.01M,
             Minimum = 0,
-            Maximum = 1000,
-            Value = 1.5M
+            Maximum = 1,
+            Value = 0.05M
         };
-        Controls.Add(averageElementsMutatedNumeric);
-        top += spacing;
-
-        AddLabel("Tournament Size:", 10, top, labelWidth);
-        tournamentSizeNumeric = new NumericUpDown
-        {
-            Left = leftInput,
-            Top = top,
-            Width = 120,
-            Minimum = 1,
-            Maximum = 100,
-            Value = 3
-        };
-        Controls.Add(tournamentSizeNumeric);
+        Controls.Add(percentageOfElementsMutatedNumeric);
         top += spacing;
 
         AddLabel("Percentage of Random Individuals:", 10, top, labelWidth);
@@ -187,7 +173,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             Increment = 0.01M,
             Minimum = 0,
             Maximum = 1,
-            Value = 0.05M
+            Value = 0.15M
         };
         Controls.Add(percentageOfRandomNumeric);
         top += spacing;
@@ -282,9 +268,8 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             (int)numberOfIndividualsNumeric.Value,
             (int)numberOfGenerationsNumeric.Value,
             elite,
-            (double)averageElementsFromNonEliteNumeric.Value,
-            (double)averageElementsMutatedNumeric.Value,
-            (int)tournamentSizeNumeric.Value,
+            (double)percentageOfElementsFromEliteNumeric.Value,
+            (double)percentageOfElementsMutatedNumeric.Value,
             random,
             (int)hillClimbingIterationsNumeric.Value,
             (double)hillClimbingAverageElementsMutatedNumeric.Value

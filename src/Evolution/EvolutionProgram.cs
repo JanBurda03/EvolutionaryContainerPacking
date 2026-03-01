@@ -54,7 +54,7 @@ public static class EvolutionProgram
         IEvolutionStatistics<PackingRules> evolutionStatistics = 
             (setting.EvolutionStatisticsFile != null) ? 
             new EvolutionStatistics<PackingRules>() : 
-            new EmptyStatistics<PackingRules>();
+            new ConsoleOnlyEvolutionStatistics<PackingRules>();
 
         // Create factory responsible for generating populations
         var populationFactory = new PackingRulesPopulationFactory(PackingSolver.GetPackingRulesMinimalLength(packingInput, setting.PackingSetting));

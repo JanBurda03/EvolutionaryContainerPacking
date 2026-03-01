@@ -19,6 +19,6 @@ public class PackingRulesProbabilisticHillClimbing : ProbabilisticHillClimbing<P
         ProbabilisticHillClimbingSetting setting,
         IEvolutionStatistics<PackingRules> evolutionStatistics)
 
-        : base(populationFactory, fitnessEvaluator, new Elitism<PackingRules>(fitnessEvaluator.Minimizing), new PackingRulesMutation(setting.AverageElementsChanged), setting, evolutionStatistics)
+        : base(populationFactory, fitnessEvaluator, new Elitism<PackingRules>(fitnessEvaluator.Minimizing), new PackingRulesMutation(setting.PercentageOfElementsChanged), setting, evolutionStatistics)
     { }
 }
