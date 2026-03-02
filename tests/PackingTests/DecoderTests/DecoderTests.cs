@@ -76,8 +76,8 @@ public class DecoderTests
                     {
                         if (c == 0)
                         {
-                            placementDecoder = new OnePlacementDecoder(PlacementHeuristics.BestFit);
-                            expectedHeuristics = PlacementHeuristics.BestFit;
+                            placementDecoder = new OnePlacementDecoder(PlacementHeuristics.BestVolumeFit);
+                            expectedHeuristics = PlacementHeuristics.BestVolumeFit;
 
                         }
                         else

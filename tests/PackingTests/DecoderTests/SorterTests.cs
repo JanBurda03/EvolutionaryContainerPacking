@@ -23,7 +23,7 @@ public class SorterTests
             boxes[i] = new PendingBox(
                 new BoxProperties(i, new Sizes(1, 1, 1), 1),
                 Rotation.XYZ,
-                PlacementHeuristics.BestFit
+                PlacementHeuristics.BestVolumeFit
                 );
         }
 
@@ -51,7 +51,7 @@ public class SorterTests
             boxes[i] = new PendingBox(
                 new BoxProperties(i, new Sizes(1, 1, 1), 1),
                 Rotation.XYZ,
-                PlacementHeuristics.BestFit
+                PlacementHeuristics.BestVolumeFit
                 );
         }
 

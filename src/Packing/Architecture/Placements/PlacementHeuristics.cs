@@ -14,9 +14,14 @@ public static class PlacementHeuristics
     /// </summary>
     private static readonly IReadOnlyDictionary<string, PlacementHeuristic> PlacementHeuristicsDictionary = new Dictionary<string, PlacementHeuristic>
         {
-            {"BestFit", BestFit},
-            {"MaxDistance", MaxDistance},
-            {"MinDistance", MinDistance}
+            {"Best Volume Fit", BestVolumeFit},
+            {"Max Distance", MaxDistance},
+            {"Min Distance", MinDistance},
+            {"Min X", MinX},
+            {"Min Y", MinY},
+            {"Gravity", MinZ},
+            {"Anti-Gravity", MaxZ},
+            {"Bottom Left Back", BottomLeftBack}
         };
 
     /// <summary>
@@ -52,9 +57,11 @@ public static class PlacementHeuristics
     /// <summary>
     /// Chooses placement that minimizes leftover region volume.
     /// </summary>
-    public static Placement? BestFit(PendingBox box, IEnumerable<ContainerData> containers)
+    public static Placement? BestVolumeFit(PendingBox box, IEnumerable<ContainerData> containers)
     {
         Placement? placement = null;
+        long bestVolume = long.MaxValue;
+        long newVolume;
 
         foreach (ContainerData c in containers)
         {
@@ -64,8 +71,11 @@ public static class PlacementHeuristics
                 {
                     if (ValidSides(box, region))
                     {
-                        if (placement == null || ((Placement)placement).OccupiedRegion.GetVolume() > region.GetVolume())
+                        newVolume = region.GetVolume();
+
+                        if (placement == null || bestVolume > newVolume)
                         {
+                            bestVolume = newVolume;
                             placement = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
                         }
                     }
@@ -80,28 +90,32 @@ public static class PlacementHeuristics
     /// </summary>
     public static Placement? MaxDistance(PendingBox box, IEnumerable<ContainerData> containers)
     {
-        Placement? placement = null;
-        int maxD = int.MaxValue;
-        
+        Placement? best = null;
+        double maxDistance = double.MinValue;
 
         foreach (ContainerData c in containers)
         {
             Coordinates cEnd = c.ContainerProperties.Sizes.ToRegion(new Coordinates(0, 0, 0)).End;
+
             if (ValidWeight(box, c))
             {
                 foreach (Region region in c.EmptyMaximalRegions)
                 {
                     if (ValidSides(box, region))
                     {
-                        if (placement == null || maxD < region.Start.GetEuclidanDistanceTo(cEnd))
+                        double distance = region.Start.GetEuclidanDistanceTo(cEnd);
+
+                        if (distance > maxDistance)
                         {
-                            placement = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                            maxDistance = distance;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
                         }
                     }
                 }
             }
         }
-        return placement;
+
+        return best;
     }
 
     /// <summary>
@@ -109,29 +123,186 @@ public static class PlacementHeuristics
     /// </summary>
     public static Placement? MinDistance(PendingBox box, IEnumerable<ContainerData> containers)
     {
-        Placement? placement = null;
-        int minD = int.MaxValue;
-        Coordinates cStart = new Coordinates(0, 0, 0);
-
+        Placement? best = null;
+        double minDistance = double.MaxValue;
+        Coordinates origin = new Coordinates(0, 0, 0);
 
         foreach (ContainerData c in containers)
         {
-            
+            if (ValidWeight(box, c))
+            {
+
+                foreach (Region region in c.EmptyMaximalRegions)
+                {
+                    if (ValidSides(box, region))
+                    {
+
+                        double distance = region.Start.GetEuclidanDistanceTo(origin);
+
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                        }
+                    }
+                }
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// Chooses placement minimizing X coordinate.
+    /// </summary>
+    public static Placement? MinX(PendingBox box, IEnumerable<ContainerData> containers)
+    {
+        Placement? best = null;
+        int minX = int.MaxValue;
+
+        foreach (ContainerData c in containers)
+        {
             if (ValidWeight(box, c))
             {
                 foreach (Region region in c.EmptyMaximalRegions)
                 {
                     if (ValidSides(box, region))
                     {
-                        if (placement == null || minD > region.Start.GetEuclidanDistanceTo(cStart))
+                        int x = region.Start.X;
+                        if (best == null || x < minX)
                         {
-                            placement = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                            minX = x;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
                         }
                     }
                 }
             }
         }
-        return placement;
+
+        return best;
+    }
+
+    /// <summary>
+    /// Chooses placement minimizing Y coordinate.
+    /// </summary>
+    public static Placement? MinY(PendingBox box, IEnumerable<ContainerData> containers)
+    {
+        Placement? best = null;
+        int minY = int.MaxValue;
+
+        foreach (ContainerData c in containers)
+        {
+            if (ValidWeight(box, c))
+            {
+                foreach (Region region in c.EmptyMaximalRegions)
+                {
+                    if (ValidSides(box, region))
+                    {
+                        int y = region.Start.Y;
+                        if (best == null || y < minY)
+                        {
+                            minY = y;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                        }
+                    }
+                }
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// Chooses placement minimizing Z coordinate.
+    /// </summary>
+    public static Placement? MinZ(PendingBox box, IEnumerable<ContainerData> containers)
+    {
+        Placement? best = null;
+        int minZ = int.MaxValue;
+
+        foreach (ContainerData c in containers)
+        {
+            if (ValidWeight(box, c))
+            {
+                foreach (Region region in c.EmptyMaximalRegions)
+                {
+                    if (ValidSides(box, region))
+                    {
+                        int z = region.Start.Z;
+                        if (best == null || z < minZ)
+                        {
+                            minZ = z;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                        }
+                    }
+                }
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// Chooses placement maximizing Z coordinate.
+    /// </summary>
+    public static Placement? MaxZ(PendingBox box, IEnumerable<ContainerData> containers)
+    {
+        Placement? best = null;
+        int maxZ = int.MinValue;
+
+        foreach (ContainerData c in containers)
+        {
+            if (ValidWeight(box, c))
+            {
+                foreach (Region region in c.EmptyMaximalRegions)
+                {
+                    if (ValidSides(box, region))
+                    {
+                        int z = region.Start.Z;
+                        if (best == null || z > maxZ)
+                        {
+                            maxZ = z;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
+                        }
+                    }
+                }
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// Chooses placement using Bottom-Left-Back rule (minimal Z, then Y, then X).
+    /// </summary>
+    public static Placement? BottomLeftBack(PendingBox box, IEnumerable<ContainerData> containers)
+    {
+        Placement? best = null;
+        Coordinates bestCoord = new Coordinates(int.MaxValue, int.MaxValue, int.MaxValue);
+
+        foreach (ContainerData c in containers)
+        {
+            if (ValidWeight(box, c))
+            {
+                foreach (Region region in c.EmptyMaximalRegions)
+                {
+                    if (ValidSides(box, region))
+                    {
+                        var coord = region.Start;
+                        if (best == null ||
+                            coord.Z < bestCoord.Z ||
+                            (coord.Z == bestCoord.Z && coord.Y < bestCoord.Y) ||
+                            (coord.Z == bestCoord.Z && coord.Y == bestCoord.Y && coord.X < bestCoord.X))
+                        {
+                            bestCoord = coord;
+                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(coord));
+                        }
+                    }
+                }
+            }
+        }
+
+        return best;
     }
 
     /// <summary>
