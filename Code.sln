@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolution", "src\Evolution\Evolution.csproj", "{B27D549B-EFD5-4012-8C49-D6DAA833AA18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "tests\PackingTests\Tests.csproj", "{4AE855C5-2801-4E02-A0F5-F8AD3722013C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "tests\Tests.csproj", "{4AE855C5-2801-4E02-A0F5-F8AD3722013C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SettingForm", "src\SettingForm\SettingForm.csproj", "{FDD1AA26-BA5E-4014-BE89-5054E901D597}"
 EndProject
