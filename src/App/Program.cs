@@ -1,49 +1,42 @@
 ﻿namespace EvolutionaryContainerPacking.App;
 
 using EvolutionaryContainerPacking.Forms;
-using EvolutionaryContainerPacking.Evolution.EvolutionStatistics;
 using EvolutionaryContainerPacking.Evolution.Setting;
-using EvolutionaryContainerPacking.Packing.Rules;
 using EvolutionaryContainerPacking.Evolution;
-using System.Text;
 using EvolutionaryContainerPacking.App.Input;
 using EvolutionaryContainerPacking.App.Output;
 
+/// <summary>
+/// Application entry point.
+/// Handles user configuration, runs the evolutionary packing algorithm,
+/// and saves results to files.
+/// </summary>
 class Program
 {
+    /// <summary>
+    /// Main application method (STA required for WinForms).
+    /// </summary>
     [STAThread]
     static void Main()
     {
         ProgramSetting? setting = FormProgram.Run();
+
         if (setting != null)
         {
-            Console.WriteLine("Setting Loaded!");
-            Console.WriteLine("Loading Packing Input...");
+            // Load input data
             var packingInput = PackingInputLoader.LoadFromFile(setting.SourceFile);
-            Console.WriteLine("Packing Input Loaded!");
-            Console.WriteLine("The Evolution Is Running...");
+
+            // Run evolutionary algorithm
             (var containers, var statistics) = EvolutionProgram.Run(setting, packingInput);
+
+            // Save packing result
             PackingOutputSaver.SaveToFile(containers, setting.OutputFile);
 
-            if (setting.EvolutionStatisticsFile != null) 
+            // Optionally save evolution statistics
+            if (setting.EvolutionStatisticsFile != null)
             {
-                SaveStatistics(statistics, setting.EvolutionStatisticsFile);
+                EvolutionStatisticsSaver.SaveStatistics(statistics, setting.EvolutionStatisticsFile);
             }
         }
-    }
-
-    public static void SaveStatistics(IEvolutionStatistics<PackingRules> s, string fileName)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("Generation;Best;Average");
-
-        foreach (var i in s.EvolutionStatisticalData)
-        {
-            sb.AppendLine(
-                $"{i.IterationNumber};{i.BestScore};{i.AverageScore}"
-            );
-        }
-
-        File.WriteAllText(fileName, sb.ToString());
     }
 }

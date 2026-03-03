@@ -32,7 +32,7 @@ def parse_file(file_path: str, density: float, std: float, container_density: fl
         container_size = Sizes(x=container_dims[0],
                                y=container_dims[1],
                                z=container_dims[2])
-        max_weight = int(sum(container_dims) * container_density)
+        max_weight = int(sum(container_dims) * container_density)+1
         container = ContainerProperties(sizes=container_size, max_weight=max_weight)
         i += 1
 
