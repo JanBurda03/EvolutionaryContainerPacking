@@ -5,7 +5,7 @@ These classes represent a minimal, serializable data structure
 shared between Python (data generation) and C# (algorithm runtime).
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import List
 
 
