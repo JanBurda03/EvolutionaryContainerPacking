@@ -1,10 +1,10 @@
 %%% The main file. It contains definitions of basic parameters and includes all other parts.
 
 % Meta-data of your thesis (please edit)
-\input metadata.tex
+\input base/metadata.tex
 
 % Generate metadata in XMP format for use by the pdfx package
-\input xmp.tex
+\input base/xmp.tex
 
 %% Settings for single-side (simplex) printing
 % Margins: left 40mm, right 25mm, top and bottom 25mm
@@ -111,33 +111,33 @@
 %\usepackage[natbib,style=alphabetic]{biblatex}
 
 % Load the file with bibliography entries
-\addbibresource{bibliography.bib}
+\addbibresource{base/bibliography.bib}
 
 % Our definitions of macros (see description inside)
-\input macros.tex
+\input base/macros.tex
 
 %%% Title page and various mandatory informational pages
 \begin{document}
-\include{title}
+\include{base/title}
 
 %%% A page with automatically generated table of contents of the thesis
 
 \tableofcontents
 
 %%% Each chapter is kept in a separate file
-\include{Preface}
+\include{chapters/Preface}
 
 
-\include{TerminologyAndProblemDescription}
-\include{PackingAlgorithm}
-\include{Evolution}
+\include{chapters/TerminologyAndProblemDescription}
+\include{chapters/PackingAlgorithm}
+\include{chapters/Evolution}
 
 
 
 %\include{epilog}
 
 %%% Bibliography
-\include{bibliography}
+\include{base/bibliography}
 
 %%% Figures used in the thesis (consider if this is needed)
 %%%\listoffigures
