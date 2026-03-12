@@ -57,7 +57,10 @@ def generate_full_mpv_benchmark(output_root: Path):
                 instance = generate_mpv_instance(
                     class_id=class_id,
                     box_count=n,
-                    seed=seed
+                    seed=seed,
+                    container_density=1,
+                    mean_box_density=0,
+                    std_box_density=0
                 )
                 target_dir = output_root / f"class{class_id}" / f"n{n}"
                 filename = f"instance_{v:02d}.json"
