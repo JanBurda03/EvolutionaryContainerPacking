@@ -1,6 +1,5 @@
 ﻿namespace EvolutionaryContainerPacking.Forms;
 
-using EvolutionaryContainerPacking.Evolution;
 using EvolutionaryContainerPacking.Packing.Architecture.Placements;
 using EvolutionaryContainerPacking.Packing.Rules.Decoding.Sorting;
 using EvolutionaryContainerPacking.Packing;
@@ -238,7 +237,7 @@ public class SettingsForm : Form
         };
 
         algorithmComboBox.Items
-            .AddRange(EvolutionaryAlgorithms.EvolutionaryAlgorithmsArray);
+            .AddRange(FormProgram.AlgorithmSettingsForms.Keys.ToArray());
 
         algorithmComboBox.SelectedIndex = 0;
 

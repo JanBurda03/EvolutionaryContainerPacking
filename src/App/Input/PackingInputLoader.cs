@@ -14,7 +14,7 @@ public static class PackingInputLoader
     /// <param name="fileName">Path to the JSON file.</param>
     /// <returns>Deserialized packing input.</returns>
     /// <exception cref="Exception">Thrown if deserialization fails.</exception>
-    public static PackingInput LoadFromFile(string fileName)
+    public static PackingInput Load(string fileName)
     {
         string json = File.ReadAllText(fileName);
         PackingInput? input = JsonSerializer.Deserialize<PackingInput>(json);

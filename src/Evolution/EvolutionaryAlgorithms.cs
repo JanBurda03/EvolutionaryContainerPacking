@@ -10,75 +10,61 @@ using EvolutionaryContainerPacking.Evolution.Architecture;
 using EvolutionaryContainerPacking.Packing.Rules;
 
 /// <summary>
-/// Factory for creating evolutionary algorithm instances
-/// based on a string identifier.
+/// Factory responsible for creating evolutionary algorithm instances
+/// based on the provided algorithm setting type.
 /// </summary>
+/// <remarks>
+/// The specific algorithm implementation is determined by the concrete
+/// type of <see cref="EvolutionaryAlgorithmSetting"/>.
+/// </remarks>
 public static class EvolutionaryAlgorithms
 {
-    private static readonly Dictionary<
-        string,
-        Func<
-            IPopulationFactory<PackingRules>,
-            IFitnessEvaluator<PackingRules>,
-            EvolutionaryAlgorithmSetting,
-            IEvolutionStatistics<PackingRules>,
-            IEvolutionary<PackingRules>
-        >
-    > EvolutionaryAlgorithmDictionary = new()
-    {
-        {
-            "Elitist Genetic",
-            (populationFactory, fitnessEvaluator, setting, evolutionStatistics) =>
-                new PackingRulesElitistGeneticAlgorithm(
-                    populationFactory,
-                    fitnessEvaluator,
-                    (ElitistGeneticAlgorithmSetting)setting,
-                    evolutionStatistics)
-        },
-        {
-            "Hill Climbing",
-            (populationFactory, fitnessEvaluator, setting, evolutionStatistics) =>
-                new PackingRulesProbabilisticHillClimbing(
-                    populationFactory,
-                    fitnessEvaluator,
-                    (ProbabilisticHillClimbingSetting)setting,
-                    evolutionStatistics)
-        },
-    };
-
     /// <summary>
-    /// Gets available algorithm names.
+    /// Creates an evolutionary algorithm instance corresponding
+    /// to the provided configuration object.
     /// </summary>
-    public static string[] EvolutionaryAlgorithmsArray
-        => EvolutionaryAlgorithmDictionary.Keys.ToArray();
-
-    /// <summary>
-    /// Creates the selected evolutionary algorithm.
-    /// </summary>
+    /// <param name="populationFactory">
+    /// Factory used to generate initial populations.
+    /// </param>
+    /// <param name="fitnessEvaluator">
+    /// Evaluates the fitness of individuals.
+    /// </param>
+    /// <param name="setting">
+    /// Configuration object determining which algorithm is used.
+    /// </param>
+    /// <param name="evolutionStatistics">
+    /// Collector for evolution statistics.
+    /// </param>
+    /// <returns>
+    /// Configured evolutionary algorithm instance.
+    /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if the algorithm name is unknown
-    /// or if the provided setting type does not match.
+    /// Thrown if the provided setting type is not supported.
     /// </exception>
     public static IEvolutionary<PackingRules> GetEvolutionaryAlgorithm(
-        string algorithmName,
         IPopulationFactory<PackingRules> populationFactory,
         IFitnessEvaluator<PackingRules> fitnessEvaluator,
         EvolutionaryAlgorithmSetting setting,
         IEvolutionStatistics<PackingRules> evolutionStatistics)
     {
-        if (EvolutionaryAlgorithmDictionary.TryGetValue(algorithmName, out var factory))
+        return setting switch
         {
-            try
-            {
-                return factory(populationFactory, fitnessEvaluator, setting, evolutionStatistics);
-            }
-            catch (InvalidCastException)
-            {
-                throw new ArgumentException(
-                    $"Algorithm '{algorithmName}' requires a different setting type.");
-            }
-        }
+            ElitistGeneticAlgorithmSetting ega =>
+                new PackingRulesElitistGeneticAlgorithm(
+                    populationFactory,
+                    fitnessEvaluator,
+                    ega,
+                    evolutionStatistics),
 
-        throw new ArgumentException($"Unknown evolutionary algorithm: {algorithmName}");
+            ProbabilisticHillClimbingSetting phc =>
+                new PackingRulesProbabilisticHillClimbing(
+                    populationFactory,
+                    fitnessEvaluator,
+                    phc,
+                    evolutionStatistics),
+
+            _ => throw new ArgumentException(
+                $"Unsupported evolutionary algorithm setting type: {setting.GetType().Name}")
+        };
     }
 }

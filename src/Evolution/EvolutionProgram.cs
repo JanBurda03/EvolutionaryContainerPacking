@@ -61,7 +61,6 @@ public static class EvolutionProgram
 
         // Instantiate selected evolutionary algorithm
         var evolutionaryAlgorithm = EvolutionaryAlgorithms.GetEvolutionaryAlgorithm(
-            setting.AlgorithmName,
             populationFactory,
             fitnessEvaluator,
             setting.EvolutionAlgorithmSetting,

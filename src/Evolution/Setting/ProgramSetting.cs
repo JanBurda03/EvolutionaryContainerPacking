@@ -38,12 +38,6 @@ public sealed record class ProgramSetting(
     string? EvolutionStatisticsFile,
 
     /// <summary>
-    /// Name of the evolutionary algorithm to use.
-    /// Typically used by a factory to select a specific algorithm implementation.
-    /// </summary>
-    string AlgorithmName,
-
-    /// <summary>
     /// Configuration settings controlling packing constraints
     /// and solver behavior.
     /// </summary>

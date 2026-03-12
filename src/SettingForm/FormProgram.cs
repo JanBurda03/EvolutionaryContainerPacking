@@ -31,7 +31,6 @@ public static class FormProgram
                             form.SourceFile,
                             form.OutputFile,
                             form.EvolutionStatisticsFile,
-                            form.AlgorithmName,
                             form.PackingSetting,
                             algorithmSettingForm.EvolutionaryAlgorithmSetting);
                     }
