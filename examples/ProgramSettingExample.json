@@ -12,20 +12,16 @@
     "EvolutionAlgorithmSetting": {
         "AlgorithmName": "Elitist Genetic",
 
-        // ======== Early stopping ========
         "TargetFitness": null,
 
-        // ======== Population ========
         "NumberOfIndividuals": 1000,
         "NumberOfGenerations": 200,
 
-        // ======== Genetic parameters ========
         "PercentageOfEliteIndividuals": 0.1,
         "PercentageOfElementsFromElite": 0.7,
         "PercentageOfElementsMutated": 0.05,
         "PercentageOfRandomIndividuals": 0.15,
 
-        // ======== Memetic extension ========
         "HillClimbingIterations": 1,
         "HillClimbingPercentageOfElementsMutated": 0.05
     }
