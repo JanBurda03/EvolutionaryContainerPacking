@@ -8,5 +8,6 @@
 public readonly record struct StatisticalData(
     int IterationNumber,
     double BestScore,
-    double AverageScore
+    double AverageScore,
+    double ElapsedSeconds  
 );

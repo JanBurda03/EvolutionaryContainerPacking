@@ -1,6 +1,7 @@
 ﻿namespace EvolutionaryContainerPacking.Evolution.EvolutionStatistics;
 
 using EvolutionaryContainerPacking.Evolution.Architecture;
+using System.Diagnostics;
 
 /// <summary>
 /// Collects statistical data during the evolutionary process.
@@ -14,6 +15,10 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
 {
     private readonly List<StatisticalData> _evolutionStatisticalData = new();
 
+    // Stopwatch se NEspouští při vytvoření objektu
+    private readonly Stopwatch _stopwatch = new();
+    private bool _timerStarted = false;
+
     /// <summary>
     /// Gets read-only statistical data collected during evolution.
     /// </summary>
@@ -22,9 +27,6 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
     /// <summary>
     /// Updates statistics for the current iteration.
     /// </summary>
-    /// <param name="currentIteration">Current iteration index.</param>
-    /// <param name="population">Evaluated population.</param>
-    /// <param name="best">Best individual of the current iteration.</param>
     public void Update(
         int currentIteration,
         IReadOnlyList<EvaluatedIndividual<T>> population,
@@ -33,13 +35,26 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
         if (population == null || population.Count == 0)
             throw new ArgumentException("Population must not be empty.", nameof(population));
 
-        var fitnessValues = EvaluatedIndividual<T>.GetFitnesses(population);
+        // Spustí časovač až při prvním update
+        if (!_timerStarted)
+        {
+            _stopwatch.Start();
+            _timerStarted = true;
+        }
 
+        var fitnessValues = EvaluatedIndividual<T>.GetFitnesses(population);
         double average = fitnessValues.Average();
 
-        _evolutionStatisticalData.Add(new StatisticalData(currentIteration, best.Fitness, average));
+        // mezičas od prvního update (v sekundách)
+        double elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
 
-        Console.WriteLine($"Iteration {currentIteration}: Best = {best.Fitness}, Avg = {average}");
+        _evolutionStatisticalData.Add(
+            new StatisticalData(currentIteration, best.Fitness, average, elapsedSeconds)
+        );
+
+        Console.WriteLine(
+            $"Iteration {currentIteration}: Best = {best.Fitness}, Avg = {average}, Time = {elapsedSeconds:F2}s"
+        );
     }
 }
 
