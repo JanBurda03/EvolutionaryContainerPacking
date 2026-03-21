@@ -1,0 +1,12 @@
+{
+    "AlgorithmName": "Elitist Genetic",
+    "TargetFitness": null,
+    "IndividualsCoef": 30,
+    "NumberOfGenerations": 200,
+    "PercentageOfEliteIndividuals": 0.1,
+    "PercentageOfElementsFromElite": 0.7,
+    "PercentageOfElementsMutated": 0.0,
+    "PercentageOfRandomIndividuals": 0.15,
+    "HillClimbingIterations": 2,
+    "HillClimbingPercentageOfElementsMutated": 0.05
+}

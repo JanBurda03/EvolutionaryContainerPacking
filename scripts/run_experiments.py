@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 import tempfile
 import sys
+import re
 
 
 def main(input_dir, output_dir, solver_exe, packing_setting_str, evolution_setting_str):
@@ -56,13 +57,35 @@ def main(input_dir, output_dir, solver_exe, packing_setting_str, evolution_setti
         output_file = output_subdir / f"output_{base_name}.json"
         stats_file = output_subdir / f"evolutionStatistics_{base_name}.csv"
 
+
+
+
+        # Get number of packages from folder nXX
+        numner_of_boxes = None
+        for part in reversed(relative_path.parts):
+            match = re.match(r"n(\d+)", part)
+            if match:
+                numner_of_boxes = int(match.group(1))
+                break
+
+        if  numner_of_boxes is None:
+            print(f"Could not determine number of packages for {input_file}")
+            continue
+
+        # Copy evolution setting so we don't overwrite the original
+        evolution_setting_for_run = evolution_setting.copy()
+
+        # Convert IndividualsCoef -> NumberOfIndividuals
+        individuals_coef = evolution_setting_for_run.pop("IndividualsCoef")
+        evolution_setting_for_run["NumberOfIndividuals"] = individuals_coef *   numner_of_boxes
+
         # Build configuration JSON
         config = {
             "SourceFile": str(input_file),
             "OutputFile": str(output_file),
             "EvolutionStatisticsFile": str(stats_file),
             "PackingSetting": packing_setting,
-            "EvolutionAlgorithmSetting": evolution_setting,
+            "EvolutionAlgorithmSetting": evolution_setting_for_run,
         }
 
         # Write configuration to temp file
@@ -82,40 +105,20 @@ def main(input_dir, output_dir, solver_exe, packing_setting_str, evolution_setti
 
     print("Batch processing finished.")
 
-
 if __name__ == "__main__":
-    DEFAULT_PACKING_SETTING = {
-        "SelectedPlacementHeuristics": ["Max Distance"],
-        "AllowRotations": True,
-        "PackingOrder": None
-    }
-
-    DEFAULT_EVOLUTION_SETTING = {
-        "AlgorithmName": "Elitist Genetic",
-        "TargetFitness": None,
-        "NumberOfIndividuals": 100,
-        "NumberOfGenerations": 100,
-        "PercentageOfEliteIndividuals": 0.1,
-        "PercentageOfElementsFromElite": 0.7,
-        "PercentageOfElementsMutated": 0.05,
-        "PercentageOfRandomIndividuals": 0.15,
-        "HillClimbingIterations": 1,
-        "HillClimbingPercentageOfElementsMutated": 0.05
-    }
-
     parser = argparse.ArgumentParser(
         description="Batch runner for C# packing solver."
     )
 
     parser.add_argument(
         "--input-dir",
-        default="..\\data\\mpv\\class1",
+        default="..\\data\\mpv",
         help="Directory containing input JSON files."
     )
 
     parser.add_argument(
         "--output-dir",
-        default="..\\data\\experiments\\class1",
+        default="..\\data\\experiments\\original_paper",
         help="Directory where output files will be written."
     )
 
@@ -127,22 +130,28 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--packing-setting",
-        default=json.dumps(DEFAULT_PACKING_SETTING),
-        help="JSON string describing PackingSetting."
+        default="packing_setting.json",
+        help="Path to JSON file describing PackingSetting."
     )
 
     parser.add_argument(
         "--evolution-setting",
-        default=json.dumps(DEFAULT_EVOLUTION_SETTING),
-        help="JSON string describing EvolutionAlgorithmSetting."
+        default="evolution_setting.json",
+        help="Path to JSON file describing EvolutionAlgorithmSetting."
     )
 
     args = parser.parse_args()
+
+    with open(args.packing_setting, "r") as f:
+        packing_setting_str = f.read()
+
+    with open(args.evolution_setting, "r") as f:
+        evolution_setting_str = f.read()
 
     main(
         args.input_dir,
         args.output_dir,
         args.solver_exe,
-        args.packing_setting,
-        args.evolution_setting
+        packing_setting_str,
+        evolution_setting_str
     )
