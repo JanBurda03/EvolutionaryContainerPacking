@@ -112,13 +112,13 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--input-dir",
-        default="..\\data\\mpv",
+        default="..\\data\\mpv\\original",
         help="Directory containing input JSON files."
     )
 
     parser.add_argument(
         "--output-dir",
-        default="..\\data\\experiments\\original_paper",
+        default="..\\experiments\\results\\original",
         help="Directory where output files will be written."
     )
 
@@ -130,13 +130,13 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--packing-setting",
-        default="packing_setting.json",
+        default="..\\experiments\\settings\\packing\\max_distance__no_order.json",
         help="Path to JSON file describing PackingSetting."
     )
 
     parser.add_argument(
         "--evolution-setting",
-        default="evolution_setting.json",
+        default="..\\experiments\\settings\\evolution\\elitist__no_hill_climbing.json",
         help="Path to JSON file describing EvolutionAlgorithmSetting."
     )
 

@@ -89,11 +89,11 @@ def generate_mpv_benchmark(output_root: Path, mean_box_density=0, std_box_densit
     """
     Generates the full MPV benchmark:
       - Classes 1–8
-      - 4 instance sizes: 50, 100, 150, 200
+      - 4 instance sizes: 50, 100, 150
       - 10 instances per (class, size)
     """
 
-    instance_sizes = [50, 100, 150, 200]
+    instance_sizes = [50, 100, 150]
     instance_count = 10
 
     for class_id in range(1, 9):
