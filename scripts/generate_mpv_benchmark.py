@@ -88,15 +88,15 @@ def generate_full_mpv_benchmark(output_root: Path):
 def generate_mpv_benchmark(output_root: Path, mean_box_density=0, std_box_density=0):
     """
     Generates the full MPV benchmark:
-      - Classes 1–8
-      - 4 instance sizes: 50, 100, 150
+      - Classes 1–4
+      - 3 instance sizes: 50, 100, 150
       - 10 instances per (class, size)
     """
 
     instance_sizes = [50, 100, 150]
     instance_count = 10
 
-    for class_id in range(1, 9):
+    for class_id in range(1, 5):
         for n in instance_sizes:
             for v in range(1, instance_count + 1):
                 seed = n + v
