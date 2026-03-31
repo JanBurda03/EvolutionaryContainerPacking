@@ -1,7 +1,8 @@
 {
     "AlgorithmName": "Elitist Genetic",
     "TargetFitness": null,
-    "IndividualsCoef": 30,
+    "Individuals": 30,
+    "UseIndividualsAsRelative": true,
     "NumberOfGenerations": 300,
     "PercentageOfEliteIndividuals": 0.1,
     "PercentageOfElementsFromElite": 0.7,

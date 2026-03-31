@@ -216,71 +216,102 @@ This means that EMR starting at the same height and sharing a face can potential
 
 \section{Heuristics}
 
-\subsection{Packing Order Heuristics}
-When using evolutionary algorithms, finding a sufficiently good solution often requires considerable time. 
-An alternative approach is to employ heuristics to determine the order of the pending boxes a priori. Some ordering heuristics can produce high quality solutions almost instantaneously. However, they tend to converge quickly 
-and, in the long term, are generally outperformed by the evolutionary approach to determining the packing order. 
+\subsection{Order Heuristics}
 
-The most effective results were obtained using a heuristic that sorts the pending boxes by their volume, placing the largest boxes first. 
-Other similar strategies include sorting by base area, by the longest side, or by weight in cases where containers are more frequently constrained by weight than by volume. 
+If it is not desired for the evolutionary algorithm to determine the order of the boxes,the boxes can instead be pre-sorted using a simple ordering heuristic. 
+In this case, the component of the packing rules responsible for ordering the boxes can be omitted.
 
+The following predefined ordering heuristics are available in the algorithm:
+
+\begin{itemize}
+    \item \textbf{High Volume First:} Boxes are sorted by descending volume, placing the largest boxes first.
+    \item \textbf{High Area Base First:} Boxes are sorted by descending base area (using rotated sizes), prioritizing those with the largest footprint.
+    \item \textbf{High Weight First:} Boxes are sorted by descending weight, useful when container weight is often the limiting factor.
+\end{itemize}
+
+By using one of these heuristics, the packing order is fixed a priori and each box is placed according to the selected heuristic without relying on evolutionary selection for ordering. 
+The evolutionary algorithm still operates, but its role is limited to selecting the rotations and placement heuristics for the boxes.
 
 \subsection{Placement Heuristics}
 
-Several placement heuristics can be employed to choose a suitable
-EMR in which a box will be placed. The following
-list summarizes the main approaches.
+The following heuristics are used in the experiments.
 
 \begin{enumerate}
-    \item \textbf{Best Fit} \\
-    Selects the EMR with the smallest volume that can
-    still accommodate the box. By choosing the EMR with minimal remaining
-    free space, this heuristic aims to reduce fragmentation of unused
-    volume and promote compact packings.
 
-    \item \textbf{Back–Bottom–Left (BBL)} \\
-    A classical rule that positions boxes as far as possible toward the
-    back, then the bottom, and finally the left side of the container.
-    The placement is therefore determined sequentially: the heuristic
-    first minimizes the X coordinate, then Z and lastly Y.
+\item \textbf{Best Volume Fit} \\
+This heuristic selects the EMR with the smallest volume that can still accommodate the box. 
+The goal is to place the box into the tightest possible region in order to reduce fragmentation of the remaining free space.
 
-    \item \textbf{DFTRC (Distance to the Front–Top–Right Corner)} \\
-    For each EMR capable of accommodating the box,
-    compute the distance from the front–top–right corner of the container
-    to the minimal coordinate of the EMR.
-    The EMR that maximizes this distance is selected, as a greater DFTRC
-    implies a more compact packing.
+\item \textbf{Max Distance} \\
+For each feasible EMR, the Euclidean distance between the starting coordinate of the region and the far corner of the container is computed. 
+The heuristic then selects the EMR that maximizes this distance. 
+
+\item \textbf{Min X} \\
+The heuristic selects the EMR with the smallest $x$ coordinate, i.e., it places the box as far as possible toward one side of the container. 
+This produces more structured packings along the $x$ axis.
+
+\item \textbf{Min Y} \\
+This heuristic selects the EMR with the smallest $y$ coordinate and therefore prefers placements closer to the back side of the container.
+
+\item \textbf{Gravity (Min Z)} \\
+This heuristic selects the EMR with the smallest $z$ coordinate, which corresponds to placing the box as low as possible in the container. 
+
+\item \textbf{Anti-Gravity (Max Z)} \\
+In contrast to the previous heuristic, this strategy selects the EMR with the largest $z$ coordinate and therefore places boxes as high as possible in the container. 
+
+\item \textbf{Bottom Left Back (BLB)} \\
+This classical rule selects the EMR with the smallest $z$ coordinate. If several regions have the same value, the smallest $y$ coordinate is selected, and finally the smallest $x$ coordinate is used as a tie-breaking rule. 
+
 \end{enumerate}
+
+The set $\mathcal{H}$ is composed of a subset of the implemented heuristics chosen for a given instance, and during the evolutionary process, the algorithm selects which heuristic to apply for each box. 
+If the size of $\mathcal{H}$ is one, i.e., only a single heuristic is available, the heuristic component of the packing rules is not needed, 
+and each box is assigned this heuristic directly.
 
 
 
 
 \section{The Box Packing Algorithm}
 
-Given a list of ordered pending boxes, ordered according to a predefined packing sequence, the algorithm iteratively places each box into one of the currently opened containers. 
-If none of the existing containers can accommodate the box, a new container is opened. The process continues until all boxes are packed.
+Given a list of ordered pending boxes, the algorithm iteratively attempts to place each box into one of the currently opened containers using a placement heuristic. 
+If the box cannot be placed using its current rotation, the algorithm automatically tries all possible rotations. 
+If no valid placement is found after considering all rotations, a new container is opened and the placement is attempted again. 
+The algorithm continues in this way for all boxes. 
 
 \subsection*{Pseudocode}
 
 \begin{algorithmic}[1]
 \State \textbf{Input:} List of ordered pending boxes $\mathcal{B} = [b_1, b_2, \dots, b_n]$
 \State \textbf{Output:} List of opened containers $\mathcal{C} = [c_1, c_2, \dots, c_m]$
+
 \State Initialize empty list of opened containers $\mathcal{C} \gets []$
-\For{each $(B, Rot, H)$ in $\mathcal{B}$}
-    \State $(C, Reg) \gets H(\mathcal{C}, (B, Rot))$ \Comment{Apply placement heuristic}
-    \If{$(C, Reg) = \texttt{null}$}
-        \State Open a new container $C_{\text{new}}$
-        \State Add $C_{\text{new}}$ to $\mathcal{C}$
-        \State $(C, Reg) \gets H(\mathcal{C}, (B, Rot))$
-        \If{$(C, Reg) = \texttt{null}$}
-            \State \textbf{Error:} Unable to place box in any container
-        \EndIf
+
+\For{each box $b \in \mathcal{B}$}
+
+    \If{\textbf{TryPackBox}$(b, \mathcal{C})$ succeeds}
+        \State continue
     \EndIf
-    \State Add placed box $(B, C, Reg, Rot)$ to the set of boxes placed in $C$
-    \State Update the EMR list of container $C$ based on placement $Reg$
+
+    \If{\textbf{TryPackWithAnyRotation}$(b, \mathcal{C})$ succeeds}
+        \State continue
+    \EndIf
+
+    \State Open a new container $c_{\text{new}}$
+    \State Add $c_{\text{new}}$ to $\mathcal{C}$
+
+    \If{\textbf{TryPackBox}$(b, \mathcal{C})$ succeeds}
+        \State continue
+    \EndIf
+
+    \If{\textbf{TryPackWithAnyRotation}$(b, \mathcal{C})$ succeeds}
+        \State continue
+    \EndIf
+
+    \State \textbf{Error:} Box could not be packed, may be too heavy or too large
 \EndFor
+
 \State \Return $\mathcal{C}$
-\end{algorithmic} 
+\end{algorithmic}
 
 
 

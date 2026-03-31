@@ -16,7 +16,6 @@ public static class PlacementHeuristics
         {
             {"Best Volume Fit", BestVolumeFit},
             {"Max Distance", MaxDistance},
-            {"Min Distance", MinDistance},
             {"Min X", MinX},
             {"Min Y", MinY},
             {"Gravity", MinZ},
@@ -108,40 +107,6 @@ public static class PlacementHeuristics
                         if (distance > maxDistance)
                         {
                             maxDistance = distance;
-                            best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
-                        }
-                    }
-                }
-            }
-        }
-
-        return best;
-    }
-
-    /// <summary>
-    /// Chooses placement closest to container origin.
-    /// </summary>
-    public static Placement? MinDistance(PendingBox box, IEnumerable<ContainerData> containers)
-    {
-        Placement? best = null;
-        double minDistance = double.MaxValue;
-        Coordinates origin = new Coordinates(0, 0, 0);
-
-        foreach (ContainerData c in containers)
-        {
-            if (ValidWeight(box, c))
-            {
-
-                foreach (Region region in c.EmptyMaximalRegions)
-                {
-                    if (ValidSides(box, region))
-                    {
-
-                        double distance = region.Start.GetEuclidanDistanceTo(origin);
-
-                        if (distance < minDistance)
-                        {
-                            minDistance = distance;
                             best = new Placement(c.ID, box.GetRotatedSizes().ToRegion(region.Start));
                         }
                     }

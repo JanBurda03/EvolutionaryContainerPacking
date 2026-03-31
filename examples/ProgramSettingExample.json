@@ -14,7 +14,8 @@
 
         "TargetFitness": null,
 
-        "NumberOfIndividuals": 1000,
+        "Individuals": 1000,
+        "UseIndividualsAsRelative": false,
         "NumberOfGenerations": 200,
 
         "PercentageOfEliteIndividuals": 0.1,

@@ -26,7 +26,12 @@ public record class ProbabilisticHillClimbingSetting(
     /// <summary>
     /// Number of individuals in the population.
     /// </summary>
-    int NumberOfIndividuals,
+    int Individuals,
+
+    /// <summary>
+    /// Indicates whether <see cref="Individuals"/> is interpreted as a relative value.
+    /// </summary>
+    bool UseIndividualsAsRelative,
 
     /// <summary>
     /// Maximum number of generations (iterations).
@@ -72,6 +77,7 @@ public record class ProbabilisticHillClimbingSetting(
 
 ) : EvolutionaryAlgorithmSetting(
         TargetFitness,
-        NumberOfIndividuals,
+        Individuals,
+        UseIndividualsAsRelative,
         NumberOfGenerations
     );

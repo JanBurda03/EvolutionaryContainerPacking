@@ -232,10 +232,6 @@ then the fitness function is defined as:
 \]
 
 
-TODO: nejnizsi odhad
-TODO: kdy neni solution
-
-
 \section{Data Representation}
 
 \subsection{Input}
@@ -244,9 +240,6 @@ The input consists of a description of the input container and a list of input b
 The container is defined by its dimensions \( D = (X, Y, Z) \) and its maximum weight \( W_\text{max} \). 
 Each input box $i$ is described by a unique identifier, its dimensions \( d_i = (x, y, z) \), and its weight \( w_i \).
 The input is provided in JSON format, where all numerical values are expressed in the same units.
-Example inputs can be found here: 
-
-\url{https://gitlab.mff.cuni.cz/teaching/nprg045/fink/jan_burda/-/tree/master/Code/TestInputs?ref_type=heads}.
 
 \subsection{Output}
 
@@ -268,17 +261,32 @@ Each box entry includes:
 \end{itemize}
 
 All numerical values are expressed in the same unit system as the input.
-An example output can be found here: 
-
-\url{https://gitlab.mff.cuni.cz/teaching/nprg045/fink/jan_burda/-/blob/master/Code/Documentation/OutputExample.json?ref_type=heads}.
 
 \subsection{Datasets}
-Part of the datasets was generated randomly. 
-The method consists of creating random input boxes within predefined sizes limits, 
-and assigning their weights based on a randomly generated density, 
-ensuring a consistent relationship between volume and weight.
+For the experimental evaluation, a dataset consisting of 120 problem instances inspired by \textcite{martello2000} was generated. 
+The dataset is divided into four classes, each containing 30 instances. 
+For every class, 10 instances were generated for each value of $n \in \{50, 100, 150\}$. The container dimensions are identical for all instances and are defined as $X = Y = Z = 100$.
 
+The size limits of the boxes differ for each class and are defined as follows:
 
+\begin{itemize}
+    \item Class 1: $x \in [1, X/2], \; y \in [Y/2, Y], \; z \in [Z/2, Z]$
+    \item Class 2: $x \in [1, X/2], \; y \in [1, Y/2], \; z \in [Z/2, Z]$
+    \item Class 3: $x \in [1, X/2], \; y \in [1, Y/2], \; z \in [1, Z/2]$
+    \item Class 4: $x \in [1, X], \; y \in [1, Y], \; z \in [1, Z]$
+\end{itemize}
 
+Classes 1–3 represent instances with a dominant geometric structure, while Class 4 corresponds to completely general instances. 
+
+For Classes 1–3, the boxes are generated randomly with a probability of 60\,\% from the corresponding class and 20\,\% from each of the remaining two classes. This approach preserves the main structural characteristics of each class while introducing additional variability.
+
+In addition to the geometric properties, weights were assigned to the boxes due to the presence of a maximum weight constraint. Based on this, three different datasets were constructed. Each of them contains the same 120 problem instances, but the assigned weights differ.
+
+In the original dataset, the weight of every box is set to 1. 
+The maximum allowed weight of each container is set to X*Y*Z, corresponding to the weight of a fully filled container with unit density. In practice, this means the weight constraint is never restrictive, as any container can accommodate all boxes by weight.
+
+The remaining two datasets, referred to as the \emph{medium} and \emph{heavy} datasets, incorporate density. For each box, density is generated from a normal distribution with a specified mean density $\mu$ and standard deviation $0.1\mu$. The weight of each box is then computed as the product of the density and the box volume.
+
+For the medium dataset, the mean density is set to $\mu = 1.2$, while for the heavy dataset it is set to $\mu = 1.5$.
 
 

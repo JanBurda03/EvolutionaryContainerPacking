@@ -50,7 +50,12 @@ public abstract class EvolutionaryBase<T> : IEvolutionary<T>
         targetFitness = setting.TargetFitness;
         _numberOfGenerationsPerRun = setting.NumberOfGenerations;
 
-        IReadOnlyList<T> unevaluatedPopulation = _populationFactory.CreatePopulation(setting.NumberOfIndividuals);
+        if (setting.UseIndividualsAsRelative)
+        {
+            throw new InvalidOperationException("Population size is defined as relative, but cannot be computed because problem size (box count) is unknown at this point in the algorithm lifecycle.");
+        }
+
+        IReadOnlyList<T> unevaluatedPopulation = _populationFactory.CreatePopulation(setting.Individuals);
 
         Population = fitnessEvaluator.GenerateEvaluated(unevaluatedPopulation);
         Best = _elitism.GetElite(Population);

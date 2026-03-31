@@ -21,9 +21,14 @@ public sealed record class ElitistGeneticAlgorithmSetting(
     double? TargetFitness,
 
     /// <summary>
-    /// Total number of individuals in the population.
+    /// Number of individuals in the population.
     /// </summary>
-    int NumberOfIndividuals,
+    int Individuals,
+
+    /// <summary>
+    /// Indicates whether <see cref="Individuals"/> is interpreted as a relative value.
+    /// </summary>
+    bool UseIndividualsAsRelative,
 
     /// <summary>
     /// Maximum number of generations.
@@ -95,6 +100,7 @@ public sealed record class ElitistGeneticAlgorithmSetting(
 
 ) : EvolutionaryAlgorithmSetting(
         TargetFitness,
-        NumberOfIndividuals,
+        Individuals,
+        UseIndividualsAsRelative,
         NumberOfGenerations
     );

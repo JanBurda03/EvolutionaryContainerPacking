@@ -31,10 +31,32 @@ public record class EvolutionaryAlgorithmSetting(
     /// Number of individuals in the population.
     /// </summary>
     /// <remarks>
-    /// Controls population size maintained during evolution.
+    /// Determines the population size used during evolution.
+    /// <para>
+    /// If <see cref="UseIndividualsAsRelative"/> is <c>false</c>,
+    /// the value represents an absolute number of individuals.
+    /// </para>
+    /// <para>
+    /// If <see cref="UseIndividualsAsRelative"/> is <c>true</c>,
+    /// the value is interpreted as a multiplier and the resulting
+    /// population size is computed relative to the problem size
+    /// (e.g., number of boxes).
+    /// </para>
+    /// <para>
     /// Larger populations increase diversity but also computational cost.
+    /// </para>
     /// </remarks>
-    int NumberOfIndividuals,
+    int Individuals,
+
+    /// <summary>
+    /// Indicates whether <see cref="Individuals"/> is interpreted as a relative value.
+    /// </summary>
+    /// <remarks>
+    /// If set to <c>true</c>, the population size is computed as:
+    /// <c>Individuals * problemSize</c>.
+    /// Otherwise, <see cref="Individuals"/> is used as an absolute value.
+    /// </remarks>
+    bool UseIndividualsAsRelative,
 
     /// <summary>
     /// Maximum number of generations (iterations).

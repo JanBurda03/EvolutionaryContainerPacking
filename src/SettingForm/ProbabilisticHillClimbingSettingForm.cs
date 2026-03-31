@@ -13,6 +13,7 @@ using EvolutionaryContainerPacking.Evolution.Setting.EvolutionaryAlgorithmSettin
 /// </summary>
 public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
 {
+
     // === Early stopping ===
     private CheckBox useTargetFitnessCheckBox;
     private NumericUpDown targetFitnessNumeric;
@@ -20,6 +21,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
     // === Population parameters ===
     private NumericUpDown numberOfIndividualsNumeric;
     private NumericUpDown numberOfGenerationsNumeric;
+    private CheckBox useIndividualsAsRelativeCheckBox;
 
     // === Mutation parameter ===
     private NumericUpDown percentageOfElementsChangedNumeric;
@@ -33,6 +35,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
     // === Control buttons ===
     private Button okButton;
     private Button cancelButton;
+
 
     public ProbabilisticHillClimbingSettingForm() : base()
     {
@@ -103,7 +106,20 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             Value = 50
         };
 
+
         Controls.Add(numberOfIndividualsNumeric);
+        top += spacing;
+
+
+        useIndividualsAsRelativeCheckBox = new CheckBox
+        {
+            Text = "Use as relative",
+            Left = leftInput,
+            Top = top,
+            Width = 200
+        };
+
+        Controls.Add(useIndividualsAsRelativeCheckBox);
         top += spacing;
 
         AddLabel("Number of Generations:", 10, top, labelWidth);
@@ -308,6 +324,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
         EvolutionaryAlgorithmSetting = new ProbabilisticHillClimbingSetting(
             targetFitness,
             numberOfIndividuals,
+            useIndividualsAsRelativeCheckBox.Checked,
             numberOfGenerations,
             percentageOfElementsChanged,
             start,

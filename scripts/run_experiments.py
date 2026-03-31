@@ -4,7 +4,6 @@ import subprocess
 from pathlib import Path
 import tempfile
 import sys
-import re
 import csv
 from statistics import mean
 from collections import defaultdict
@@ -62,32 +61,13 @@ def main(input_dir, output_dir, solver_exe, packing_setting_str, evolution_setti
         output_file = output_subdir / f"output_{base_name}.json"
         stats_file = output_subdir / f"evolutionStatistics_{base_name}.csv"
 
-        # Get number of packages from folder nXX
-        numner_of_boxes = None
-        for part in reversed(relative_path.parts):
-            match = re.match(r"n(\d+)", part)
-            if match:
-                numner_of_boxes = int(match.group(1))
-                break
-
-        if  numner_of_boxes is None:
-            print(f"Could not determine number of packages for {input_file}")
-            continue
-
-        # Copy evolution setting so we don't overwrite the original
-        evolution_setting_for_run = evolution_setting.copy()
-
-        # Convert IndividualsCoef -> NumberOfIndividuals
-        individuals_coef = evolution_setting_for_run.pop("IndividualsCoef")
-        evolution_setting_for_run["NumberOfIndividuals"] = individuals_coef * numner_of_boxes
-
         # Build configuration JSON
         config = {
             "SourceFile": str(input_file),
             "OutputFile": str(output_file),
             "EvolutionStatisticsFile": str(stats_file),
             "PackingSetting": packing_setting,
-            "EvolutionAlgorithmSetting": evolution_setting_for_run,
+            "EvolutionAlgorithmSetting": evolution_setting,
         }
 
         # Write configuration to temp file
@@ -240,7 +220,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--output-dir",
-        default="..\\experiments\\results\\elitist",
+        default="..\\experiments\\results\\all_volume",
         help="Directory where output files will be written."
     )
 
@@ -252,7 +232,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--packing-setting",
-        default="..\\experiments\\settings\\packing\\max_distance__no_order.json",
+        default="..\\experiments\\settings\\packing\\all_heuristics__high_volume_first.json",
         help="Path to JSON file describing PackingSetting."
     )
 

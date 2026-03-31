@@ -7,6 +7,7 @@ using EvolutionaryContainerPacking.Evolution.Fitness;
 using EvolutionaryContainerPacking.Evolution.EvolutionStatistics;
 using EvolutionaryContainerPacking.Evolution.Setting;
 using EvolutionaryContainerPacking.Evolution.Architecture.Population;
+using EvolutionaryContainerPacking.Evolution.Setting.EvolutionaryAlgorithmSettings;
 
 /// <summary>
 /// Entry point for executing the evolutionary container packing process.
@@ -47,6 +48,9 @@ public static class EvolutionProgram
     /// </returns>
     public static (IReadOnlyList<ContainerData> solution, IEvolutionStatistics<PackingRules> statistics) Run(ProgramSetting setting, PackingInput packingInput)
     {
+        // Converts relative population size in the evolutionary algorithm setting to absolute
+        setting = ConvertRelativeSettingToAbsolute(setting, packingInput);
+
         // Create fitness evaluator responsible for scoring individuals
         var fitnessEvaluator = new PackingRulesFitnessEvaluator(packingInput, setting.PackingSetting);
 
@@ -74,6 +78,40 @@ public static class EvolutionProgram
         var solution = solver.Solve(bestIndividual);
 
         return (solution, evolutionStatistics);
+    }
+
+    /// <summary>
+    /// Converts relative population size in the evolutionary algorithm setting
+    /// to an absolute value based on the provided packing input.
+    /// </summary>
+    private static ProgramSetting ConvertRelativeSettingToAbsolute(
+        ProgramSetting setting,
+        PackingInput packingInput)
+    {
+        EvolutionaryAlgorithmSetting evolutionAlgorithmSetting = setting.EvolutionAlgorithmSetting;
+
+        // If already absolute, no conversion is needed
+        if (!evolutionAlgorithmSetting.UseIndividualsAsRelative)
+        {
+            return setting;
+        }
+
+        // Compute absolute population size based on problem size (number of boxes)
+        int absoluteIndividuals = evolutionAlgorithmSetting.Individuals * packingInput.BoxPropertiesList.Count;
+
+        // Create new algorithm setting with resolved (absolute) population size
+        EvolutionaryAlgorithmSetting absoluteEvolutionAlgorithmSetting =
+            evolutionAlgorithmSetting with
+            {
+                UseIndividualsAsRelative = false,
+                Individuals = absoluteIndividuals,
+            };
+
+        // Return updated program setting with the resolved algorithm configuration
+        return setting with
+        {
+            EvolutionAlgorithmSetting = absoluteEvolutionAlgorithmSetting,
+        };
     }
 }
 

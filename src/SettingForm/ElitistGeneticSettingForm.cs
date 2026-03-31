@@ -18,6 +18,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
     // ============================================================
     private NumericUpDown numberOfIndividualsNumeric;
     private NumericUpDown numberOfGenerationsNumeric;
+    private CheckBox useIndividualsAsRelativeCheckBox;
 
     // ============================================================
     // Genetic parameters
@@ -99,6 +100,16 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             Value = 100
         };
         Controls.Add(numberOfIndividualsNumeric);
+        top += spacing;
+
+        useIndividualsAsRelativeCheckBox = new CheckBox
+        {
+            Text = "Use as relative",
+            Left = leftInput,
+            Top = top,
+            Width = 200
+        };
+        Controls.Add(useIndividualsAsRelativeCheckBox);
         top += spacing;
 
         AddLabel("Number of Generations:", 10, top, labelWidth);
@@ -266,6 +277,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
         EvolutionaryAlgorithmSetting = new ElitistGeneticAlgorithmSetting(
             targetFitness,
             (int)numberOfIndividualsNumeric.Value,
+            useIndividualsAsRelativeCheckBox.Checked,
             (int)numberOfGenerationsNumeric.Value,
             elite,
             (double)percentageOfElementsFromEliteNumeric.Value,
