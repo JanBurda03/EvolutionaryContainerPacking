@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--output-dir",
-        default="..\\experiments\\results\\all_volume",
+        default="..\\experiments\\results\\all_heuristics_no_order_mut_0.003",
         help="Directory where output files will be written."
     )
 
@@ -232,13 +232,13 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--packing-setting",
-        default="..\\experiments\\settings\\packing\\all_heuristics__high_volume_first.json",
+        default="..\\experiments\\settings\\packing\\all_heuristics__no_order.json",
         help="Path to JSON file describing PackingSetting."
     )
 
     parser.add_argument(
         "--evolution-setting",
-        default="..\\experiments\\settings\\evolution\\elitist__no_memetic.json",
+        default="..\\experiments\\settings\\evolution\\elitist__no_memetic_mut.json",
         help="Path to JSON file describing EvolutionAlgorithmSetting."
     )
 

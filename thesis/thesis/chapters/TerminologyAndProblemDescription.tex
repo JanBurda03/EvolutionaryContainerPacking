@@ -1,4 +1,5 @@
 \chapter{Terminology and Problem Description}
+\label{chap:problem}
 
 In this chapter, we will focus on the formal description of the extended 3D Bin Packing Problem.
 To make this possible, we first need to introduce the terminology related to the representation of 3D space and the objects within it.
@@ -263,30 +264,39 @@ Each box entry includes:
 All numerical values are expressed in the same unit system as the input.
 
 \subsection{Datasets}
-For the experimental evaluation, a dataset consisting of 120 problem instances inspired by \textcite{martello2000} was generated. 
+For the experimental evaluation, a dataset consisting of 120 problem instances inspired by Martello, Silvano and Pisinger \cite{martello2000} was generated. 
 The dataset is divided into four classes, each containing 30 instances. 
 For every class, 10 instances were generated for each value of $n \in \{50, 100, 150\}$. The container dimensions are identical for all instances and are defined as $X = Y = Z = 100$.
 
-The size limits of the boxes differ for each class and are defined as follows:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Type} & \textbf{x} & \textbf{y} & \textbf{z} \\
+\hline
+1 & $[1, X/2]$ & $[Y/2, Y]$ & $[Z/2, Z]$ \\
+2 & $[1, X/2]$ & $[1, Y/2]$ & $[Z/2, Z]$ \\
+3 & $[1, X/2]$ & $[1, Y/2]$ & $[1, Z/2]$ \\
+4 & $[1, X]$ & $[1, Y]$ & $[1, Z]$ \\
+\hline
+\end{tabular}
+\caption{Box size limits for each type.}
+\label{tab:box_types}
+\end{table}
 
-\begin{itemize}
-    \item Class 1: $x \in [1, X/2], \; y \in [Y/2, Y], \; z \in [Z/2, Z]$
-    \item Class 2: $x \in [1, X/2], \; y \in [1, Y/2], \; z \in [Z/2, Z]$
-    \item Class 3: $x \in [1, X/2], \; y \in [1, Y/2], \; z \in [1, Z/2]$
-    \item Class 4: $x \in [1, X], \; y \in [1, Y], \; z \in [1, Z]$
-\end{itemize}
+Classes 1–3 represent instances with a dominant geometric structure, while class 4 corresponds to completely general instances. 
 
-Classes 1–3 represent instances with a dominant geometric structure, while Class 4 corresponds to completely general instances. 
-
-For Classes 1–3, the boxes are generated randomly with a probability of 60\,\% from the corresponding class and 20\,\% from each of the remaining two classes. This approach preserves the main structural characteristics of each class while introducing additional variability.
+For classes 1–3, the boxes are generated randomly with a probability of 60\,\% from the corresponding type and 20\,\% from each of the remaining two types. This approach preserves the main structural characteristics of each class while introducing additional variability.
+The box size limits for each type are shown in Table~\ref{tab:box_types}. From these intervals, the sizes are selected uniformly.
 
 In addition to the geometric properties, weights were assigned to the boxes due to the presence of a maximum weight constraint. Based on this, three different datasets were constructed. Each of them contains the same 120 problem instances, but the assigned weights differ.
 
-In the original dataset, the weight of every box is set to 1. 
-The maximum allowed weight of each container is set to X*Y*Z, corresponding to the weight of a fully filled container with unit density. In practice, this means the weight constraint is never restrictive, as any container can accommodate all boxes by weight.
+In the original dataset, the boxes do not have weights. To simulate this, the weight of every box is set to 1, while 
+the maximum allowed weight of each container is set to $X \cdot Y \cdot Z$, corresponding to the weight of a fully filled container with unit density. In practice, this means the weight constraint is never restrictive, as any container can accommodate all boxes by weight.
 
 The remaining two datasets, referred to as the \emph{medium} and \emph{heavy} datasets, incorporate density. For each box, density is generated from a normal distribution with a specified mean density $\mu$ and standard deviation $0.1\mu$. The weight of each box is then computed as the product of the density and the box volume.
 
 For the medium dataset, the mean density is set to $\mu = 1.2$, while for the heavy dataset it is set to $\mu = 1.5$.
+
 
 

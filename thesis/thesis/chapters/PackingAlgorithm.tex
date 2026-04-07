@@ -1,4 +1,5 @@
 \chapter{The Packing Algorithm}
+\label{chap:packing}
 
 This chapter describes how we can obtain a deterministic packing solution, i.e. a list of containers and boxes packed within them, 
 from the packing input and the packing rules. The packing rules contain information regarding the rotation of each box, the heuristic that will
@@ -86,9 +87,8 @@ Formally, they are represented as a triple $(o, rot, h)$, where:
 \end{itemize}
 In other words, the packing rules determine the packing order, rotation, and placement heuristic for each input box, which together form the corresponding list of pending boxes.
 
-
 \subsubsection{Vector representation}
-In order to use the packing rules as an individual for the evolutionary algorithm, they can be represented as a continuous vector of length $3k$ consisting of real values in the interval $[0,1]$. \cite{goncalves2013}
+In order to use the packing rules as an individual for the evolutionary algorithm, they can be represented as a continuous vector of length $3k$ consisting of real values in the interval $[0,1]$ \cite{goncalves2013}.
 This vector is divided into three parts corresponding to the components $(o, rot, h)$.
 
 In this triple, the first $k$ entries are sorted in ascending order to derive the permutation $o$, 
@@ -102,23 +102,17 @@ In this case, the rotation part is unnecessary, and the vector can also be short
 If neither of these parts are needed, the vector can be shortened further to length $k$. 
 Furthermore, if the packing order is determined directly by a heuristic, the order part can also be omitted, as the order can be derived without relying on the packing vector.
 
-
-
 \subsection{Packing Rules Fitness}
 Previously, the concept of fitness was defined in the context of evaluating a solution. 
 It is now evident that the packing input together with packing rules uniquely determine a specific solution. 
 This allows fitness to be assigned not only to the solution itself but also to the packing rules with respect to the given packing input. 
 The procedure is as follows: the packing rules are first converted into a list of pending boxes in a specified order, the packing algorithm is then applied to generate the solution, which is subsequently evaluated to determine its fitness.
 
-
-
-
 \section{Empty Maximal Regions}
 
 To keep track of unoccupied regions during the packing process, we assign each opened container a list of \emph{empty maximal regions} (EMR). 
 An empty region is said to be \textit{maximal} if it is not a subregion of any other empty region. 
-In the literature, the more common term is empty maximal spaces (EMS). However, the term regions is adopted here to ensure consistency with the terminology of this work. \cite{lai1997, goncalves2013}  
-
+In the literature, the more common term is empty maximal spaces (EMS). However, the term regions is adopted here to ensure consistency with the terminology of this work \cite{lai1997, goncalves2013}.
 
 Initially, each empty opened container $c$ has a single EMR, which is the region of the container itself, denoted as $R_c$. As boxes are placed into the container, the set of EMR is updated accordingly.
 
@@ -189,22 +183,10 @@ Therefore, its $x$ and $y$ coordinates are restricted to match the footprint of 
 
 It is worth explicitly mentioning that there is no requirement for the newly generated EMR to be non-overlapping. Overlaps are allowed and common in this representation.
 
-\url{https://www.geogebra.org/calculator/zatgrfrg}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{img/EMR1.png}
-    \caption{
-        A simplified 2D example of EMR update. Suppose we have an EMR defined as \( (\text{A}, \text{C}) \), and a newly placed box occupying the region \( (\text{E}, \text{G}) \). The intersection region is \( (\text{I}, \text{G}) \), and three new EMR are created: \( (\text{A}, \text{J}) \), \( (\text{L}, \text{C}) \), and \( (\text{M}, \text{C}) \).
-    }
-    \label{fig:EMR-update}
-\end{figure}
-
-
 \subsection{Update of an Empty Maximal Regions List}
 
 Since a newly placed box can intersect multiple EMR, it is necessary to update each region in the EMR list using the method described above. 
-Once this is done, several additional steps must be taken.\cite{goncalves2013}
+Once this is done, several additional steps must be taken \cite{goncalves2013}.
 
 First, we check whether any of the newly created EMR is a subregion of another EMR in the list. Such subregions do not satisfy the definition of maximality and are therefore removed.
 Second, we attempt to merge adjacent EMR that lie next to each other and start at the same height.
@@ -213,6 +195,26 @@ However, the constraint still allows a box to rest on top of multiple smaller bo
 This means that EMR starting at the same height and sharing a face can potentially be merged into a larger EMR.
 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{img/SideEMR.png}
+    \caption{Side view of EMR update. 
+    Boxes are inserted sequentially in the order A, B, C. 
+    The top EMR is always located directly above a box so that the support constraint is satisfied. 
+    When two box tops are at the same height, as in the case of A and C, their top EMRs merge into a single EMR.}
+    \label{fig:EMR-side-update}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{img/TopEMR.png}
+    \caption{Top view of EMR update. 
+    Boxes are inserted sequentially in the order A, B, C. 
+    Newly added boxes split existing EMR into several smaller regions, 
+    and if any of these EMRs is a subregion of another EMR, it disappears. 
+    For example, after inserting box C, part of the blue EMR becomes part of the dark green EMR.}
+    \label{fig:EMR-top-update}
+\end{figure}
 
 \section{Heuristics}
 
@@ -268,18 +270,17 @@ The set $\mathcal{H}$ is composed of a subset of the implemented heuristics chos
 If the size of $\mathcal{H}$ is one, i.e., only a single heuristic is available, the heuristic component of the packing rules is not needed, 
 and each box is assigned this heuristic directly.
 
-
-
-
 \section{The Box Packing Algorithm}
 
 Given a list of ordered pending boxes, the algorithm iteratively attempts to place each box into one of the currently opened containers using a placement heuristic. 
 If the box cannot be placed using its current rotation, the algorithm automatically tries all possible rotations. 
 If no valid placement is found after considering all rotations, a new container is opened and the placement is attempted again. 
 The algorithm continues in this way for all boxes. 
+The pseudocode is shown in Figure~\ref{fig:box-packing-algorithm}.
 
-\subsection*{Pseudocode}
-
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
 \State \textbf{Input:} List of ordered pending boxes $\mathcal{B} = [b_1, b_2, \dots, b_n]$
 \State \textbf{Output:} List of opened containers $\mathcal{C} = [c_1, c_2, \dots, c_m]$
@@ -312,9 +313,10 @@ The algorithm continues in this way for all boxes.
 
 \State \Return $\mathcal{C}$
 \end{algorithmic}
-
-
-
+\end{minipage}
+\caption{Box Packing Algorithm Pseudocode}
+\label{fig:box-packing-algorithm}
+\end{figure}
 
 
 

@@ -55,6 +55,7 @@ public class HillClimbingMemetic<T> : IMemetic<T>
     /// </summary>
     public EvaluatedIndividual<T> Memetic(EvaluatedIndividual<T> individual)
     {
+
         for (int i = 0; i < _iterations; i++)
         {
             // Generate neighbor from current individual
@@ -88,10 +89,10 @@ public class HillClimbingMemetic<T> : IMemetic<T>
     {
         EvaluatedIndividual<T>[] result = new EvaluatedIndividual<T>[individuals.Count];
 
-        for (int i = 0; i < individuals.Count; i++)
+        Parallel.For(0, individuals.Count, i =>
         {
             result[i] = Memetic(individuals[i]);
-        }
+        });
 
         return result;
     }

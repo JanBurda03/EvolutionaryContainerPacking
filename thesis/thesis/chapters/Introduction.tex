@@ -1,0 +1,47 @@
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+The nature of today’s world is greatly influenced by globalization,  
+which not only connects economies and societies across continents, 
+but also has a profound impact on cultures \cite{zizek1997}.
+One of the main drivers of globalization is the transportation of goods. 
+In order to transport goods effectively, containers are essential, 
+as they allow for the easy movement of goods using various methods of transportation. 
+They are used in trucks, ships, trains, and even airplanes, 
+facilitating a smooth transition of goods when changing the mode of transport. 
+The use of containers has tremendously reduced handling times and costs, making the global supply chain much more efficient \cite{bernhofen2016}.
+Since the cost of shipping is typically calculated based on the number of containers, their volume, and their weight, 
+any unused space consequently results in increased expenses. 
+In large-scale logistics, where massive quantities of containers are shipped daily, 
+even small improvements in packing efficiency can lead to significant cost savings as well as reduction in emissions. 
+For example, in 2018, containers imported into the United States were, on average, loaded to only about 65\% of their capacity \cite{obyrne2021}.
+
+In the context of computer science and optimization, container packing problems generally revolve around three key types \cite{martello2000}.
+In 3D Bin Packing Problem, the goal is to pack a set of rectangular boxes into the smallest possible number of containers.
+For Knapsack Loading Problem, each box has an associated value, and the objective is to select a subset of boxes that fits into a single container while maximizing the sum of their values.
+The aim of Container Loading Problem is to pack all boxes into a single container, which has infinite length, while minimizing the total volume used.
+All of these problems are indeed NP-hard \cite{martello2000}, so heuristic and approximation algorithms are usually used to find good solutions in a reasonable amount of time.
+
+This thesis focuses on a variant of the 3D Bin Packing Problem in which rectangular boxes not only have given sizes,
+but also an associated weight, and each container has a maximum load capacity. All orthogonal rotations of the boxes are allowed.
+Furthermore, every box must be fully supported from below, either by the container floor or by the top surfaces of other boxes, 
+ensuring structural stability of the packing. 
+The primary objective is to minimize the number of containers used while respecting these constraints.
+
+In this thesis, we build upon the genetic algorithm proposed by Gonçalves and Resende \cite{goncalves2013} and derive several 
+algorithmic variants from it. In particular, we investigate whether its performance can be improved by 
+incorporating mutation operators and memetic local search. Within this framework, 
+we also examine the effect of replacing the box-packing order derived through evolution with several 
+predefined ordering heuristics, as well as the effect of allowing evolution to choose the placement strategy 
+for each box instead of using a single fixed strategy. In addition, these variants are compared with two other 
+optimization approaches: mutation-based hill climbing and the physics-inspired method of simulated annealing \cite{eiben2016}. 
+Finally, we investigate how the solutions change for different box density values under a fixed container weight constraint. 
+The algorithms are evaluated according to solution quality, measured by fitness, and computational runtime.
+
+The thesis is structured as follows. 
+Chapter~\ref{chap:problem} introduces the geometric terminology, formal definition of the packing problem and used datasets. 
+Chapter~\ref{chap:packing} introduces a packing algorithm that deterministically constructs a complete solution from an individual and evaluates its fitness.
+Chapter~\ref{chap:evolution} describes the evolutionary algorithms applied to the problem. 
+Chapter~\ref{chap:experiments} reports on the experiments conducted and discusses the results. 
+Finally, two appendices provide additional documentation: 
+Appendix~\ref{app:user} contains user instructions, and Appendix~\ref{app:program} includes programming and implementation details.

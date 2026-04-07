@@ -31,75 +31,54 @@ research and academic purposes, and uses the above publications
 as reference for instance design. 
 
 Additional features in this Python version:
-
   - Support for box weights and container maximum weight
     (weight constraints).
   - Randomized box densities with configurable mean and standard deviation.
-  - Container density parameter controlling the maximum allowed total weight.
-  - Automatic generation of three benchmark categories:
-        original  -> no weight constraints
-        medium    -> mean box density = 1.2
-        heavy     -> mean box density = 1.5
 """
 
 
-def generate_full_mpv_benchmark(output_root: Path):
+def generate_mpv_benchmark(output_root: Path, mean_box_density=0, std_box_density=0, instance_sizes=[50, 100, 150], instance_count=10, initial_seed=0):
     """
-    Generates the full MPV benchmark with 3 variants:
+    Generates a configurable MPV benchmark dataset.
 
-    original/
-        -> no weight (mean_box_density = 0)
-
-    medium/
-        -> mean_box_density = 1.2
-
-    heavy/
-        -> mean_box_density = 1.5
-    """
-
-    # ---- ORIGINAL (no weights) ----
-    generate_mpv_benchmark(
-        output_root=output_root / "original",
-        mean_box_density=0,
-        std_box_density=0
-    )
-
-    # ---- MEDIUM ----
-    medium_mean = 1.2
-    medium_std = 0.1 * medium_mean
-
-    generate_mpv_benchmark(
-        output_root=output_root / "medium",
-        mean_box_density=medium_mean,
-        std_box_density=medium_std
-    )
-
-    # ---- HEAVY ----
-    heavy_mean = 1.5
-    heavy_std = 0.1 * heavy_mean
-
-    generate_mpv_benchmark(
-        output_root=output_root / "heavy",
-        mean_box_density=heavy_mean,
-        std_box_density=heavy_std
-    )
-
-
-def generate_mpv_benchmark(output_root: Path, mean_box_density=0, std_box_density=0):
-    """
-    Generates the full MPV benchmark:
+    The generator creates instances for:
       - Classes 1–4
-      - 3 instance sizes: 50, 100, 150
-      - 10 instances per (class, size)
+      - Instance sizes defined by `instance_sizes`
+      - `instance_count` instances for each (class, size) combination
+
+    Seed handling:
+      - For each instance, the seed is computed as:
+        seed = n + v + initial_seed
+      - where:
+        n = instance size
+        v = instance index (starting from 1)
+
+    Parameters:
+        output_root (Path):
+            Root directory where generated instances will be saved.
+
+        mean_box_density (float):
+            Mean box density used for weighted instances.
+
+        std_box_density (float):
+            Standard deviation of box density.
+
+        instance_sizes (list[int]):
+            List of instance sizes to generate.
+
+        instance_count (int):
+            Number of instances per size.
+
+        initial_seed (int):
+            Seed offset added to each generated instance.
     """
 
-    instance_sizes = [50, 100, 150]
-    instance_count = 10
+    NUMBER_OF_CLASSES = 4
 
-    for class_id in range(1, 5):
+    for class_id in range(1, NUMBER_OF_CLASSES+1):
         for n in instance_sizes:
             for v in range(1, instance_count + 1):
-                seed = n + v
+                seed = n + v + initial_seed
                 instance = generate_mpv_instance(
                     class_id=class_id,
                     box_count=n,
@@ -114,17 +93,58 @@ def generate_mpv_benchmark(output_root: Path, mean_box_density=0, std_box_densit
     
 
 
+def parse_instance_sizes(value: str) -> list[int]:
+    return [int(x.strip()) for x in value.split(",") if x.strip()]
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Full MPV benchmark generator (original + weighted classes)"
+        description="MPV benchmark generator"
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=Path("../data/mpv"),
-        help="Root directory for generated benchmark instances"
+        help="Root directory where generated instances will be saved",
+    )
+    parser.add_argument(
+        "--mean-box-density",
+        type=float,
+        default=0.0,
+        help="Mean box density",
+    )
+    parser.add_argument(
+        "--std-box-density",
+        type=float,
+        default=0.0,
+        help="Standard deviation of box density",
+    )
+    parser.add_argument(
+        "--instance-sizes",
+        type=parse_instance_sizes,
+        default=[50, 100, 150],
+        help="Comma-separated list of instance sizes, e.g. 50,100,150",
+    )
+    parser.add_argument(
+        "--instance-count",
+        type=int,
+        default=10,
+        help="Number of instances per size",
+    )
+    parser.add_argument(
+        "--initial-seed",
+        type=int,
+        default=0,
+        help="Seed offset added to each generated instance",
     )
 
     args = parser.parse_args()
-    generate_full_mpv_benchmark(args.output)
+
+    generate_mpv_benchmark(
+        output_root=args.output,
+        mean_box_density=args.mean_box_density,
+        std_box_density=args.std_box_density,
+        instance_sizes=args.instance_sizes,
+        instance_count=args.instance_count,
+        initial_seed=args.initial_seed,
+    )
