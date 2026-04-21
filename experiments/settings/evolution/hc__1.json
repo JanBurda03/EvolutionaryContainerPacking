@@ -1,0 +1,11 @@
+{
+    "AlgorithmName": "Hill Climbing",
+    "TargetFitness": null,
+    "Individuals": 30,
+    "UseIndividualsAsRelative": true,
+    "NumberOfGenerations": 300,
+    "PercentageOfElementsChanged": 0.01,
+    "StartAcceptanceProbability": 0,
+    "EndAcceptanceProbability": 0,
+    "AcceptanceDecayFactor" : 0
+}

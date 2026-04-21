@@ -36,9 +36,6 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
     // Number of elite individuals to preserve each generation
     protected readonly int _numberOfEliteIndividuals;
 
-    // Number of non-elite individuals
-    protected readonly int _numberOfNonEliteIndividuals;
-
     // Number of individuals to select and apply crossover/mutation
     protected readonly int _numberOfSelectedIndividuals;
 
@@ -60,7 +57,6 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
         _numberOfRandomIndividuals = (int)Math.Ceiling(setting.PercentageOfRandomIndividuals * Population.Count);
         _numberOfEliteIndividuals = (int)Math.Ceiling(setting.PercentageOfEliteIndividuals * Population.Count);
         _numberOfSelectedIndividuals = Population.Count - _numberOfRandomIndividuals - _numberOfEliteIndividuals;
-        _numberOfNonEliteIndividuals = Population.Count - _numberOfEliteIndividuals;
 
         _memetic = memetic;
         _crossover = crossover;
@@ -75,11 +71,7 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
     protected override void NextGeneration()
     {
         // divide population into elites and non elites
-        var elites = _elitism.GetElite(Population, _numberOfEliteIndividuals);
-        var nonElites = _elitism.GetWorst(Population, _numberOfNonEliteIndividuals);
-
-        // improve elites by memetic
-        elites = _memetic.Memetic(elites);
+        var (elites, nonElites) = _elitism.ElitesNonElitesSplit(Population, _numberOfEliteIndividuals);
 
         // select individuals from elites and non-elites for crossover
         var selectedElites = _randomSelection.Select(elites, _numberOfSelectedIndividuals);
@@ -91,14 +83,14 @@ public class ElitistGeneticAlgorithm<T> : EvolutionaryBase<T>
         // apply mutation to the crossovered individuals
         var mutated = _mutation.Mutate(crossovered);
 
+        // apply memetic to mutated
+        var upgraded = _memetic.Memetic(mutated);
+
         // add entirely new random individuals to maintain diversity
         var added = _populationFactory.CreatePopulation(_numberOfRandomIndividuals);
 
-        // combine mutated and new individuals
-        var newNonElites = mutated.Concat(added).ToList();
-
         // evaluate the new generation and append preserved elites
-        Population = (_fitnessEvaluator.GenerateEvaluated(newNonElites)).Concat(elites).ToList();
+        Population = (_fitnessEvaluator.GenerateEvaluated(added)).Concat(elites).Concat(upgraded).ToList();
     }
 }
 

@@ -1,0 +1,823 @@
+[
+  {
+    "ContainerID": 0,
+    "CurrentWeight": 22,
+    "OccupiedVolume": 784940,
+    "PackedBoxes": [
+      {
+        "BoxID": 36,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 26,
+            "Y": 11,
+            "Z": 34
+          }
+        }
+      },
+      {
+        "BoxID": 22,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 11,
+            "Z": 0
+          },
+          "End": {
+            "X": 81,
+            "Y": 44,
+            "Z": 74
+          }
+        }
+      },
+      {
+        "BoxID": 26,
+        "Rotation": "YXZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 44,
+            "Z": 0
+          },
+          "End": {
+            "X": 99,
+            "Y": 93,
+            "Z": 64
+          }
+        }
+      },
+      {
+        "BoxID": 2,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 44,
+            "Z": 64
+          },
+          "End": {
+            "X": 29,
+            "Y": 83,
+            "Z": 100
+          }
+        }
+      },
+      {
+        "BoxID": 1,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 29,
+            "Y": 44,
+            "Z": 64
+          },
+          "End": {
+            "X": 92,
+            "Y": 91,
+            "Z": 89
+          }
+        }
+      },
+      {
+        "BoxID": 49,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 29,
+            "Y": 44,
+            "Z": 89
+          },
+          "End": {
+            "X": 68,
+            "Y": 75,
+            "Z": 100
+          }
+        }
+      },
+      {
+        "BoxID": 40,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 11,
+            "Z": 74
+          },
+          "End": {
+            "X": 38,
+            "Y": 27,
+            "Z": 88
+          }
+        }
+      },
+      {
+        "BoxID": 42,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 27,
+            "Z": 74
+          },
+          "End": {
+            "X": 45,
+            "Y": 37,
+            "Z": 99
+          }
+        }
+      },
+      {
+        "BoxID": 27,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 26,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 93,
+            "Y": 8,
+            "Z": 60
+          }
+        }
+      },
+      {
+        "BoxID": 4,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 93,
+            "Z": 0
+          },
+          "End": {
+            "X": 44,
+            "Y": 96,
+            "Z": 25
+          }
+        }
+      },
+      {
+        "BoxID": 37,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 34
+          },
+          "End": {
+            "X": 26,
+            "Y": 7,
+            "Z": 43
+          }
+        }
+      },
+      {
+        "BoxID": 19,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 81,
+            "Y": 8,
+            "Z": 0
+          },
+          "End": {
+            "X": 93,
+            "Y": 36,
+            "Z": 66
+          }
+        }
+      },
+      {
+        "BoxID": 21,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 45,
+            "Y": 11,
+            "Z": 74
+          },
+          "End": {
+            "X": 76,
+            "Y": 40,
+            "Z": 96
+          }
+        }
+      },
+      {
+        "BoxID": 16,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 37,
+            "Z": 74
+          },
+          "End": {
+            "X": 45,
+            "Y": 44,
+            "Z": 93
+          }
+        }
+      },
+      {
+        "BoxID": 28,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 93,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 96,
+            "Y": 18,
+            "Z": 36
+          }
+        }
+      },
+      {
+        "BoxID": 0,
+        "Rotation": "YXZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 83,
+            "Z": 64
+          },
+          "End": {
+            "X": 29,
+            "Y": 92,
+            "Z": 100
+          }
+        }
+      },
+      {
+        "BoxID": 32,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 37,
+            "Z": 93
+          },
+          "End": {
+            "X": 26,
+            "Y": 40,
+            "Z": 100
+          }
+        }
+      },
+      {
+        "BoxID": 34,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 43
+          },
+          "End": {
+            "X": 23,
+            "Y": 7,
+            "Z": 62
+          }
+        }
+      },
+      {
+        "BoxID": 20,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 44,
+            "Y": 93,
+            "Z": 0
+          },
+          "End": {
+            "X": 47,
+            "Y": 95,
+            "Z": 1
+          }
+        }
+      },
+      {
+        "BoxID": 30,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 96,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 100,
+            "Y": 41,
+            "Z": 96
+          }
+        }
+      },
+      {
+        "BoxID": 17,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 11,
+            "Z": 88
+          },
+          "End": {
+            "X": 38,
+            "Y": 21,
+            "Z": 96
+          }
+        }
+      },
+      {
+        "BoxID": 48,
+        "Rotation": "YXZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 29,
+            "Y": 75,
+            "Z": 89
+          },
+          "End": {
+            "X": 76,
+            "Y": 83,
+            "Z": 90
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ContainerID": 1,
+    "CurrentWeight": 23,
+    "OccupiedVolume": 737473,
+    "PackedBoxes": [
+      {
+        "BoxID": 41,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 44,
+            "Y": 92,
+            "Z": 85
+          }
+        }
+      },
+      {
+        "BoxID": 25,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 44,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 54,
+            "Y": 77,
+            "Z": 83
+          }
+        }
+      },
+      {
+        "BoxID": 11,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 54,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 57,
+            "Y": 56,
+            "Z": 50
+          }
+        }
+      },
+      {
+        "BoxID": 6,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 57,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 96,
+            "Y": 41,
+            "Z": 16
+          }
+        }
+      },
+      {
+        "BoxID": 8,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 85
+          },
+          "End": {
+            "X": 31,
+            "Y": 79,
+            "Z": 87
+          }
+        }
+      },
+      {
+        "BoxID": 29,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 54,
+            "Y": 56,
+            "Z": 0
+          },
+          "End": {
+            "X": 98,
+            "Y": 70,
+            "Z": 49
+          }
+        }
+      },
+      {
+        "BoxID": 44,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 57,
+            "Y": 0,
+            "Z": 16
+          },
+          "End": {
+            "X": 80,
+            "Y": 39,
+            "Z": 66
+          }
+        }
+      },
+      {
+        "BoxID": 7,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 54,
+            "Y": 70,
+            "Z": 0
+          },
+          "End": {
+            "X": 76,
+            "Y": 96,
+            "Z": 76
+          }
+        }
+      },
+      {
+        "BoxID": 38,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 57,
+            "Y": 41,
+            "Z": 0
+          },
+          "End": {
+            "X": 93,
+            "Y": 52,
+            "Z": 37
+          }
+        }
+      },
+      {
+        "BoxID": 10,
+        "Rotation": "XZY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 80,
+            "Y": 0,
+            "Z": 16
+          },
+          "End": {
+            "X": 91,
+            "Y": 32,
+            "Z": 66
+          }
+        }
+      },
+      {
+        "BoxID": 33,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 31,
+            "Y": 0,
+            "Z": 85
+          },
+          "End": {
+            "X": 44,
+            "Y": 72,
+            "Z": 95
+          }
+        }
+      },
+      {
+        "BoxID": 47,
+        "Rotation": "YXZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 57,
+            "Y": 0,
+            "Z": 66
+          },
+          "End": {
+            "X": 77,
+            "Y": 36,
+            "Z": 85
+          }
+        }
+      },
+      {
+        "BoxID": 5,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 54,
+            "Y": 56,
+            "Z": 49
+          },
+          "End": {
+            "X": 83,
+            "Y": 70,
+            "Z": 94
+          }
+        }
+      },
+      {
+        "BoxID": 13,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 44,
+            "Y": 0,
+            "Z": 83
+          },
+          "End": {
+            "X": 54,
+            "Y": 35,
+            "Z": 90
+          }
+        }
+      },
+      {
+        "BoxID": 23,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 96,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 100,
+            "Y": 49,
+            "Z": 38
+          }
+        }
+      },
+      {
+        "BoxID": 43,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 76,
+            "Y": 70,
+            "Z": 0
+          },
+          "End": {
+            "X": 91,
+            "Y": 100,
+            "Z": 96
+          }
+        }
+      },
+      {
+        "BoxID": 15,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 57,
+            "Y": 41,
+            "Z": 37
+          },
+          "End": {
+            "X": 90,
+            "Y": 50,
+            "Z": 87
+          }
+        }
+      },
+      {
+        "BoxID": 12,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 87
+          },
+          "End": {
+            "X": 24,
+            "Y": 28,
+            "Z": 96
+          }
+        }
+      },
+      {
+        "BoxID": 45,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 91,
+            "Y": 70,
+            "Z": 0
+          },
+          "End": {
+            "X": 97,
+            "Y": 98,
+            "Z": 34
+          }
+        }
+      },
+      {
+        "BoxID": 31,
+        "Rotation": "YZX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 28,
+            "Z": 87
+          },
+          "End": {
+            "X": 22,
+            "Y": 57,
+            "Z": 99
+          }
+        }
+      },
+      {
+        "BoxID": 46,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 44,
+            "Y": 77,
+            "Z": 0
+          },
+          "End": {
+            "X": 53,
+            "Y": 93,
+            "Z": 60
+          }
+        }
+      },
+      {
+        "BoxID": 9,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 83,
+            "Y": 56,
+            "Z": 49
+          },
+          "End": {
+            "X": 89,
+            "Y": 60,
+            "Z": 91
+          }
+        }
+      },
+      {
+        "BoxID": 18,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 79,
+            "Z": 85
+          },
+          "End": {
+            "X": 13,
+            "Y": 88,
+            "Z": 98
+          }
+        }
+      }
+    ]
+  },
+  {
+    "ContainerID": 2,
+    "CurrentWeight": 5,
+    "OccupiedVolume": 189621,
+    "PackedBoxes": [
+      {
+        "BoxID": 14,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 17,
+            "Y": 39,
+            "Z": 43
+          }
+        }
+      },
+      {
+        "BoxID": 24,
+        "Rotation": "ZYX",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 0,
+            "Y": 39,
+            "Z": 0
+          },
+          "End": {
+            "X": 52,
+            "Y": 63,
+            "Z": 48
+          }
+        }
+      },
+      {
+        "BoxID": 35,
+        "Rotation": "ZXY",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 17,
+            "Y": 0,
+            "Z": 0
+          },
+          "End": {
+            "X": 91,
+            "Y": 24,
+            "Z": 21
+          }
+        }
+      },
+      {
+        "BoxID": 3,
+        "Rotation": "XYZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 52,
+            "Y": 24,
+            "Z": 0
+          },
+          "End": {
+            "X": 79,
+            "Y": 42,
+            "Z": 84
+          }
+        }
+      },
+      {
+        "BoxID": 39,
+        "Rotation": "YXZ",
+        "OccupiedRegion": {
+          "Start": {
+            "X": 79,
+            "Y": 24,
+            "Z": 0
+          },
+          "End": {
+            "X": 92,
+            "Y": 72,
+            "Z": 37
+          }
+        }
+      }
+    ]
+  }
+]

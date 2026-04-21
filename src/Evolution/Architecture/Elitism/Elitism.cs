@@ -3,14 +3,12 @@
 using EvolutionaryContainerPacking.Evolution.Fitness;
 
 /// <summary>
-/// Provides selection of best (elitism) and worst (anti-elitism)
-/// individuals from a population.
+/// Provides selection of best individuals and splitting a population into elites and non-elites.
 /// </summary>
 /// <typeparam name="T">Type of the individual.</typeparam>
 public class Elitism<T> : IElitism<T>
 {
     private readonly FitnessComparer _fitnessComparer;
-    private readonly FitnessComparer _reversedComparer;
 
     /// <summary>
     /// Initializes elitism with minimizing/maximizing criterion.
@@ -19,7 +17,6 @@ public class Elitism<T> : IElitism<T>
     public Elitism(bool minimizing)
     {
         _fitnessComparer = new FitnessComparer(minimizing);
-        _reversedComparer = new FitnessComparer(!minimizing);
     }
 
     /// <summary>
@@ -28,9 +25,7 @@ public class Elitism<T> : IElitism<T>
     public Elitism(FitnessComparer fitnessComparer)
     {
         _fitnessComparer = fitnessComparer;
-        _reversedComparer = new FitnessComparer(!fitnessComparer.Minimizing);
     }
-
 
     /// <summary>
     /// Returns the best individual from the given population
@@ -43,7 +38,18 @@ public class Elitism<T> : IElitism<T>
     /// </exception>
     public EvaluatedIndividual<T> GetElite(IReadOnlyList<EvaluatedIndividual<T>> population)
     {
-        return GetExtreme(population, _fitnessComparer);
+        if (population == null || population.Count == 0)
+            throw new ArgumentException("Population must not be empty.");
+
+        var best = population[0];
+
+        for (int i = 1; i < population.Count; i++)
+        {
+            if (_fitnessComparer.Compare(population[i], best) < 0)
+                best = population[i];
+        }
+
+        return best;
     }
 
     /// <summary>
@@ -58,92 +64,34 @@ public class Elitism<T> : IElitism<T>
     /// </exception>
     public IReadOnlyList<EvaluatedIndividual<T>> GetElite(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites)
     {
-        return GetExtremes(population, numberOfElites, _fitnessComparer);
-    }
+        if (population == null)
+            throw new ArgumentNullException(nameof(population));
 
-    /// <summary>
-    /// Returns the worst individual from the given population
-    /// according to the configured fitness comparer.
-    /// </summary>
-    /// <param name="population">Population to evaluate.</param>
-    /// <returns>Worst individual in the population.</returns>
-    /// <exception cref="ArgumentException">
-    /// Thrown when the population is null or empty.
-    /// </exception>
-    public EvaluatedIndividual<T> GetWorst(IReadOnlyList<EvaluatedIndividual<T>> population)
-    {
-        return GetExtreme(population, _reversedComparer);
-    }
+        if (numberOfElites < 0)
+            throw new ArgumentOutOfRangeException(nameof(numberOfElites), "Number of elites must not be negative.");
 
-    /// <summary>
-    /// Returns the N worst individuals from the given population
-    /// according to the configured fitness comparer.
-    /// </summary>
-    /// <param name="population">Population to evaluate.</param>
-    /// <param name="numberOfWorst">Number of worst individuals to return.</param>
-    /// <returns>Collection of worst individuals.</returns>
-    /// <exception cref="ArgumentException">
-    /// Thrown when the population is null or contains fewer individuals than requested.
-    /// </exception>
-    public IReadOnlyList<EvaluatedIndividual<T>> GetWorst(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfWorst)
-    {
-        return GetExtremes(population, numberOfWorst, _reversedComparer);
-    }
-
-
-
-    /// <summary>
-    /// Returns a single extreme individual according to comparer.
-    /// </summary>
-    private EvaluatedIndividual<T> GetExtreme(
-        IReadOnlyList<EvaluatedIndividual<T>> population,
-        FitnessComparer comparer)
-    {
-        if (population == null || population.Count == 0)
-            throw new ArgumentException("Population must not be empty.");
-
-        var best = population[0];
-
-        for (int i = 1; i < population.Count; i++)
-        {
-            if (comparer.Compare(population[i], best) < 0)
-                best = population[i];
-        }
-
-        return best;
-    }
-
-    /// <summary>
-    /// Returns N extreme individuals according to comparer.
-    /// </summary>
-    private IReadOnlyList<EvaluatedIndividual<T>> GetExtremes(
-        IReadOnlyList<EvaluatedIndividual<T>> population,
-        int count,
-        FitnessComparer comparer)
-    {
-        if (count <= 0)
-            return Array.Empty<EvaluatedIndividual<T>>();
-
-        if (population == null || population.Count < count)
+        if (numberOfElites > population.Count)
             throw new ArgumentException("Population does not contain enough individuals.");
 
-        // Initialize array with first 'count' individuals
-        EvaluatedIndividual<T>[] extremes = new EvaluatedIndividual<T>[count];
-        for (int i = 0; i < count; i++)
+        if (numberOfElites == 0)
+            return Array.Empty<EvaluatedIndividual<T>>();
+
+        var extremes = new EvaluatedIndividual<T>[numberOfElites];
+
+        for (int i = 0; i < numberOfElites; i++)
             extremes[i] = population[i];
 
         int worstIndex = -1;
 
-        // Process remaining individuals
-        for (int i = count; i < population.Count; i++)
+        for (int i = numberOfElites; i < population.Count; i++)
         {
             if (worstIndex == -1)
-                worstIndex = FindWorstIndex(extremes, comparer);
+                worstIndex = FindWorstIndex(extremes);
 
-            if (comparer.Compare(population[i], extremes[worstIndex]) < 0)
+            if (_fitnessComparer.Compare(population[i], extremes[worstIndex]) < 0)
             {
                 extremes[worstIndex] = population[i];
-                worstIndex = -1; // recompute next time
+                worstIndex = -1;
             }
         }
 
@@ -151,18 +99,47 @@ public class Elitism<T> : IElitism<T>
     }
 
     /// <summary>
-    /// Finds the index of the worst individual within the current extremes
-    /// (according to given comparer).
+    /// Splits the population into elite and non-elite individuals.
     /// </summary>
-    private int FindWorstIndex(
-        IReadOnlyList<EvaluatedIndividual<T>> individuals,
-        FitnessComparer comparer)
+    /// <param name="population">The population to split.</param>
+    /// <param name="numberOfElites">How many elites should be selected.</param>
+    /// <returns>
+    /// Tuple containing list of elite individuals and list of non-elite individuals.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the population is null or contains fewer individuals than requested.
+    /// </exception>
+    public (IReadOnlyList<EvaluatedIndividual<T>> Elites, IReadOnlyList<EvaluatedIndividual<T>> NonElites)
+        ElitesNonElitesSplit(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites)
+    {
+        if (population == null)
+            throw new ArgumentNullException(nameof(population));
+
+        if (numberOfElites < 0)
+            throw new ArgumentOutOfRangeException(nameof(numberOfElites), "Number of elites must not be negative.");
+
+        if (numberOfElites > population.Count)
+            throw new ArgumentException("Population does not contain enough individuals.");
+
+        var sortedPopulation = population.ToArray();
+        Array.Sort(sortedPopulation, (a, b) => _fitnessComparer.Compare(a, b));
+
+        var elites = sortedPopulation.Take(numberOfElites).ToArray();
+        var nonElites = sortedPopulation.Skip(numberOfElites).ToArray();
+
+        return (elites, nonElites);
+    }
+
+    /// <summary>
+    /// Finds the index of the worst individual within the current extremes.
+    /// </summary>
+    private int FindWorstIndex(IReadOnlyList<EvaluatedIndividual<T>> individuals)
     {
         int worstIndex = 0;
 
         for (int i = 1; i < individuals.Count; i++)
         {
-            if (comparer.Compare(individuals[worstIndex], individuals[i]) < 0)
+            if (_fitnessComparer.Compare(individuals[worstIndex], individuals[i]) < 0)
                 worstIndex = i;
         }
 

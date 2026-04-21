@@ -20,7 +20,7 @@ Individuals representing better packing rules therefore obtain higher fitness va
 \section{Elitist Genetic Algorithm}
 
 The evolutionary process used in this work is based on the elitist genetic algorithm introduced by Gonçalves and Resende \cite{goncalves2013}. 
-The algorithm parameters are summarized in Table~\ref{tab:ega-hyperparameters}, and the full pseudocode is given in Figure~\ref{fig:ega-pseudocode}. 
+The algorithm parameters are summarized in Table~\ref{tab:ega-hyperparameters}, and the full pseudocode is given in Figure~\ref{alg:ega-pseudocode}. 
 In each generation, the population is divided into two groups: \emph{elite individuals} and \emph{non-elite individuals}. 
 The elite group consists of the individuals with the highest fitness values, and its size is determined by a predefined parameter.
 
@@ -59,13 +59,13 @@ In combination with newly generated random individuals, mutation may help discov
 \subsection{Memetic}
 
 Another extension of the original algorithm is the memetic approach.
-Here, a small number of \emph{hill-climbing} iterations is applied to the elite individuals before the crossover step.
+Here, a small number of \emph{hill-climbing} iterations is applied to the mutated individuals.
 
 Hill climbing is a local search that applies small, mutation-like changes with a given probability.
 For each iteration, a gene is randomly modified and the change is kept only if it improves fitness. 
 This process is repeated for a fixed number of iterations $I_{HC}$.
 
-We will test whether refining promising individuals this way can improve convergence and solution quality, even without adding new individuals from the rest of the population.
+We will test whether refining offspring in this way can improve convergence and solution quality by increasing their chances of becoming new elites.
 
 \begin{table}[htbp]
 \centering
@@ -84,7 +84,7 @@ $p_{HC}$ & probability that a gene is mutated during each hill-climbing step \\ 
 \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{algorithm}[htbp]
 \centering
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
@@ -102,14 +102,13 @@ $p_{HC}$ & probability that a gene is mutated during each hill-climbing step \\ 
     \State $\mathcal{E} \gets \text{ExtractElite}(\mathcal{P}, N_E)$ \Comment{Select the elite individuals}
     \State $\mathcal{N} = \mathcal{P} \setminus \mathcal{E}$ \Comment{Obtain the non-elite individuals}
 
-    \State $\mathcal{E} \gets \textbf{Memetic}(\mathcal{E}, I_{HC}, p_{HC})$    \Comment{Improve elite individuals by local search}
+    \State $S_E \gets \text{SelectRandom}(\mathcal{E}, N_S)$ \Comment{Select elite parents for crossover}
+    \State $S_{NE} \gets \text{SelectRandom}(\mathcal{N}, N_S)$ \Comment{Select non-elite parents for crossover}
 
-    \State $S_E \gets \text{SelectRandom}(\mathcal{E}, N_S)$                    \Comment{Select elite parents for crossover}
-    \State $S_{NE} \gets \text{SelectRandom}(\mathcal{N}, N_S)$                 \Comment{Select non-elite parents for crossover}
-
-    \State $\mathcal{C} \gets \textbf{Crossover}(S_E, S_{NE}, p_C)$             \Comment{Generate offspring by crossover}
-    \State $\mathcal{M} \gets \textbf{Mutation}(\mathcal{C}, p_M)$              \Comment{Mutate the offspring}
-    \State $\mathcal{R} \gets \textbf{RandomPopulation}(N_R)$                   \Comment{Generate new random individuals}
+    \State $\mathcal{C} \gets \textbf{Crossover}(S_E, S_{NE}, p_C)$ \Comment{Generate offspring by crossover}
+    \State $\mathcal{M} \gets \textbf{Mutation}(\mathcal{C}, p_M)$ \Comment{Mutate the offspring}
+    \State $\mathcal{M} \gets \textbf{Memetic}(\mathcal{M}, I_{HC}, p_{HC})$ \Comment{Improve mutated individuals by local search}
+    \State $\mathcal{R} \gets \textbf{RandomPopulation}(N_R)$ \Comment{Generate new random individuals}
 
     \State $\mathcal{P}' \gets \mathcal{E} \cup \mathcal{M} \cup \mathcal{R}$
 
@@ -121,5 +120,5 @@ $p_{HC}$ & probability that a gene is mutated during each hill-climbing step \\ 
 \end{algorithmic}
 \end{minipage}
 \caption{Elitist Genetic Algorithm Pseudocode}
-\label{fig:ega-pseudocode}
-\end{figure}
+\label{alg:ega-pseudocode}
+\end{algorithm}

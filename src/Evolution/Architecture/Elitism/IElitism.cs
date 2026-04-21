@@ -24,18 +24,13 @@ public interface IElitism<T>
 
 
     /// <summary>
-    /// Returns the worst-performing individuals from the given population.
+    /// Splits the population into elite and non-elite individuals.
     /// </summary>
-    /// <param name="population">The population to select worst individuals from.</param>
-    /// <param name="numberOfWorst">How many worst individuals to return.</param>
-    /// <returns>List of worst individuals.</returns>
-    IReadOnlyList<EvaluatedIndividual<T>> GetWorst(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfWorst);
-
-    /// <summary>
-    /// Returns the worst individual from the given population.
-    /// </summary>
-    /// <param name="population">The population to select worst from.</param>
-    /// <returns>Worst individual.</returns>
-    EvaluatedIndividual<T> GetWorst(IReadOnlyList<EvaluatedIndividual<T>> population);
+    /// <param name="population">The population to split.</param>
+    /// <param name="numberOfElites">How many elites should be selected.</param>
+    /// <returns>
+    /// Tuple containing list of elite individuals and list of non-elite individuals.
+    /// </returns>
+    (IReadOnlyList<EvaluatedIndividual<T>> Elites, IReadOnlyList<EvaluatedIndividual<T>> NonElites) ElitesNonElitesSplit(IReadOnlyList<EvaluatedIndividual<T>> population, int numberOfElites);
 }
 

@@ -235,6 +235,7 @@ By using one of these heuristics, the packing order is fixed a priori and each b
 The evolutionary algorithm still operates, but its role is limited to selecting the rotations and placement heuristics for the boxes.
 
 \subsection{Placement Heuristics}
+\label{sec:placement-heuristics}
 
 The following heuristics are used in the experiments.
 
@@ -276,9 +277,9 @@ Given a list of ordered pending boxes, the algorithm iteratively attempts to pla
 If the box cannot be placed using its current rotation, the algorithm automatically tries all possible rotations. 
 If no valid placement is found after considering all rotations, a new container is opened and the placement is attempted again. 
 The algorithm continues in this way for all boxes. 
-The pseudocode is shown in Figure~\ref{fig:box-packing-algorithm}.
+The pseudocode is shown in this section ~\ref{alg:box-packing-algorithm}.
 
-\begin{figure}[htbp]
+\begin{algorithm}[htbp]
 \centering
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
@@ -315,8 +316,8 @@ The pseudocode is shown in Figure~\ref{fig:box-packing-algorithm}.
 \end{algorithmic}
 \end{minipage}
 \caption{Box Packing Algorithm Pseudocode}
-\label{fig:box-packing-algorithm}
-\end{figure}
+\label{alg:box-packing-algorithm}
+\end{algorithm}
 
 
 

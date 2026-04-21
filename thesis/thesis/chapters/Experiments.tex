@@ -1,2 +1,170 @@
 \chapter{Experiments}
 \label{chap:experiments}
+
+This chapter discusses the results of the experiments conducted 
+for different algorithm settings. We begin by comparing the use 
+of a single default placement heuristic with allowing the evolution 
+to select a specific heuristic for each box. Next, we examine the 
+difference between letting the evolution determine the order 
+of the boxes and using an order based on their volume. 
+After that, we analyze the effect of adding mutation operators 
+and hill-climbing memetic search. Finally, we investigate 
+how assigning weights to the dataset influences the results, 
+comparing cases where the evolution selects the box order with 
+cases where the order is given by volume and, additionally, 
+by the weight of the boxes.
+
+For the elitist algorithm, we primarily adopt the parameter settings proposed by Gonçalves and Resende \cite{goncalves2013}, 
+as shown in Table~\ref{tab:ega-set-hyperparameters}, while the remaining parameters are currently set to zero.
+
+TODO: stranka s oznacenim a jejich ustaleni (zadne number of boxes)
+
+\begin{table}[htbp]
+\centering
+\caption{Elitist Genetic Algorithm Hyperparameters}
+\label{tab:ega-set-hyperparameters}
+\begin{tabular}{|l|l|}
+\hline
+$N$ & $30 \times$ number of boxes \\ \hline
+$G$ & 300 \\ \hline
+$p_E$ & 10\% \\ \hline
+$p_R$ & 15\% \\ \hline
+$p_C$ & 70\% \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Comparison of Placement Heuristics}
+This section compares the use of a single default placement heuristic 
+with an approach in which the evolutionary algorithm selects a specific 
+heuristic for each box. Following Gonçalves and Resende \cite{goncalves2013}, 
+we use the Max Distance heuristic as the default one. 
+We then examine whether the results can be improved when 
+evolution is allowed to choose, for each box, from any 
+heuristic listed in Section~\ref{sec:placement-heuristics}. 
+In this set of experiments, we consider only datasets without weights.
+
+The results are summarized in Table~\ref{tab:placement-heuristics-results}. 
+The \emph{All Heuristics} column shows the results obtained when the 
+evolutionary algorithm is allowed to choose the placement heuristic for each box, 
+whereas the \emph{Max Distance} column shows the results obtained when 
+the Max Distance heuristic is used for every box. Each row represents 
+the average fitness of the best solution found for a given dataset type 
+and number of boxes. The results indicate that, in all cases, allowing 
+the evolution to choose from multiple heuristics yields better performance.
+Based on these results, all subsequent experiments will use the 
+\emph{All Heuristics} setting by default, unless stated otherwise.
+
+TODO: N = pocet boxu
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of placement heuristics (average best fitness)}
+\label{tab:placement-heuristics-results}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Class & $N$ & All Heuristics & Max Distance \\ \hline
+class 1 & 100 & 11.918 & 12.299 \\ \hline
+class 1 & 150 & 18.736 & 19.283 \\ \hline
+class 1 & 50  & 7.288  & 7.372  \\ \hline
+class 2 & 100 & 7.884  & 8.098  \\ \hline
+class 2 & 150 & 11.697 & 11.933 \\ \hline
+class 2 & 50  & 4.610  & 4.693  \\ \hline
+class 3 & 100 & 6.174  & 6.320  \\ \hline
+class 3 & 150 & 9.496  & 9.756  \\ \hline
+class 3 & 50  & 3.835  & 3.882  \\ \hline
+class 4 & 100 & 16.097 & 16.186 \\ \hline
+class 4 & 150 & 24.488 & 24.912 \\ \hline
+class 4 & 50  & 8.567  & 8.686  \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Box Ordering Strategies}
+This section investigates the impact of box ordering on the performance 
+of the algorithm. We compare a predefined ordering based on box volume 
+with an ordering determined by the evolutionary algorithm. In the volume-based setting, 
+boxes are processed in descending order of their volume, whereas in the evolutionary 
+setting the algorithm is free to choose the order in which boxes are packed.
+
+The results are summarized in Table~\ref{tab:box-ordering-results}. 
+For the larger instances with 150 boxes, the volume-based ordering outperforms 
+the evolutionary ordering on datasets 1 to 3, 
+which are constrained by different size restrictions. 
+In contrast, for dataset 4, where the box dimensions are generated completely 
+at random, the evolutionary ordering performs better in most cases, 
+except for the smallest instances, where the results are comparable.
+For the medium-sized instances with 100 boxes, the results for datasets 1 to 3 are very similar, 
+suggesting that the choice of ordering has only a minor effect in this setting. 
+For the smaller instances with 50 boxes, the evolutionary ordering yields the best results across datasets 1 to 3.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of box ordering strategies (average best fitness)}
+\label{tab:box-ordering-results}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Class & $N$ & Evolutionary Ordering & Volume Ordering \\ \hline
+class 1 & 100 & 11.918 & 11.928 \\ \hline
+class 1 & 150 & 18.736 & 18.705 \\ \hline
+class 1 & 50  & 7.288  & 7.309  \\ \hline
+class 2 & 100 & 7.884  & 7.876  \\ \hline
+class 2 & 150 & 11.697 & 11.650 \\ \hline
+class 2 & 50  & 4.610  & 4.649  \\ \hline
+class 3 & 100 & 6.174  & 6.167  \\ \hline
+class 3 & 150 & 9.496  & 9.483  \\ \hline
+class 3 & 50  & 3.835  & 3.856  \\ \hline
+class 4 & 100 & 16.097 & 16.212 \\ \hline
+class 4 & 150 & 24.488 & 24.524 \\ \hline
+class 4 & 50  & 8.567  & 8.565  \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Impact of Mutation and Memetic}
+This section evaluates the effect of incorporating mutation operators and hill-climbing memetic 
+search into the algorithm. To identify suitable parameter settings, we performed a grid search over 
+the memetic and mutation parameters listed in Table~\ref{tab:mutation-memetic-parameters}. 
+
+The results show that hill-climbing memetic search does not improve the solution quality in practice. 
+In most cases, the results are identical to those obtained without memetic enhancement, 
+while the runtime increases due to the additional evaluation of individuals. 
+For this reason, the hill-climbing component is not recommended and is kept disabled in the remaining experiments.
+
+We also tested memetic search only on elite individuals, instead of applying it to offspring. 
+In this setting, the results were even worse, since non-elite individuals had fewer opportunities 
+to surpass the elites, which were further improved by memetic search.
+
+Regarding mutation, the setting $p_M = 0.01$ improves the results for the smallest instances with 50 boxes. 
+However, for larger instances, mutation consistently degrades performance. 
+This is expected, since the same mutation probability affects a larger number of genes as the instance size increases, making higher mutation rates overly disruptive in larger problems. 
+Nevertheless, even for lower values $p_M = 0.003$ and $p_M = 0.005$, which should in principle mitigate this effect, no improvement in performance is observed.
+
+The results are summarized in Table~\ref{tab:mutation-results}, which reports only the small instances with 50 boxes.
+
+\begin{table}[htbp]
+\centering
+\caption{Grid search over mutation and memetic parameters}
+\label{tab:mutation-memetic-parameters}
+\begin{tabular}{|c|c|}
+\hline
+Parameter & Tested values \\ \hline
+$I_{HC}$ & 1, 2, 5 \\ \hline
+$p_{HC}$ & 0.003, 0.005, 0.01 \\ \hline
+$p_M$ & 0.003, 0.005, 0.01 \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Effect of mutation ($p_M = 0.01$) on small instances (50 boxes)}
+\label{tab:mutation-results}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Class & No Mutation & Mutation ($p_M = 0.01$) \\ \hline
+class 1 & 7.288 & 7.259 \\ \hline
+class 2 & 4.610 & 4.603 \\ \hline
+class 3 & 3.835 & 3.831 \\ \hline
+class 4 & 8.567 & 8.546 \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Influence of Box Weights}
+Here, we investigate how assigning weights to boxes affects the results. We compare scenarios where the box order is determined by evolution with those where the order is predefined based on volume and weight.

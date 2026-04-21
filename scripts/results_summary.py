@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--root_dir",
-        default="..\\experiments\\results",
+        default="..\\experiments\\results\\hc",
         help="Root folder where summary.csv files will be searched"
     )
 
