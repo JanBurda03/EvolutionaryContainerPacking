@@ -1,2 +1,176 @@
 \chapter{User Documentation}
 \label{app:user}
+
+This chapter describes how to run the application and how to provide input data.
+
+\section{Running the Application}
+
+The application can be executed in two ways:
+\begin{itemize}
+    \item using a graphical user interface (GUI),
+    \item using a configuration file.
+\end{itemize}
+
+\subsection{Running with GUI}
+
+If the application is started without command-line arguments, a graphical interface is launched.
+
+The procedure is as follows:
+\begin{enumerate}
+    \item Run the application.
+    \item Select the input JSON file.
+    \item Configure packing settings.
+    \item Select the evolutionary algorithm.
+    \item Set the algorithm hyperparameters.
+    \item Start the computation.
+\end{enumerate}
+
+\subsection{Running with Configuration File}
+
+The application can also be executed from the command line using a configuration file:
+
+\begin{verbatim}
+dotnet run --project src/App config.json
+\end{verbatim}
+
+The file \texttt{config.json} contains all required settings.
+
+\section{Configuration Parameters}
+
+The program is configured using a \texttt{ProgramSetting} structure, which represents the full high-level configuration of the application.
+
+Conceptually, the configuration has the following structure:
+
+\begin{verbatim}
+ProgramSetting
+{
+    SourceFile: string,
+    OutputFile: string,
+    EvolutionStatisticsFile: string?,
+
+    PackingSetting:
+    {
+        SelectedPlacementHeuristics: string[],
+        AllowRotations: bool,
+        PackingOrder: string? or null
+    },
+
+    EvolutionAlgorithmSetting:
+    {
+        (common parameters)
+        TargetFitness: double?,
+        Individuals: int,
+        UseIndividualsAsRelative: bool,
+        NumberOfGenerations: int,
+
+        (algorithm-specific parameters)
+        ...
+    }
+}
+\end{verbatim}
+
+\subsection{Input and Output}
+
+These parameters correspond to the top-level fields of \texttt{ProgramSetting}:
+
+\begin{itemize}
+    \item \texttt{SourceFile} -- path to the input JSON file containing the packing problem,
+    
+    \item \texttt{OutputFile} -- path where the resulting packing solution will be saved,
+    
+    \item \texttt{EvolutionStatisticsFile} -- optional CSV file where evolution statistics are exported.
+\end{itemize}
+
+\subsection{Packing Settings}
+
+These parameters belong to the \texttt{PackingSetting} structure and define the packing constraints.
+
+\begin{itemize}
+    \item \texttt{SelectedPlacementHeuristics} -- list of heuristics used to determine where a box should be placed,
+    
+    \item \texttt{AllowRotations} -- allows boxes to be rotated when searching for a valid placement,
+    
+    \item \texttt{PackingOrder} -- optional heuristic defining the order in which boxes are packed.
+\end{itemize}
+
+If \texttt{PackingOrder} is not specified, the order of boxes is determined by the evolutionary algorithm.
+
+\subsection{Evolutionary Algorithm Settings}
+
+These parameters belong to the \texttt{EvolutionAlgorithmSetting} structure.
+The available parameters depend on the selected algorithm.
+
+\begin{itemize}
+    \item \texttt{AlgorithmName} -- discriminator that determines which evolutionary algorithm configuration is used,
+
+    \item \texttt{TargetFitness} -- optional target fitness value for early stopping,
+    
+    \item \texttt{Individuals} -- number of individuals in the population, denoted as $M$ in the algorithm,
+
+    \item \texttt{UseIndividualsAsRelative} -- indicates whether \texttt{Individuals} is interpreted as a relative value; if \texttt{true}, the actual population size is scaled proportionally to the input size,
+
+    \item \texttt{NumberOfGenerations} -- maximum number of generations, corresponding to $G$.
+\end{itemize}
+
+\subsubsection{Elitist Genetic Algorithm Settings}
+
+\begin{itemize}
+    \item \texttt{PercentageOfEliteIndividuals} -- percentage of elite individuals preserved in each generation, corresponding to $p_E$,
+    
+    \item \texttt{PercentageOfElementsFromElite} -- percentage of elements inherited from the elite parent during crossover, corresponding to $p_C$,
+    
+    \item \texttt{PercentageOfElementsMutated} -- percentage of elements mutated in each offspring, corresponding to $p_M$,
+    
+    \item \texttt{PercentageOfRandomIndividuals} -- percentage of new random individuals introduced each generation, corresponding to $p_R$,
+    
+    \item \texttt{HillClimbingIterations} -- number of hill climbing iterations applied to each offspring, corresponding to $I_{HC}$,
+    
+    \item \texttt{HillClimbingPercentageOfElementsMutated} -- mutation rate used during hill climbing, corresponding to $p_{HC}$.
+\end{itemize}
+
+\subsubsection{Probabilistic Hill Climbing Settings}
+
+\begin{itemize}
+    \item \texttt{PercentageOfElementsChanged} -- percentage of elements modified when generating a neighboring solution, corresponding to $p_M$,
+    
+    \item \texttt{StartAcceptanceProbability} -- probability of accepting a worse solution at the beginning of the search, corresponding to $p_A^{(0)}$,
+    
+    \item \texttt{EndAcceptanceProbability} -- minimum probability of accepting a worse solution, corresponding to $p_{\min}$,
+    
+    \item \texttt{AcceptanceDecayFactor} -- factor by which the acceptance probability decreases each generation, corresponding to $\alpha$.
+\end{itemize}
+
+\subsection{Configuration Schema and Examples}
+
+The JSON schemas defining the configuration structure are located in the \texttt{schema} directory:
+
+\begin{itemize}
+    \item \texttt{schema/ProgramSetting.json} -- schema for the high-level application configuration,
+    \item \texttt{schema/PackingInput.json} -- schema for the packing problem input data.
+\end{itemize}
+
+Example input and output files are available in the \texttt{examples} directory.
+
+\section{Packing Input Format}
+
+The packing input is provided as a JSON file describing container properties and a list of boxes.
+
+\begin{verbatim}
+{
+  "ContainerProperties": {
+    "Sizes": { "X": 100, "Y": 100, "Z": 100 },
+    "MaxWeight": 500000
+  },
+  "BoxPropertiesList": [
+    { "ID": 0, "Sizes": { "X": 20, "Y": 10, "Z": 5 }, "Weight": 123 }
+  ]
+}
+\end{verbatim}
+
+\section{Output}
+
+The program produces:
+\begin{itemize}
+    \item a JSON file with the resulting packing solution,
+    \item optionally a CSV file with evolution statistics.
+\end{itemize}

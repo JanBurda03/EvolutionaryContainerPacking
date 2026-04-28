@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PackingInput",
+  "type": "object",
+
+  "required": [
+    "ContainerProperties",
+    "BoxPropertiesList"
+  ],
+
+  "properties": {
+
+    "ContainerProperties": {
+      "type": "object",
+      "required": ["Sizes", "MaxWeight"],
+      "properties": {
+
+        "Sizes": {
+          "type": "object",
+          "required": ["X", "Y", "Z"],
+          "properties": {
+            "X": { "type": "integer", "minimum": 0 },
+            "Y": { "type": "integer", "minimum": 0 },
+            "Z": { "type": "integer", "minimum": 0 }
+          }
+        },
+
+        "MaxWeight": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+
+    "BoxPropertiesList": {
+      "type": "array",
+      "minItems": 1,
+
+      "items": {
+        "type": "object",
+        "required": ["ID", "Sizes", "Weight"],
+
+        "properties": {
+
+          "ID": {
+            "type": "integer",
+            "minimum": 0
+          },
+
+          "Sizes": {
+            "type": "object",
+            "required": ["X", "Y", "Z"],
+            "properties": {
+              "X": { "type": "integer", "minimum": 0 },
+              "Y": { "type": "integer", "minimum": 0 },
+              "Z": { "type": "integer", "minimum": 0 }
+            }
+          },
+
+          "Weight": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

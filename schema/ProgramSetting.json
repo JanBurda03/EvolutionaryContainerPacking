@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProgramSetting",
+  "type": "object",
+
+  "required": [
+    "SourceFile",
+    "OutputFile",
+    "PackingSetting",
+    "EvolutionAlgorithmSetting"
+  ],
+
+  "properties": {
+    "SourceFile": { "type": "string" },
+    "OutputFile": { "type": "string" },
+
+    "EvolutionStatisticsFile": {
+      "type": ["string", "null"]
+    },
+
+    "PackingSetting": {
+      "type": "object",
+      "required": [
+        "SelectedPlacementHeuristics",
+        "AllowRotations"
+      ],
+      "properties": {
+        "SelectedPlacementHeuristics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "Best Volume Fit",
+              "Max Distance",
+              "Min X",
+              "Min Y",
+              "Gravity",
+              "Anti-Gravity",
+              "Bottom Left Back"
+            ]
+          }
+        },
+
+        "AllowRotations": { "type": "boolean" },
+
+        "PackingOrder": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "string",
+              "enum": [
+                "High Volume First Heuristic",
+                "High Weight First Heuristic"
+              ]
+            }
+          ]
+        }
+      }
+    },
+
+    "EvolutionAlgorithmSetting": {
+      "oneOf": [
+        {
+          "title": "Elitist Genetic",
+          "type": "object",
+          "required": [
+            "AlgorithmName",
+            "Individuals",
+            "UseIndividualsAsRelative",
+            "NumberOfGenerations",
+            "PercentageOfEliteIndividuals",
+            "PercentageOfElementsFromElite",
+            "PercentageOfElementsMutated",
+            "PercentageOfRandomIndividuals",
+            "HillClimbingIterations",
+            "HillClimbingPercentageOfElementsMutated"
+          ],
+          "properties": {
+            "AlgorithmName": { "const": "Elitist Genetic" },
+
+            "TargetFitness": { "type": ["number", "null"] },
+
+            "Individuals": { "type": "integer", "minimum": 1 },
+            "UseIndividualsAsRelative": { "type": "boolean" },
+            "NumberOfGenerations": { "type": "integer", "minimum": 1 },
+
+            "PercentageOfEliteIndividuals": { "type": "number", "minimum": 0, "maximum": 1 },
+            "PercentageOfElementsFromElite": { "type": "number", "minimum": 0, "maximum": 1 },
+            "PercentageOfElementsMutated": { "type": "number", "minimum": 0, "maximum": 1 },
+            "PercentageOfRandomIndividuals": { "type": "number", "minimum": 0, "maximum": 1 },
+
+            "HillClimbingIterations": { "type": "integer", "minimum": 0 },
+            "HillClimbingPercentageOfElementsMutated": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+
+        {
+          "title": "Hill Climbing",
+          "type": "object",
+          "required": [
+            "AlgorithmName",
+            "Individuals",
+            "UseIndividualsAsRelative",
+            "NumberOfGenerations",
+            "PercentageOfElementsChanged",
+            "StartAcceptanceProbability",
+            "EndAcceptanceProbability",
+            "AcceptanceDecayFactor"
+          ],
+          "properties": {
+            "AlgorithmName": { "const": "Hill Climbing" },
+
+            "TargetFitness": { "type": ["number", "null"] },
+
+            "Individuals": { "type": "integer", "minimum": 1 },
+            "UseIndividualsAsRelative": { "type": "boolean" },
+            "NumberOfGenerations": { "type": "integer", "minimum": 1 },
+
+            "PercentageOfElementsChanged": { "type": "number", "minimum": 0, "maximum": 1 },
+            "StartAcceptanceProbability": { "type": "number", "minimum": 0, "maximum": 1 },
+            "EndAcceptanceProbability": { "type": "number", "minimum": 0, "maximum": 1 },
+            "AcceptanceDecayFactor": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+          }
+        }
+      ]
+    }
+  }
+}

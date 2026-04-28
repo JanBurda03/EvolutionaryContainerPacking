@@ -12,9 +12,9 @@ public static class OrderHeuristics
         new Dictionary<string, IComparer<PendingBox>>
         {
             {"High Volume First Heuristic", new HighVolumeFirstHeuristic() },
-            {"High Area Base First Heuristic", new HighAreaBaseFirstHeuristic()},
+            //{"High Area Base First Heuristic", new HighAreaBaseFirstHeuristic()},
             //{"Longest First Heuristic", new LongestFirstHeuristic()},
-            //{"High Weight First Heuristic", new HighWeightFirstHeuristic()},
+            {"High Weight First Heuristic", new HighWeightFirstHeuristic()},
             //{"High Surface Area FirstHeuristic", new HighSurfaceAreaFirstHeuristic()}
         };
 
