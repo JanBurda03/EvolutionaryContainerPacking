@@ -54,7 +54,7 @@ def generate_box_dimensions(rng: random.Random, X: int, Y: int, Z: int, box_type
     Args:
         rng: Random number generator
         X, Y, Z: Container dimensions
-        box_type: Type 1–5
+        box_type: Type 1–4
 
     Returns:
         Tuple (X_box, Y_box, Z_box)
@@ -84,9 +84,8 @@ def choose_box_type_for_class(rng: random.Random, class_id: int) -> int:
     """
     Chooses box type based on extended MPV logic:
 
-    class 1–3 → structured merge-friendly boxes
-    class 4   → very small boxes
-    class 5   → fully random boxes
+    class 1–3 → structured boxes
+    class 4   → fully random boxes
     """
 
     if class_id in (1, 2, 3):
@@ -100,7 +99,7 @@ def choose_box_type_for_class(rng: random.Random, class_id: int) -> int:
         return 4  # completely random items
 
     else:
-        raise ValueError("class_id must be 1–5")
+        raise ValueError("class_id must be 1–4")
 
 def generate_mpv_instance(
     class_id: int,
@@ -114,7 +113,7 @@ def generate_mpv_instance(
     Generates a single MPV benchmark instance with box weights.
 
     Args:
-        class_id: MPV class (1–5)
+        class_id: MPV class (1–4)
         box_count: Number of boxes
         seed: Random seed
         container_density: Density factor for container max weight

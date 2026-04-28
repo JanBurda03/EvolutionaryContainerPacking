@@ -10,11 +10,11 @@ Through repeated iterations, the population is gradually refined and the algorit
 
 \section{Representation of an Individual}
 
-An individual in the evolutionary algorithm represents the packing rules in their vector form, uniquely determining a complete packing solution.
+An individual in the evolutionary algorithm represents the packing rules in their vector form, uniquely determining a complete packing solution, as defined in Section~\ref{sec:vector-packing-rules}.
 
 \section{Fitness Evaluation}
 
-The fitness of an individual corresponds directly to the fitness of the packing rules it represents. 
+The fitness of an individual corresponds directly to the fitness of the packing rules it encodes, as defined in Section~\ref{sec:fitness-packing-rules}.
 Individuals representing better packing rules therefore obtain higher fitness values and are more likely to persist in the population in subsequent generations.
 
 \section{Elitist Genetic Algorithm}
@@ -73,7 +73,7 @@ We will test whether refining offspring in this way can improve convergence and 
 \label{tab:ega-hyperparameters}
 \begin{tabular}{|l|l|}
 \hline
-$N$ & population size \\ \hline
+$M$ & population size \\ \hline
 $G$ & maximum number of generations \\ \hline
 $p_E$ & percentage of elite individuals in the population \\ \hline
 $p_C$ & probability that a gene is inherited from the elite parent during uniform crossover \\ \hline
@@ -88,37 +88,128 @@ $p_{HC}$ & probability that a gene is mutated during each hill-climbing step \\ 
 \centering
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
-\State \textbf{Input:} Parameters $N$, $G$, $p_E$, $p_R$, $p_C$, $p_M$, $I_{HC}$, $p_{HC}$
-\State \textbf{Output:} Final population $\mathcal{P}$ 
+\State \textbf{Input:} Parameters $M$, $G$, $p_E$, $p_R$, $p_C$, $p_M$, $I_{HC}$, $p_{HC}$
+\State \textbf{Output:} Final population $\mathcal{P}$
 
-\State $\mathcal{P} \gets \textbf{RandomPopulation}(N)$ 
+\State $\mathcal{P} \gets \textbf{RandomPopulation}(M)$
 \State Evaluate($\mathcal{P}$)
 
+\State $N_{Elite} \gets \lceil p_E \cdot M \rceil$ \Comment{Number of elite individuals}
+\State $N_{Random} \gets \lceil p_R \cdot M \rceil$ \Comment{Number of random individuals}
+\State $N_{Selected} \gets M - N_{Elite} - N_{Random}$ \Comment{Number of parents selected for crossover}
+
 \For{$g = 1$ to $G$} 
-    \State $N_E = \lceil p_E \cdot N \rceil$ \Comment{Determine the number of elite individuals}
-    \State $N_R = \lceil p_R \cdot N \rceil$ \Comment{Determine the number of random individuals}
-    \State $N_S = N - N_E - N_R$ \Comment{Determine the number of selected parents}
 
-    \State $\mathcal{E} \gets \text{ExtractElite}(\mathcal{P}, N_E)$ \Comment{Select the elite individuals}
-    \State $\mathcal{N} = \mathcal{P} \setminus \mathcal{E}$ \Comment{Obtain the non-elite individuals}
+    \State Elite $\gets$ \textbf{ExtractElite}($\mathcal{P}$, $N_{Elite}$) \Comment{Select elite individuals}
+    \State NonElite $\gets \mathcal{P} \setminus$ Elite \Comment{Remaining individuals}
 
-    \State $S_E \gets \text{SelectRandom}(\mathcal{E}, N_S)$ \Comment{Select elite parents for crossover}
-    \State $S_{NE} \gets \text{SelectRandom}(\mathcal{N}, N_S)$ \Comment{Select non-elite parents for crossover}
+    \State EliteParents $\gets$ \textbf{SelectRandom}(Elite, $N_{Selected}$) \Comment{Elite parents}
+    \State NonEliteParents $\gets$ \textbf{SelectRandom}(NonElite, $N_{Selected}$) \Comment{Non-elite parents}
 
-    \State $\mathcal{C} \gets \textbf{Crossover}(S_E, S_{NE}, p_C)$ \Comment{Generate offspring by crossover}
-    \State $\mathcal{M} \gets \textbf{Mutation}(\mathcal{C}, p_M)$ \Comment{Mutate the offspring}
-    \State $\mathcal{M} \gets \textbf{Memetic}(\mathcal{M}, I_{HC}, p_{HC})$ \Comment{Improve mutated individuals by local search}
-    \State $\mathcal{R} \gets \textbf{RandomPopulation}(N_R)$ \Comment{Generate new random individuals}
+    \State Offspring $\gets$ \textbf{Crossover}(EliteParents, NonEliteParents, $p_C$) \Comment{Generate offspring}
+    \State Mutated $\gets$ \textbf{Mutation}(Offspring, $p_M$) \Comment{Apply mutation}
+    \State Improved $\gets$ \textbf{Memetic}(Mutated, $I_{HC}$, $p_{HC}$) \Comment{Local search improvement}
 
-    \State $\mathcal{P}' \gets \mathcal{E} \cup \mathcal{M} \cup \mathcal{R}$
+    \State RandomIndividuals $\gets$ \textbf{RandomPopulation}($N_{Random}$) \Comment{New random individuals}
+
+    \State $\mathcal{P}' \gets$ Elite $\cup$ Improved $\cup$ RandomIndividuals
 
     \State Evaluate($\mathcal{P}'$)
     \State $\mathcal{P} \gets \mathcal{P}'$
+
 \EndFor
 
-\State \Return $\mathcal{P}$ 
+\State \Return $\mathcal{P}$
 \end{algorithmic}
 \end{minipage}
 \caption{Elitist Genetic Algorithm Pseudocode}
 \label{alg:ega-pseudocode}
+\end{algorithm}
+
+\section{Probabilistic Hill Climbing}
+
+As a simple baseline for comparison with the elitist genetic algorithm, we introduce probabilistic hill climbing. 
+This method can be viewed as a simplified variant of simulated annealing \cite{eiben2016}, but instead of using a temperature parameter, it works with a probability of accepting a worse solution. 
+This acceptance probability is gradually reduced over time by a geometric decay coefficient, but it is bounded below by a minimum acceptance threshold.
+
+For simplicity, we reuse the terminology introduced for the evolutionary algorithm. 
+At each step, a current individual is modified by a small random mutation, producing a neighboring candidate solution. 
+If the candidate has a better fitness value, it is always accepted. 
+If the candidate is worse, it may still be accepted with a certain probability $p_A$. 
+After each generation, this probability is updated as
+\[
+p_A^{(g+1)} = \max(p_{\min}, \alpha \, p_A^{(g)}),
+\]
+where $\alpha \in (0,1)$ is the decay coefficient and $p_{\min}$ is the minimum acceptance threshold. 
+Thus, the acceptance probability decreases geometrically over time, but never falls below the prescribed lower bound.
+
+The main idea behind this approach is to balance exploration and exploitation. 
+At the beginning of the search, a relatively high acceptance probability allows the algorithm to escape poor local optima and explore a wider portion of the solution space. 
+Later, as the acceptance probability decreases, the algorithm becomes more selective and focuses on refining promising solutions. 
+This behaviour often works well in practice because early exploration can reveal regions of the search space that would not be reached by purely greedy hill climbing, while later exploitation helps stabilize the search around high-quality solutions.
+
+In the simplest setting, the algorithm repeatedly applies mutation and probabilistic acceptance to a population of individuals for a fixed number of generations. 
+Although the method is conceptually close to local search, using multiple individuals in parallel makes it compatible with the same experimental framework as the evolutionary algorithm.
+
+It is worth noting that if the acceptance probability is set to $p_A = 0$, the method reduces to classical hill climbing, where only strictly improving solutions are accepted. 
+This variant will also be included in the experiments as a baseline for comparison.
+
+The parameters of the probabilistic hill climbing baseline and its pseudocode are summarized in Table~\ref{tab:phc-hyperparameters} and Algorithm~\ref{alg:phc-pseudocode}.
+
+\begin{table}[htbp]
+\centering
+\caption{Probabilistic Hill Climbing Hyperparameters}
+\label{tab:phc-hyperparameters}
+\begin{tabular}{|l|l|}
+\hline
+$M$ & population size \\ \hline
+$G$ & maximum number of generations \\ \hline
+$p_M$ & probability that a gene in an individual is mutated \\ \hline
+$p_A^{(0)}$ & initial probability of accepting a worse solution \\ \hline
+$\alpha$ & geometric decay coefficient for $p_A$ \\ \hline
+$p_{\min}$ & minimum acceptance probability \\ \hline
+\end{tabular}
+\end{table}
+
+
+\begin{algorithm}[htbp]
+\centering
+\begin{minipage}{0.95\linewidth}
+\begin{algorithmic}[1]
+\State \textbf{Input:} Parameters $M$, $G$, $p_M$, $p_A^{(0)}$, $\alpha$, $p_{\min}$
+\State \textbf{Output:} Best individual found during the search
+
+\State $\mathcal{P} \gets \textbf{RandomPopulation}(M)$
+\State Evaluate($\mathcal{P}$)
+\State $I^\star \gets \textbf{BestIndividual}(\mathcal{P})$
+\State $p_A \gets p_A^{(0)}$
+
+\For{$g = 1$ to $G$}
+    \State $\mathcal{P}' \gets []$ \Comment{Initialize new population}
+
+    \For{each individual $I \in \mathcal{P}$}
+        \State $J \gets \textbf{Mutation}(I, p_M)$ \Comment{Generate a neighboring solution}
+
+        \If{$F(J) \geq F(I)$}
+            \State $I_{\text{new}} \gets J$ \Comment{Always accept improvement}
+        \ElsIf{$\textbf{rand}() < p_A$}
+            \State $I_{\text{new}} \gets J$ \Comment{Accept worse solution with probability $p_A$}
+        \Else
+            \State $I_{\text{new}} \gets I$ \Comment{Reject and keep current solution}
+        \EndIf
+
+        \State Add $I_{\text{new}}$ to $\mathcal{P}'$
+    \EndFor
+
+    \State Evaluate($\mathcal{P}'$) \Comment{Evaluate new population}
+    \State $I^\star \gets \textbf{BestIndividual}(\mathcal{P}' \cup \{I^\star\})$ \Comment{Update global best solution}
+    \State $\mathcal{P} \gets \mathcal{P}'$ \Comment{Move to next generation}
+    \State $p_A \gets \max(p_{\min}, \alpha \, p_A)$ \Comment{Decrease acceptance probability with lower bound}
+\EndFor
+
+\State \Return $I^\star$
+\end{algorithmic}
+\end{minipage}
+\caption{Probabilistic Hill Climbing Pseudocode}
+\label{alg:phc-pseudocode}
 \end{algorithm}

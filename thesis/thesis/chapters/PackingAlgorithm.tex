@@ -17,31 +17,31 @@ This placed box consists of the input box information, its rotation, the space i
 The solution is then a list of open containers, each with a list of placed boxes within that particular container.
 Since we can assign fitness to each solution, and the packing rules and packing input determine a unique solution, we can also assign fitness to the packing rules themselves with regard to the packing input.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{img/Packing.png}
-    \caption{
-    }
-    \label{fig:Packing Overview}
-\end{figure}
-
-
 \section{Terminology}
 
 \subsection{Pending box}
 
-A \emph{pending box} is represented as a triple $(B, Rot, H)$, where:
+A \emph{pending box} is represented as a triple $(b, \rho, h)$, where:
 \begin{itemize}
-    \item $B$ is the input box,
-    \item $Rot$ is the selected rotation,
-    \item $H$ is the placement heuristic.
+    \item $b \in B$ is an input box property,
+    \item $\rho \in \mathcal{R}$ is the selected rotation,
+    \item $h \in \mathcal{H}$ is the placement heuristic.
 \end{itemize}
 
 The reason each pending box has its own placement heuristic, rather than using a single heuristic for all pending boxes, is to support variability in evolutionary algorithms.
 
+\subsection{Opened Container}
+
+An \emph{opened container} $c$ is represented as a triple $(C_\text{properties}, \mathcal{B}_c, \mathcal{E}_c)$, where:
+\begin{itemize}
+    \item $C_\text{properties}$ represents the input container properties,
+    \item $\mathcal{B}_c$ is the set of boxes already placed in container $c$,
+    \item $\mathcal{E}_c$ is the set of Empty Maximal Regions within container $c$.
+\end{itemize}
+
 \subsection{Placement Heuristic}
 
-A \emph{placement heuristic} is a function that takes a list of currently opened containers and an input box with its rotation, 
+A \emph{placement heuristic} is a function that takes a list of currently opened containers and an input box properties with its rotation, 
 and returns a selected container along with the region where the box should be placed.
 Since the input is defined only as a list of opened containers, 
 the heuristic has considerable flexibility. It can take into account various factors when choosing the target container and placement space. 
@@ -52,61 +52,59 @@ In this more general formulation, however, it can also consider additional attri
 If no valid placement for the box is found (i.e., there is no EMR in any container with sufficient dimensions, or placing the box would exceed the container's maximum weight), 
 then the function returns \textit{null}.
 
-\subsection{Opened Container}
-
-An \emph{opened container} $C$ is represented as a triple $(C_{in}, B_c, EMR_c)$, where:
-\begin{itemize}
-    \item $C_{in}$ represents the input container,
-    \item $B_c$ is the set of boxes already placed into the container,
-    \item $EMR_c$ is the set of Empty Maximal Regions within the container.
-\end{itemize}
+The set of all placement heuristics is denoted as $\mathcal{H}$.
 
 
 \subsection{Placed Box}
 
-A \emph{placed box} is represented as $(B, C, Reg, Rot)$, where:
+A \emph{placed box} is represented as $(b, c, r, \rho)$, where:
 \begin{itemize}
-    \item $B$ is the box,
-    \item $C$ is the container into which the box is placed,
-    \item $Reg$ is the region occupied by the box within the container,
-    \item $Rot$ is the rotation of the box.
+    \item $b \in B$ is an input box property,
+    \item $c$ is the container into which the box is placed,
+    \item $r$ is the region occupied by the box within the container,
+    \item $\rho \in \mathcal{R}$ is the rotation of the box.
 \end{itemize}
 
 
 
 \subsection{Packing Rules}
 
-Let $\mathcal{H}$ denote the set of all available placement heuristics, and let $\mathcal{R}$ denote the set of all allowed box rotations.
 The \emph{packing rules} provide a compact representation of the list of pending boxes and define the order in which they are packed. 
-Formally, they are represented as a triple $(o, rot, h)$, where:
+Formally, they are represented as a triple $\Pi = (o, \boldsymbol{\rho}, \mathbf{h})$, where:
 \begin{itemize}
-    \item $o$ is a permutation list of integers from $1$ to $k$. 
+    \item $o$ is a permutation list of integers from $1$ to $N$. 
     The value at index $i$ specifies the packing order of the box with identifier $i$.
-    \item $rot$ is a list of length $k$, where the element at index $i$ represents the rotation assigned to the input box with identifier $i$, $rot \in \mathcal{R}^k$.
-    \item $h$ is a list of length $k$, where the element at index $i$ represents the placement heuristic assigned to the input box with identifier $i$, $h \in \mathcal{H}^k$.
+    \item $\boldsymbol{\rho}$ is a list of length $N$, where the element at index $i$ represents the rotation assigned to the input box with identifier $i$, with $\rho_i \in \mathcal{R}$.
+    \item $\mathbf{h}$ is a list of length $N$, where the element at index $i$ represents the placement heuristic assigned to the input box with identifier $i$, with $h_i \in \mathcal{H}$.
 \end{itemize}
+
 In other words, the packing rules determine the packing order, rotation, and placement heuristic for each input box, which together form the corresponding list of pending boxes.
 
 \subsubsection{Vector representation}
-In order to use the packing rules as an individual for the evolutionary algorithm, they can be represented as a continuous vector of length $3k$ consisting of real values in the interval $[0,1]$ \cite{goncalves2013}.
-This vector is divided into three parts corresponding to the components $(o, rot, h)$.
+\label{sec:vector-packing-rules}
+In order to use the packing rules as an individual for the evolutionary algorithm, they can be represented as a continuous vector of length $3N$ consisting of real values in the interval $[0,1]$ \cite{goncalves2013}.
+This vector is divided into three parts corresponding to the components of the packing rules $\Pi = (o, \boldsymbol{\rho}, \mathbf{h})$.
 
-In this triple, the first $k$ entries are sorted in ascending order to derive the permutation $o$, 
-the second $k$ entries are interpreted as uniformly distributed indices to select elements from the set of allowed rotations $\mathcal{R}$, 
-and the third $k$ entries are interpreted similarly to choose elements from the set of available heuristics $\mathcal{H}$. 
+In this representation, the first $N$ entries are sorted in ascending order to derive the permutation $o$, 
+the second $N$ entries are interpreted as uniformly distributed indices used to select elements from the set of allowed rotations $\mathcal{R}$, 
+and the third $N$ entries are interpreted similarly to choose elements from the set of available heuristics $\mathcal{H}$. 
 This transformation allows evolutionary algorithms to operate on the vector representation while still producing valid discrete packing rules.
 
-If the set $\mathcal{H}$ contains only a single heuristic, the heuristic part becomes redundant, and the vector can be reduced to two parts with a total length of $2k$. 
+If the set $\mathcal{H}$ contains only a single heuristic, the heuristic part becomes redundant, and the vector can be reduced to two parts with a total length of $2N$. 
 A similar situation arises if rotations are not allowed, meaning that no rotation can be applied and the only feasible orientation is the default XYZ. 
-In this case, the rotation part is unnecessary, and the vector can also be shortened to length $2k$. 
-If neither of these parts are needed, the vector can be shortened further to length $k$. 
+In this case, the rotation part is unnecessary, and the vector can also be shortened to length $2N$. 
+If neither of these parts are needed, the vector can be shortened further to length $N$. 
 Furthermore, if the packing order is determined directly by a heuristic, the order part can also be omitted, as the order can be derived without relying on the packing vector.
 
 \subsection{Packing Rules Fitness}
-Previously, the concept of fitness was defined in the context of evaluating a solution. 
-It is now evident that the packing input together with packing rules uniquely determine a specific solution. 
-This allows fitness to be assigned not only to the solution itself but also to the packing rules with respect to the given packing input. 
-The procedure is as follows: the packing rules are first converted into a list of pending boxes in a specified order, the packing algorithm is then applied to generate the solution, which is subsequently evaluated to determine its fitness.
+\label{sec:fitness-packing-rules}
+
+The fitness function was defined in Section~\ref{sec:fitness-function} for evaluating a solution.
+
+The packing input together with the packing rules uniquely determines a specific solution. 
+This allows fitness to be assigned not only to the solution itself but also to the packing rules with respect to a given packing input. 
+
+The procedure is as follows: the packing rules are first converted into a list of pending boxes in a specified order. The packing algorithm is then applied to generate the solution, which is subsequently evaluated using the fitness function.
 
 \section{Empty Maximal Regions}
 
@@ -114,7 +112,7 @@ To keep track of unoccupied regions during the packing process, we assign each o
 An empty region is said to be \textit{maximal} if it is not a subregion of any other empty region. 
 In the literature, the more common term is empty maximal spaces (EMS). However, the term regions is adopted here to ensure consistency with the terminology of this work \cite{lai1997, goncalves2013}.
 
-Initially, each empty opened container $c$ has a single EMR, which is the region of the container itself, denoted as $R_c$. As boxes are placed into the container, the set of EMR is updated accordingly.
+Initially, each empty opened container $c$ has a single EMR, which is the region of the container itself, $(\mathbf{0}, S)$. As boxes are placed into the container, the set of EMR is updated accordingly.
 
 \subsection{Update of a Single Empty Maximal Region}
 
@@ -197,28 +195,32 @@ This means that EMR starting at the same height and sharing a face can potential
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\textwidth]{img/SideEMR.png}
-    \caption{Side view of EMR update. 
-    Boxes are inserted sequentially in the order A, B, C. 
-    The top EMR is always located directly above a box so that the support constraint is satisfied. 
-    When two box tops are at the same height, as in the case of A and C, their top EMRs merge into a single EMR.}
-    \label{fig:EMR-side-update}
-\end{figure}
+    \includegraphics[width=0.9\textwidth]{img/EMR.png}
+    \caption[EMR update visualization]{
+    The figure illustrates the difference between EMR generation when boxes are stacked vertically and when they are placed side by side. 
+    
+    The left image shows a side view of EMR during vertical stacking. 
+    When box A is inserted, a new EMR is created only directly above it, 
+    since no part of a box is allowed to be unsupported in empty space. 
+    The same process occurs when box B is inserted, resulting in another EMR above it. 
+    However, when box C is placed such that its top surface reaches the same height as a neighbouring box, 
+    the EMRs above A and C can merge. As a result, boxes A and C may jointly support future placements, 
+    forming a larger continuous supporting region instead of two separate ones.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.45\textwidth]{img/TopEMR.png}
-    \caption{Top view of EMR update. 
-    Boxes are inserted sequentially in the order A, B, C. 
-    Newly added boxes split existing EMR into several smaller regions, 
-    and if any of these EMRs is a subregion of another EMR, it disappears. 
-    For example, after inserting box C, part of the blue EMR becomes part of the dark green EMR.}
-    \label{fig:EMR-top-update}
+    The right image shows a top-down view of EMR updates when boxes are placed next to each other. 
+    After inserting box X, two EMRs are created due to the splitting of the original free space. 
+    One EMR extends from the top boundary of X towards the upper-right corner, while the second EMR 
+    covers the region from the right boundary of X towards the same corner. When box Y is inserted next to X, 
+    it further splits the second EMR in a similar manner, creating two new regions while leaving the EMR above X unchanged. 
+    Finally, when box Z is placed next to both X and Y, another subdivision occurs. 
+    In this case, the EMR created above Y becomes fully contained within an existing EMR originating from placing X. 
+    According to the maximality condition, these overlapping or redundant regions can be merged, resulting in a more compact representation of available free space.}
 \end{figure}
 
 \section{Heuristics}
 
 \subsection{Order Heuristics}
+\label{sec:order-heuristics}
 
 If it is not desired for the evolutionary algorithm to determine the order of the boxes,the boxes can instead be pre-sorted using a simple ordering heuristic. 
 In this case, the component of the packing rules responsible for ordering the boxes can be omitted.
@@ -227,7 +229,7 @@ The following predefined ordering heuristics are available in the algorithm:
 
 \begin{itemize}
     \item \textbf{High Volume First:} Boxes are sorted by descending volume, placing the largest boxes first.
-    \item \textbf{High Area Base First:} Boxes are sorted by descending base area (using rotated sizes), prioritizing those with the largest footprint.
+    %\item \textbf{High Area Base First:} Boxes are sorted by descending base area (using rotated sizes), prioritizing those with the largest footprint.
     \item \textbf{High Weight First:} Boxes are sorted by descending weight, useful when container weight is often the limiting factor.
 \end{itemize}
 
@@ -277,35 +279,34 @@ Given a list of ordered pending boxes, the algorithm iteratively attempts to pla
 If the box cannot be placed using its current rotation, the algorithm automatically tries all possible rotations. 
 If no valid placement is found after considering all rotations, a new container is opened and the placement is attempted again. 
 The algorithm continues in this way for all boxes. 
-The pseudocode is shown in this section ~\ref{alg:box-packing-algorithm}.
 
 \begin{algorithm}[htbp]
 \centering
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
-\State \textbf{Input:} List of ordered pending boxes $\mathcal{B} = [b_1, b_2, \dots, b_n]$
-\State \textbf{Output:} List of opened containers $\mathcal{C} = [c_1, c_2, \dots, c_m]$
+\State \textbf{Input:} List of ordered pending boxes $\mathcal{P}$
+\State \textbf{Output:} List of opened containers $\mathcal{C}$
 
 \State Initialize empty list of opened containers $\mathcal{C} \gets []$
 
-\For{each box $b \in \mathcal{B}$}
+\For{each box $(b, \rho, h) \in \mathcal{P}$}
 
-    \If{\textbf{TryPackBox}$(b, \mathcal{C})$ succeeds}
+    \If{\textbf{TryPackBox}$((b, \rho, h), \mathcal{C})$ succeeds}
         \State continue
     \EndIf
 
-    \If{\textbf{TryPackWithAnyRotation}$(b, \mathcal{C})$ succeeds}
+    \If{\textbf{TryPackWithAnyRotation}$((b, \rho, h), \mathcal{C})$ succeeds}
         \State continue
     \EndIf
 
     \State Open a new container $c_{\text{new}}$
     \State Add $c_{\text{new}}$ to $\mathcal{C}$
 
-    \If{\textbf{TryPackBox}$(b, \mathcal{C})$ succeeds}
+    \If{\textbf{TryPackBox}$((b, \rho, h), \mathcal{C})$ succeeds}
         \State continue
     \EndIf
 
-    \If{\textbf{TryPackWithAnyRotation}$(b, \mathcal{C})$ succeeds}
+    \If{\textbf{TryPackWithAnyRotation}$((b, \rho, h), \mathcal{C})$ succeeds}
         \State continue
     \EndIf
 
@@ -316,9 +317,67 @@ The pseudocode is shown in this section ~\ref{alg:box-packing-algorithm}.
 \end{algorithmic}
 \end{minipage}
 \caption{Box Packing Algorithm Pseudocode}
-\label{alg:box-packing-algorithm}
+\label{alg:box-packing}
 \end{algorithm}
 
+
+
+
+
+
+
+\begin{algorithm}[htbp]
+\centering
+\begin{minipage}{0.95\linewidth}
+\begin{algorithmic}[1]
+
+\State \textbf{Input:} Pending box $(b, \rho, h)$, list of opened containers $\mathcal{C}$
+\State \textbf{Output:} True if placement succeeds, otherwise False
+
+\State Compute candidate placement using heuristic:
+\[
+\text{placement} \leftarrow h(b, \rho, \mathcal{C})
+\]
+
+\If{$\text{placement} = \text{null}$}
+    \State \Return False
+\EndIf
+
+\State Let $(c, r)$ be the selected container and region returned by \text{placement}
+\State Create a placed box $p = (b, c, r, \rho)$
+\State Update container $c$ by inserting $p$ into $\mathcal{B}_c$ and updating $\mathcal{E}_c$
+\State \Return True
+
+\end{algorithmic}
+\end{minipage}
+\caption{TryPackBox Procedure}
+\end{algorithm}
+
+
+
+
+\begin{algorithm}[htbp]
+\centering
+\begin{minipage}{0.95\linewidth}
+\begin{algorithmic}[1]
+
+\State \textbf{Input:} Pending box $(b, \rho, h)$, list of opened containers $\mathcal{C}$
+\State \textbf{Output:} True if placement succeeds for any rotation, otherwise False
+
+\For{each rotation $\rho' \in \mathcal{R} \setminus \{\rho\}$}
+
+    \If{\textbf{TryPackBox}$((b, \rho', h), \mathcal{C})$ succeeds}
+        \State \Return True
+    \EndIf
+
+\EndFor
+
+\State \Return False
+
+\end{algorithmic}
+\end{minipage}
+\caption{TryPackWithAnyRotation Procedure}
+\end{algorithm}
 
 
 

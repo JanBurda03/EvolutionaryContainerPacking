@@ -214,13 +214,13 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--input-dir",
-        default="..\\data\\mpv\\original",
+        default="..\\data\\mpv\\medium",
         help="Directory containing input JSON files."
     )
 
     parser.add_argument(
         "--output-dir",
-        default="..\\experiments\\results\\phc__0985",
+        default="..\\experiments\\results\\phc_10_98_medium",
         help="Directory where output files will be written."
     )
 
@@ -238,7 +238,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--evolution-setting",
-        default="..\\experiments\\settings\\evolution\\phc__0985.json",
+        default="..\\experiments\\settings\\evolution\\phc__10_98.json",
         help="Path to JSON file describing EvolutionAlgorithmSetting."
     )
 

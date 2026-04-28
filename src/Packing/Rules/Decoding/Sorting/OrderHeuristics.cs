@@ -14,7 +14,7 @@ public static class OrderHeuristics
             {"High Volume First Heuristic", new HighVolumeFirstHeuristic() },
             {"High Area Base First Heuristic", new HighAreaBaseFirstHeuristic()},
             //{"Longest First Heuristic", new LongestFirstHeuristic()},
-            {"High Weight First Heuristic", new HighWeightFirstHeuristic()},
+            //{"High Weight First Heuristic", new HighWeightFirstHeuristic()},
             //{"High Surface Area FirstHeuristic", new HighSurfaceAreaFirstHeuristic()}
         };
 

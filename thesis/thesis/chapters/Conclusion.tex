@@ -1,2 +1,60 @@
 \chapter*{Conclusion}
 \addcontentsline{toc}{chapter}{Conclusion}
+
+This thesis investigated several algorithmic choices for the three-dimensional container packing problem, 
+with the goal of understanding how different evolutionary and local-search components influence solution quality.
+
+The experimental results show that selecting placement heuristics evolutionarily instead of relying
+on a single fixed heuristic leads to a substantial improvement in performance. 
+In particular, allowing the algorithm to choose among several placement heuristics 
+significantly outperforms the Max Distance baseline used in the original formulation. 
+Similarly, the evolutionary ordering of boxes can often be replaced by simpler heuristic 
+orderings based on box volume or box weight without degrading the results. 
+In some cases, especially for larger instances, these heuristic orderings even improve convergence by reducing the effective search space.
+
+Another important finding is that a small amount of mutation can be beneficial, 
+but mainly for the smallest instances. For larger instances, mutation becomes increasingly 
+disruptive and tends to degrade performance. Memetic hill climbing, on the other hand, 
+did not bring any practical benefit. Applying a few hill-climbing iterations to offspring 
+increased runtime without improving the quality of the solutions. 
+When hill climbing was applied to elite individuals, 
+the results were even worse, because the search converged faster to local optima.
+
+The influence of box weights was also examined. Adding weights creates a strong additional 
+feasibility constraint, which changes the behaviour of the search but does not fundamentally alter the conclusions. 
+The elitist genetic algorithm remains clearly superior to hill climbing in all cases. 
+In this setting, hill climbing serves as a useful baseline, 
+but not as a competitive alternative to the elitist genetic algorithm.
+
+Probabilistic hill climbing was also tested as a baseline inspired 
+by simulated annealing. The results indicate that it does not improve 
+on standard hill climbing for this problem. In fact, the best configurations 
+consistently used low values of the initial acceptance probability 
+and the decay coefficient, which means that the method performs best 
+when it behaves very similarly to ordinary hill climbing. 
+This suggests that accepting worse solutions is not particularly helpful in this search space.
+
+From a software engineering perspective, the thesis also produced a 
+fairly extensive and modular codebase implemented in C\#. The program was 
+designed so that extending it with additional algorithms or heuristic components should be straightforward. 
+At the same time, the implementation grew to roughly 130 source files, which makes the project relatively 
+large and somewhat difficult to maintain. In hindsight, a more compact language such as Julia 
+might have reduced the amount of boilerplate and simplified experimentation.
+
+Several directions for future work remain open. One interesting extension would be to assign 
+different selection probabilities to the individual components of the solution representation. 
+At the moment, rotation, box ordering, and placement heuristics are encoded together in a single vector, 
+which gives them the same chance of being modified. It would be worthwhile to investigate whether 
+better results could be obtained by changing these components at different rates, 
+for example by mutating the rotation part more frequently than the ordering or placement part.
+
+Another promising direction is to extend the evolutionary search to the container itself. 
+If multiple container dimensions were available, the algorithm could be allowed to choose 
+not only box rotations, ordering, and placement heuristics, but also the container variant. 
+Such a choice would likely deserve a lower mutation probability than the other components, 
+but it could open the way to a more general framework for adaptive packing.
+
+Overall, the thesis demonstrates that the design of the search 
+process has a strong impact on solution quality. The best results were obtained by 
+combining evolutionary search with flexible heuristic selection, while local-search 
+enhancement and probabilistic acceptance did not provide additional benefits for the tested instances.

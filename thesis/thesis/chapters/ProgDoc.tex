@@ -1,2 +1,196 @@
 \chapter{Programming Documentation}
 \label{app:program}
+
+The codebase can be divided into six main components:
+
+\begin{itemize}
+    \item \texttt{src/App} contains the main application logic and serves as the entry point of the system,
+    
+    \item \texttt{src/Evolution} implements the evolutionary algorithms, including the evolution of the packing rules vector and the evaluation of solution fitness,
+    
+    \item \texttt{src/Packing} handles the packing process, transforming the packing input and packing rules into a concrete solution,
+    
+    \item \texttt{src/SettingForm} provides the user interface for configuring the algorithms and their parameters,
+    
+    \item \texttt{tests/} contains unit tests for the C\# implementation,
+    
+    \item \texttt{scripts/} includes Python scripts for dataset generation, experimental evaluation, and result processing.
+\end{itemize}
+
+\section{\texttt{src/Packing}}
+
+We first take a look at the packing module.
+
+\texttt{PackingInput.cs} represents the input data for a packing problem
+and contains container properties as well as the list of boxes to be packed.
+
+\texttt{PackingSetting.cs} defines configuration settings controlling the behaviour
+of the packing solver. It includes allowed placement heuristics, rotation permissions,
+and an optional packing order heuristic.
+
+\texttt{PackingSolver.cs} is the main entry point for solving a bin packing problem
+using a set of packing rules. An instance of this class is provided with \texttt{PackingRules}
+and \texttt{PackingSetting}. When its main function is called with a set of packing rules,
+it first decodes the rules into a sequence of boxes and subsequently assigns them to containers.
+
+\subsection{\texttt{src/Packing/Rules}}
+
+This folder contains \texttt{PackingRules.cs} and \texttt{PackingRulesCell.cs},
+which together form a list-based representation of the packing-rules vector.
+
+The folder \texttt{Decoding} contains \texttt{Decoding/PackingRulesDecoder.cs},
+which decodes packing rules into an ordered list of pending boxes.
+
+The folder \texttt{Decoding/PartDecoders} contains additional interfaces and classes used for decoding
+rotation and placement separately, while \texttt{Decoding/Sorting} contains the infrastructure
+for sorting the pending boxes either by evolutionary order or by order heuristics, which are also defined in this folder
+as described in Section~\ref{sec:order-heuristics}.
+
+\subsection{\texttt{src/Packing/Architecture}}
+
+This folder contains the data structures and helper classes related to boxes, containers, and the packing process in general. 
+The main file is \texttt{BoxPacker.cs}, which packs pending boxes into containers according to the algorithm defined in Algorithm~\ref{alg:box-packing}.
+
+The \texttt{Boxes} folder contains the definitions of box-related classes, including box properties, pending boxes, and placed boxes. 
+In particular, these are \texttt{Boxes/BoxProperties.cs} (which is part of \texttt{PackingInput}), 
+\texttt{Boxes/\\PendingBox.cs}, and \texttt{Boxes/PlacedBox.cs}, together with the corresponding box interfaces and extension methods.
+
+The \texttt{Geometry} folder contains classes related to the geometric representation of the problem, including coordinates, sizes, regions, and rotations, as described in Chapter~\ref{chap:problem}. 
+These are defined in \texttt{Geometry/Coordinates.cs}, \texttt{Geometry/\allowbreak Sizes.cs}, \texttt{Geometry/Region.cs}, and \texttt{Geometry/Rotation.cs}.
+
+The \texttt{EMR} folder contains the implementation of empty maximal regions and the corresponding update algorithm.
+
+The \texttt{Container} folder defines the opened container class \texttt{Container/\\OpenedContainer.cs}, 
+which provides functionality for packing pending boxes into a container, as well as \texttt{Container/ContainerProperties.cs}, 
+which is part of \texttt{PackingInput}. It also contains \texttt{Container/ContainerData.cs}, a data class used 
+as one of the inputs to the placement heuristic, providing it with all relevant information about the container.
+
+Placement is implemented in \texttt{Placements}. In particular, \texttt{Placements/\\Placement.cs} 
+stores the container in which a box is placed and the region it occupies, while \texttt{Placements/PlacementHeuristic.cs} 
+defines the interface for the placement heuristic function. The file \texttt{Placements/PlacementHeuristics.cs} 
+contains the implementations of the placement heuristics described in Section~\ref{sec:placement-heuristics}.
+
+\section{\texttt{src/Evolution}}
+
+This section describes the implementation of the evolutionary algorithms and the related supporting classes.
+
+We first look at the configuration classes in \texttt{Setting}. 
+The main application configuration is defined in \texttt{Setting/ProgramSetting.cs}. 
+It contains the path to the input file, the output file for the results, 
+an additional file for storing statistics about the evolutionary run, 
+as well as the packing settings and the evolutionary algorithm settings, which are described below.
+
+The settings are defined in \texttt{Setting/EvolutionaryAlgorithmSettings}. 
+This folder contains the base class \texttt{Setting/EvolutionaryAlgorithmSettings/\\EvolutionaryAlgorithmSetting.cs}, 
+together with two derived classes corresponding to the implemented algorithms, 
+namely \texttt{Setting/\\EvolutionaryAlgorithmSettings/ElitistGeneticAlgorithmSetting.cs} 
+and \texttt{Setting/EvolutionaryAlgorithmSettings/\\ProbabilisticHillClimbingSetting.cs}. 
+These classes define the hyperparameters of each algorithm. 
+The base class contains parameters common to both algorithms, such as the population size and the number of generations, 
+while the derived classes define algorithm-specific hyperparameters.
+
+The class \texttt{EvolutionaryAlgorithms.cs} acts as a factory for creating evolutionary algorithms from the evolutionary algorithm settings. 
+Depending on the provided setting instance, it returns the corresponding evolutionary algorithm configured with the specified hyperparameters. 
+Its input also includes a fitness evaluator, which is used throughout the evolutionary process, 
+a population factory, and a class for recording statistics about the run.
+
+This statistics class is located in the folder \texttt{EvolutionStatistics} and is responsible for storing
+a snapshot of each generation with relevant information such as the best fitness, average fitness, 
+and the time required to progress to the next generation.
+Each snapshot is represented by the class \texttt{EvolutionStatistics/\allowbreak StatisticalData.cs}, 
+while the management of the full sequence of snapshots is defined by 
+\texttt{EvolutionStatistics/\allowbreak EvolutionStatistics.cs}.
+
+Regarding fitness evaluation, the folder \texttt{Fitness} contains the implementation of the fitness computation.
+First, \texttt{Fitness/\allowbreak ContainerFitnessEvaluator.cs} evaluates the fitness of a 
+given set of containers according to the formula defined in Section~\ref{sec:fitness-function}.
+Second, \texttt{Fitness/\allowbreak PackingRulesFitnessEvaluator.cs} is responsible for evaluating packing rules vectors. 
+It first uses \texttt{src/\allowbreak Packing/PackingSolver.cs} to obtain a packing solution, 
+and then passes this solution to \texttt{Fitness/\\ContainerFitnessEvaluator.cs} to compute the final fitness value.
+This class also supports evaluating an entire population of packing rules in parallel, which significantly reduces computation time.
+
+The main file in \texttt{src/Evolution} is \texttt{EvolutionProgram.cs}, 
+which takes the program settings, creates the fitness evaluator and the population factory, 
+constructs the evolutionary algorithm with the given hyperparameters, 
+executes the evolutionary process, and returns the best individual together with the statistics of the evolution.
+
+\subsection{\texttt{src/Evolution/Architecture}}
+
+This folder contains the core architecture used to build the evolutionary algorithms.
+The main interface is \texttt{IEvolutionary.cs}. 
+The class\\\texttt{EvolutionaryBase.cs} serves as a base class for evolutionary algorithms and implements the overall evolutionary process. 
+For a specific derived algorithm, it is only necessary to implement the function that creates the next generation.
+The algorithms are generic, so the individual can be represented by any type. 
+The folder also contains the helper class \texttt{EvaluatedIndividual.cs}, which combines a generic individual with its fitness value.
+
+The folder \texttt{ElitistGeneticAlgorithm} contains the implementation of the elitist genetic algorithm, as described in Algorithm~\ref{alg:ega-pseudocode}. 
+It provides two variants: a generic implementation \texttt{ElitistGeneticAlgorithm/\allowbreak ElitistGenetic.cs}, 
+and a wrapper specialized for packing rules, \texttt{ElitistGeneticAlgorithm/\\PackingRulesElitistGenetic.cs}.
+
+Similarly, the folder \texttt{ProbabilisticHillClimbing} contains the implementation of probabilistic hill climbing, as described in Algorithm~\ref{alg:phc-pseudocode}. 
+It also includes two variants: a generic implementation \texttt{ProbabilisticHillClimbing/\allowbreak ProbabilisticHillClimbing.cs}, 
+and a packing rules specific wrapper\\\texttt{ProbabilisticHillClimbing/PackingRulesProbabilisticHillClimbing.cs}.
+
+The folder \texttt{Population} contains \texttt{Population/\\PackingRulesPopulationFactory.cs}, 
+a class that receives the length of the packing rules vector upon initialization and provides a function for generating a specified number of random individuals.
+
+The remaining parts of the architecture consist of various evolutionary components, namely the folders 
+\texttt{Mutation}, \texttt{Selection},
+\texttt{Crossover}, \texttt{Elitism}, and 
+\texttt{Memetic}. These folders generally follow a consistent structure: each contains a generic interface for the corresponding component, 
+together with concrete implementations for packing rules.
+
+This design is useful because the evolutionary algorithms depend only on these components through their interfaces, making it easy to replace individual operators. 
+For example, in \texttt{Selection}, both random selection and tournament selection are implemented, and both conform to the same interface.
+
+\section{\texttt{src/SettingForm}}
+
+This folder contains the Windows Forms implementation for manually selecting the algorithm and its parameters. 
+The main entry point is \texttt{FormProgram.cs}, which first opens \texttt{SettingForm.cs}. 
+In this form, the user selects the algorithm name, input and output files, and the packing settings.
+
+After this step, the program selects the form from a dictionary based on the chosen algorithm, either 
+\texttt{ProbabilisticHillClimbingSettingForm.cs} or 
+\texttt{ElitistGeneticSettingForm.cs}. 
+In these forms, the hyperparameters of the evolutionary algorithm are specified.
+
+Once the configuration is completed, the function returns a new program setting based on the values provided in the forms.
+
+\section{\texttt{src/App}}
+
+This folder serves as the entry point of the system.
+The main function in \texttt{Program.cs} either takes a command-line argument 
+with the path to the JSON file containing the program settings, or launches the Windows Forms 
+application described above if no argument is provided. If a path is given, 
+the class \texttt{Input/ProgramSettingLoader.cs} is used to load the program settings 
+from the JSON file. Once this is done, the class \texttt{Input/PackingInputLoader.cs} 
+is used to load the packing input from the path specified in the program settings.
+
+The class \texttt{src/Evolution/EvolutionProgram.cs} is then used together with 
+the loaded settings and packing input to run the program and obtain the results, 
+namely the best individual and the statistics of the evolutionary run.
+
+Both of these outputs are then saved using helper classes from the folder \texttt{Output}. 
+In particular, \texttt{Output/EvolutionStatisticsSaver.cs} saves the statistics as a CSV file, 
+while \texttt{Output/PackingOutputSaver.cs} saves the best solution as a JSON file.
+
+\section{\texttt{scripts}}
+
+This folder contains the Python scripts used for dataset generation, evaluation, and result visualization.
+
+The script \texttt{generate\_full\_mpv\_benchmark.py} was used to generate the full dataset described in Section~\ref{sec:datasets}. 
+It relies on several helper scripts:\\ 
+\texttt{generate\_mpv\_benchmark.py}, which generates a dataset with a given mean weight, standard deviation, number of instances, and related parameters; 
+\\\texttt{mpv\_generator.py}, which creates a single packing instance for a given class and number of boxes using the same parameters; 
+\texttt{saver.py}, which saves the packing input as a JSON file; and 
+\texttt{models.py}, which provides Python versions of the necessary data structures, such as container and box properties.
+
+Once the dataset has been generated, \texttt{lower\_bound.py} can be used to compute the average lower-bound fitness for each class and number of boxes, as shown in Table~\ref{tab:lower-bound}.
+
+The script \texttt{run\_experiments.py} is used to run the evolutionary algorithm with given hyperparameters on the full dataset. 
+It takes the desired evolutionary and packing settings, together with the C\# solver, and creates temporary JSON files containing the corresponding program settings. 
+It then iterates over all instances in the dataset, runs the solver, and stores both the results and the evolutionary statistics for each instance. 
+In addition, it computes average fitness values per generation across all instances of the same class and number of boxes.
+
+These average statistics can then be processed by \texttt{plot.py}, which generates graphs for the average results for each class and number of boxes. 
+The script can also combine the results of multiple evolutionary algorithms and plot them in the same figure.

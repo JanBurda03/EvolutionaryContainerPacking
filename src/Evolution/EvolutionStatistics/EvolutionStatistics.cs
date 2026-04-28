@@ -15,7 +15,6 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
 {
     private readonly List<StatisticalData> _evolutionStatisticalData = new();
 
-    // Stopwatch se NEspouští při vytvoření objektu
     private readonly Stopwatch _stopwatch = new();
     private bool _timerStarted = false;
 
@@ -35,7 +34,6 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
         if (population == null || population.Count == 0)
             throw new ArgumentException("Population must not be empty.", nameof(population));
 
-        // Spustí časovač až při prvním update
         if (!_timerStarted)
         {
             _stopwatch.Start();
@@ -45,7 +43,6 @@ public class EvolutionStatistics<T> : IEvolutionStatistics<T>
         var fitnessValues = EvaluatedIndividual<T>.GetFitnesses(population);
         double average = fitnessValues.Average();
 
-        // mezičas od prvního update (v sekundách)
         double elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
 
         _evolutionStatisticalData.Add(
