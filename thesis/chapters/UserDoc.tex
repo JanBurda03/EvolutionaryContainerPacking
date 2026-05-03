@@ -1,0 +1,224 @@
+\chapter{User Documentation}
+\label{app:user}
+
+This chapter describes the repository structure, how to run the application, and how to provide input data.
+
+\section{Repository structure}
+
+The repository consists of multiple folders. The main C# code is located in the \texttt{src} folder, 
+unit tests are in \texttt{tests}, 
+Python scripts for dataset generation and experiment handling are in \texttt{scripts}, 
+JSON schemas for validating the program settings and packing input are in \texttt{schema}, 
+examples of input and output files are in \texttt{examples}, 
+the dataset described in Section~\ref{sec:datasets} is stored in \texttt{data}, 
+and experiment settings and results can be saved in \texttt{experiments}.
+
+\section{Running the Application}
+
+The application can be run on a Windows operating system with the .NET 8 SDK installed.
+
+Initially, the project must be built in Release configuration using the following command in the root folder of the project:
+
+\begin{verbatim}
+dotnet build -c Release
+\end{verbatim}
+
+The resulting executable files are located in:
+
+\begin{verbatim}
+src/App/bin/Release/net8.0-windows/
+\end{verbatim}
+
+The application can be executed either without command-line arguments, in which case a Windows Forms user interface is launched, 
+allowing the user to manually configure input and output paths, algorithm selection, and hyperparameters, 
+or with a configuration file provided as a command-line argument, which is used to automatically load the application settings.
+
+To run the application:
+
+\begin{verbatim}
+src/App/bin/Release/net8.0-windows/App.exe
+\end{verbatim}
+
+or with a configuration file:
+
+\begin{verbatim}
+src/App/bin/Release/net8.0-windows/App.exe ProgramSetting.json
+\end{verbatim}
+
+Alternatively, the application can be built and run directly from an IDE such as Visual Studio 2022. The build configuration should be set to Release and the App project selected before running.
+
+\section{Program Setting Parameters}
+
+The program is configured using a \texttt{ProgramSetting} structure, 
+which contains the input and output paths, packing settings, 
+and evolutionary algorithm settings. 
+The packing settings determine the selected placement and order heuristics 
+and whether rotations are allowed, while the evolutionary settings specify 
+the chosen evolutionary algorithm together with its hyperparameters. 
+The configuration file has the following structure:
+
+\begin{verbatim}
+ProgramSetting
+{
+    SourceFile: string,
+    OutputFile: string,
+    EvolutionStatisticsFile: string?,
+
+    PackingSetting:
+    {
+        SelectedPlacementHeuristics: string[],
+        AllowRotations: bool,
+        PackingOrder: string? or null
+    },
+
+    EvolutionAlgorithmSetting:
+    {
+        (common parameters)
+        TargetFitness: double?,
+        Individuals: int,
+        UseIndividualsAsRelative: bool,
+        NumberOfGenerations: int,
+
+        (algorithm-specific parameters)
+        ...
+    }
+}
+\end{verbatim}
+
+\subsection{Input and Output}
+
+These parameters define the input data source and the locations where the results of the computation are stored. They correspond to the top-level fields of \texttt{ProgramSetting}:
+
+\begin{itemize}
+    \item \texttt{SourceFile} -- path to the input JSON file containing the packing problem,
+    
+    \item \texttt{OutputFile} -- path where the resulting packing solution will be saved,
+    
+    \item \texttt{EvolutionStatisticsFile} -- optional CSV file where evolution statistics are exported; if not needed, set to \texttt{null}.
+\end{itemize}
+
+\subsection{Packing Settings}
+
+These parameters define the constraints and behaviour of the packing process, including the selected placement heuristics, whether rotations are allowed, and the order in which boxes are processed:
+
+\begin{itemize}
+    \item \texttt{SelectedPlacementHeuristics} -- list of heuristics used to determine where a box should be placed,
+    
+    \item \texttt{AllowRotations} -- allows boxes to be rotated,
+    
+    \item \texttt{PackingOrder} -- optional heuristic defining the order in which boxes are packed; if set to \texttt{null}, the order is determined by the evolution.
+\end{itemize}
+
+\subsection{Evolutionary Algorithm Settings}
+
+These parameters define the configuration of the evolutionary optimization process. 
+They are represented by the \texttt{EvolutionAlgorithmSetting} structure, 
+which serves as a base configuration containing parameters common to all algorithms. 
+Depending on the selected value of \texttt{AlgorithmName}, this base structure is extended 
+by a derived configuration specific to the chosen algorithm. 
+Two derived configurations are implemented, corresponding to the Elitist Genetic Algorithm and the Probabilistic Hill Climbing algorithm.
+
+\begin{itemize}
+    \item \texttt{AlgorithmName} -- discriminator that determines which evolutionary algorithm configuration is used; supported values are \texttt{"Elitist Genetic"} and \texttt{"Hill Climbing"},
+
+    \item \texttt{TargetFitness} -- optional target fitness value for early stopping,
+    
+    \item \texttt{Individuals} -- number of individuals in the population, denoted as $M$ in the algorithm,
+
+    \item \texttt{UseIndividualsAsRelative} -- indicates whether \texttt{Individuals} is interpreted as a relative value; if \texttt{true}, the actual population size is scaled proportionally to the input size,
+
+    \item \texttt{NumberOfGenerations} -- maximum number of generations, corresponding to $G$.
+\end{itemize}
+
+\subsubsection{Elitist Genetic Algorithm Settings}
+
+\begin{itemize}
+    \item \texttt{PercentageOfEliteIndividuals} -- percentage of elite individuals preserved in each generation, corresponding to $p_E$,
+    
+    \item \texttt{PercentageOfElementsFromElite} -- percentage of elements inherited from the elite parent during crossover, corresponding to $p_C$,
+    
+    \item \texttt{PercentageOfElementsMutated} -- percentage of elements mutated in each offspring, corresponding to $p_M$,
+    
+    \item \texttt{PercentageOfRandomIndividuals} -- percentage of new random individuals introduced each generation, corresponding to $p_R$,
+    
+    \item \texttt{HillClimbingIterations} -- number of hill climbing iterations applied to each offspring, corresponding to $I_{HC}$,
+    
+    \item \texttt{HillClimbingPercentageOfElementsMutated} -- mutation rate used during hill climbing, corresponding to $p_{HC}$.
+\end{itemize}
+
+\subsubsection{Probabilistic Hill Climbing Settings}
+
+\begin{itemize}
+    \item \texttt{PercentageOfElementsChanged} -- percentage of elements modified when generating a neighboring solution, corresponding to $p_M$,
+    
+    \item \texttt{StartAcceptanceProbability} -- probability of accepting a worse solution at the beginning of the search, corresponding to $p_A^{(0)}$,
+    
+    \item \texttt{EndAcceptanceProbability} -- minimum probability of accepting a worse solution, corresponding to $p_{\min}$,
+    
+    \item \texttt{AcceptanceDecayFactor} -- factor by which the acceptance probability decreases each generation, corresponding to $\alpha$.
+\end{itemize}
+
+\section{Packing Input Format}
+
+The packing input is provided as a JSON file describing container properties and a list of boxes.
+
+\begin{verbatim}
+{
+  "ContainerProperties": {
+    "Sizes": {
+      "X": 100,
+      "Y": 100,
+      "Z": 100
+    },
+    "MaxWeight": 1000000
+  },
+  "BoxPropertiesList": [
+    {
+      "ID": 0,
+      "Sizes": {
+        "X": 13,
+        "Y": 84,
+        "Z": 72
+      },
+      "Weight": 92768
+    },
+    {
+      "ID": 1,
+      "Sizes": {
+        "X": 15,
+        "Y": 68,
+        "Z": 81
+      },
+      "Weight": 103299
+    },
+    {
+      "ID": 2,
+      "Sizes": {
+        "X": 5,
+        "Y": 17,
+        "Z": 13
+      },
+      "Weight": 1187
+    }
+  ]
+}
+\end{verbatim}
+
+\subsection{Configuration Schema and Examples}
+
+The JSON schemas defining the configuration structure are located in the \texttt{schema} directory:
+
+\begin{itemize}
+    \item \texttt{schema/ProgramSetting.json} -- schema for the high-level application configuration,
+    \item \texttt{schema/PackingInput.json} -- schema for the packing problem input data.
+\end{itemize}
+
+Example input and output files are available in the \texttt{examples} directory.
+
+\section{Output}
+
+The program produces:
+\begin{itemize}
+    \item a JSON file with the resulting packing solution,
+    \item optionally a CSV file with evolution statistics.
+\end{itemize}

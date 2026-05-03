@@ -148,11 +148,11 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             Left = leftInput,
             Top = top,
             Width = 120,
-            DecimalPlaces = 2,
-            Increment = 0.01M,
+            DecimalPlaces = 3,
+            Increment = 0.005M,
             Minimum = 0,
             Maximum = 1,
-            Value = 0.1M
+            Value = 0.01M
         };
 
         Controls.Add(percentageOfElementsChangedNumeric);
@@ -194,7 +194,7 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             Increment = 0.01M,
             Minimum = 0,
             Maximum = 1,
-            Value = 1M,
+            Value = 0.1M,
             Enabled = false
         };
 
@@ -208,11 +208,11 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             Left = leftInput,
             Top = top,
             Width = 120,
-            DecimalPlaces = 2,
-            Increment = 0.01M,
+            DecimalPlaces = 3,
+            Increment = 0.005M,
             Minimum = 0,
             Maximum = 1,
-            Value = 0.1M,
+            Value = 0.0M,
             Enabled = false
         };
 
@@ -226,11 +226,11 @@ public class ProbabilisticHillClimbingSettingForm : AlgorithmSettingForm
             Left = leftInput,
             Top = top,
             Width = 120,
-            DecimalPlaces = 4,
-            Increment = 0.001M,
+            DecimalPlaces = 3,
+            Increment = 0.005M,
             Minimum = 0,
             Maximum = 1,
-            Value = 0.99M,
+            Value = 0.98M,
             Enabled = false
         };
 

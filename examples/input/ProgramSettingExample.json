@@ -1,0 +1,31 @@
+{
+    "SourceFile": "examples/input/PackingInputExample.json",
+    "OutputFile": "examples/output/PackintOutputExample.json",
+    "EvolutionStatisticsFile": "examples/output/EvolutionStatisticsExample.json",
+    "PackingSetting": {
+        "SelectedPlacementHeuristics": [
+            "Best Volume Fit",
+            "Max Distance",
+            "Min X",
+            "Min Y",
+            "Gravity",
+            "Anti-Gravity",
+            "Bottom Left Back"
+        ],
+        "AllowRotations": true,
+        "PackingOrder": null
+    },
+    "EvolutionAlgorithmSetting": {
+        "AlgorithmName": "Elitist Genetic",
+        "TargetFitness": null,
+        "Individuals": 30,
+        "UseIndividualsAsRelative": true,
+        "NumberOfGenerations": 300,
+        "PercentageOfEliteIndividuals": 0.1,
+        "PercentageOfElementsFromElite": 0.7,
+        "PercentageOfElementsMutated": 0.0,
+        "PercentageOfRandomIndividuals": 0.15,
+        "HillClimbingIterations": 0,
+        "HillClimbingPercentageOfElementsMutated": 0.0
+    }
+}

@@ -82,10 +82,10 @@ public class DecoderTests
                         }
                         else
                         {
-                            placementDecoder = new MultiplePlacementsDecoder([PlacementHeuristics.MinDistance, PlacementHeuristics.MaxDistance]);
+                            placementDecoder = new MultiplePlacementsDecoder([PlacementHeuristics.BestVolumeFit, PlacementHeuristics.MaxDistance]);
                             if (packingVector[a + b] < 0.5)
                             {
-                                expectedHeuristics = PlacementHeuristics.MinDistance;
+                                expectedHeuristics = PlacementHeuristics.BestVolumeFit;
                             }
                             else
                             {

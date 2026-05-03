@@ -24,7 +24,7 @@ public class ElitismTests
         };
 
     [Fact]
-    public void GetEliteAndWorstMinimizing()
+    public void GetEliteMinimizing()
     {
         var elitism = new Elitism<string>(minimizing: true);
         var population = CreatePopulation();
@@ -33,15 +33,10 @@ public class ElitismTests
 
         Assert.Equal(1, elite.Fitness);
         Assert.Equal("D", elite.Individual);
-
-        var worst = elitism.GetWorst(population);
-
-        Assert.Equal(20, worst.Fitness);
-        Assert.Equal("C", worst.Individual);
     }
 
     [Fact]
-    public void GetEliteAndWorstMaximizing()
+    public void GetEliteMaximizing()
     {
         var elitism = new Elitism<string>(minimizing: false);
         var population = CreatePopulation();
@@ -50,11 +45,6 @@ public class ElitismTests
 
         Assert.Equal(20, elite.Fitness);
         Assert.Equal("C", elite.Individual);
-
-        var worst = elitism.GetWorst(population);
-
-        Assert.Equal(1, worst.Fitness);
-        Assert.Equal("D", worst.Individual);
     }
 
 
@@ -69,19 +59,6 @@ public class ElitismTests
         var fitnesses = elites.Select(e => e.Fitness).OrderBy(x => x).ToArray();
 
         Assert.Equal(new[] { 1.0, 2.0, 5.0, 5.0, 10.0}, fitnesses);
-    }
-
-    [Fact]
-    public void GetWorsts()
-    {
-        var elitism = new Elitism<string>(minimizing: true);
-        var population = CreatePopulation();
-
-        var worst = elitism.GetWorst(population, 6);
-
-        var fitnesses = worst.Select(e => e.Fitness).OrderByDescending(x => x).ToArray();
-
-        Assert.Equal(new[] { 20.0, 15.0, 10.0, 5.0, 5.0, 2.0 }, fitnesses);
     }
 
     [Fact]

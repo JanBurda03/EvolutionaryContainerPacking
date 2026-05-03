@@ -165,11 +165,11 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             Left = leftInput,
             Top = top,
             Width = 120,
-            DecimalPlaces = 2,
-            Increment = 0.01M,
+            DecimalPlaces = 3,
+            Increment = 0.005M,
             Minimum = 0,
             Maximum = 1,
-            Value = 0.05M
+            Value = 0.01M
         };
         Controls.Add(percentageOfElementsMutatedNumeric);
         top += spacing;
@@ -200,7 +200,7 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             Top = top,
             Width = 120,
             Minimum = 0,
-            Maximum = 1000,
+            Maximum = 100,
             Value = 0
         };
         Controls.Add(hillClimbingIterationsNumeric);
@@ -212,12 +212,12 @@ public class ElitistGeneticSettingForm : AlgorithmSettingForm
             Left = leftInput,
             Top = top,
             Width = 120,
-            DecimalPlaces = 2,
-            Increment = 0.01M,
+            DecimalPlaces = 3,
+            Increment = 0.005M,
             Minimum = 0,
             Maximum = 1,
             Enabled = false,
-            Value = 0.05M
+            Value = 0.01M
         };
         Controls.Add(hillClimbingPercentageOfElementsMutatedNumeric);
 
