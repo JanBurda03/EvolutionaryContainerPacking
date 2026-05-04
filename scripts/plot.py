@@ -6,6 +6,14 @@ import matplotlib.pyplot as plt
 CLASSES = ["class1", "class2", "class3", "class4"]
 SIZES = ["n50", "n100", "n150"]
 
+STYLE_MAP = [
+    {"color": "blue", "linestyle": "-"},
+    {"color": "green", "linestyle": "-"},
+    {"color": "red", "linestyle": "-"},
+    {"color": "blue", "linestyle": "--"},
+    {"color": "green", "linestyle": "--"},
+    {"color": "red", "linestyle": "--"},
+]
 
 def load_data(base_path, cls, size):
     file_path = os.path.join(base_path, cls, size, "averages.csv")
@@ -17,18 +25,32 @@ def load_data(base_path, cls, size):
 
 
 def plot_results(algorithms, labels, output_path, show_plot=False):
-    fig, axes = plt.subplots(len(CLASSES), len(SIZES), figsize=(15, 12), sharex=True, sharey=False)
+    fig, axes = plt.subplots(
+        len(CLASSES),
+        len(SIZES),
+        figsize=(15, 12),
+        sharex=True,
+        sharey=False
+    )
 
     for i, cls in enumerate(CLASSES):
         for j, size in enumerate(SIZES):
             ax = axes[i][j]
 
-            for algo_path, label in zip(algorithms, labels):
+            for idx, (algo_path, label) in enumerate(zip(algorithms, labels)):
                 df = load_data(algo_path, cls, size)
                 if df is None:
                     continue
 
-                ax.plot(df["Generation"], df["AverageBest"], label=label)
+                style = STYLE_MAP[idx % len(STYLE_MAP)]
+
+                ax.plot(
+                    df["Generation"],
+                    df["AverageBest"],
+                    label=label,
+                    color=style["color"],
+                    linestyle=style["linestyle"],
+                )
 
             if i == 0:
                 ax.set_title(size)
@@ -46,11 +68,9 @@ def plot_results(algorithms, labels, output_path, show_plot=False):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
 
     plt.savefig(output_path, dpi=300)
-    print(f"Saved plot to {output_path}")
 
     if show_plot:
         plt.show()
-
 
 def main():
     parser = argparse.ArgumentParser(description="Plot evolutionary algorithm comparison.")
@@ -59,11 +79,12 @@ def main():
         "--algorithms",
         nargs="+",
         default=[
-            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\elitist\\heavy\\lower_bound_heavy",
-            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\hc\\hc__1_heavy",
-            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\elitist\\heavy\\heavy_all_heuristics_no_order",
-           "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\elitist\\heavy\\heavy_all_heuristics_volume",
-            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\elitist\\heavy\\heavy_all_heuristics_weight",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\phc\\hc_original",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\phc\\hc_medium",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\phc\\hc_heavy",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\lower_bound\\lower_bound_original",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\lower_bound\\lower_bound_medium",
+            "C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\experiments\\results\\lower_bound\\lower_bound_heavy",
         ],
         help="Paths to algorithm result folders"
     )
@@ -71,13 +92,13 @@ def main():
     parser.add_argument(
         "--labels",
         nargs="+",
-        default=["Lower Bound", "Hill Climbing", "Elitist - All heuristics",  "Elitist - All heuristics - Volume", "Elitist - All heuristics - Weight"],
+        default=["Original", "Medium", "Heavy", "Original - Lower Bound", "Medium - Lower Bound", "Heavy - Lower Bound",],
         help="Labels for algorithms (optional)"
     )
 
     parser.add_argument(
         "--output",
-        default="comparison-heavy.png",
+        default="hc-weights.png",
         help="Output PNG file"
     )
 

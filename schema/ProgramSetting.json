@@ -120,7 +120,7 @@
             "PercentageOfElementsChanged": { "type": "number", "minimum": 0, "maximum": 1 },
             "StartAcceptanceProbability": { "type": "number", "minimum": 0, "maximum": 1 },
             "EndAcceptanceProbability": { "type": "number", "minimum": 0, "maximum": 1 },
-            "AcceptanceDecayFactor": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+            "AcceptanceDecayFactor": { "type": "number", "minimum": 0, "maximum": 1 }
           }
         }
       ]

@@ -11,46 +11,26 @@ Finally, we evaluate the baseline hill-climbing approach and test whether introd
 \section{Fitness Lower Bound}
 
 To better interpret the quality of obtained solutions, we introduce a lower bound estimate of the fitness function defined in Section~\ref{sec:fitness-function}. 
+The fitness function consists of two parts: the first is the number of opened containers, and the second measures how well the least filled container is utilized. 
 
-Let the total volume of all boxes be given by:
-\[
-\sum_{i=1}^{N} \mathrm{V}(s_i),
-\]
-and let the container volume be $\mathrm{V}(S)$. 
-Similarly, the total weight of all boxes is:
-\[
-\sum_{i=1}^{N} w_i,
-\]
-with $W_{\max}$ denoting the maximum allowed container weight.
-
-We define two independent lower bounds based on volume and weight constraints.
-
-\subsection*{Volume-based lower bound}
+Firstly, we consider the lower bound induced by the volume constraint. 
+Dividing the total volume of all boxes by the volume of a single container gives the minimum amount of container space that must be used. 
+The integer part of this ratio corresponds to fully utilized containers, while the fractional part describes how much of the last container is occupied. 
+Since the fitness function consists of the number of opened containers and a penalty based on the occupancy of the least filled container, 
+one additional container must be accounted for in the volume-based bound. Therefore, the volume-based lower bound of the fitness value is given by:
 
 \[
-x_V = \frac{\sum_{i=1}^{N} \mathrm{V}(s_i)}{\mathrm{V}(S)}.
+L_{\mathrm{volume}} = \frac{\sum_{i=1}^{N} \mathrm{V}(s_i)}{\mathrm{V}(S)} + 1.
 \]
 
-The volume-based lower bound is defined as:
-\[
-L_{\mathrm{volume}} = \left\lceil x_V \right\rceil + \operatorname{frac}(x_V),
-\]
-where $\operatorname{frac}(x)$ denotes the fractional part of $x$.
-
-\subsection*{Weight-based lower bound}
+Similarly, we can introduce a lower bound induced by the weight constraint. We divide the total weight of all boxes by the maximum allowed container weight:
 
 \[
-x_W = \frac{\sum_{i=1}^{N} w_i}{W_{\max}}.
+L_{\mathrm{weight}} = \frac{\sum_{i=1}^{N} w_i}{W_{\max}} + 1.
 \]
 
-The weight-based lower bound is defined analogously as:
-\[
-L_{\mathrm{weight}} = \left\lceil x_W \right\rceil + \operatorname{frac}(x_W).
-\]
 
-\subsection*{Final lower bound}
-
-The final lower bound is given as:
+The final lower bound is obtained as the maximum of the volume-based and weight-based bounds:
 \[
 L = \max \left(L_{\mathrm{volume}}, L_{\mathrm{weight}}\right).
 \]
@@ -140,8 +120,12 @@ with evolutionary selection of placement heuristics, unless stated otherwise.
 \caption{Comparison of placement heuristics and box ordering for the elitist algorithm on the dataset without weights}
 \label{tab:combined-results}
 \begin{tabular}{|c|c|c|c|c|c|}
-\hline
-Class & $N$ & All + Evol. & All + Volume & MaxDist + Evol. & MaxDist + Volume \\ \hline
+\hline 
+Class & $N$ 
+& \shortstack{All \\ Evol.} 
+& \shortstack{All \\ Volume} 
+& \shortstack{Max Dist. \\ Evol.} 
+& \shortstack{Max Dist. \\ Volume} \\ \hline
 class 1 & 100 & \textbf{11.92} & 11.93 & 12.30 & 12.33 \\ \hline
 class 1 & 150 & 18.74 & \textbf{18.71} & 19.28 & 19.20 \\ \hline
 class 1 & 50  & \textbf{7.29}  & 7.31  & 7.37  & 7.41  \\ \hline
@@ -238,7 +222,7 @@ Overall, the results confirm that box weight acts as a strong feasibility constr
 \begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{%
-        \includegraphics[width=1.3\textwidth]{img/elitist-weights.png}%
+        \includegraphics[width=1.2\textwidth]{img/elitist-weights.png}%
     }
     \caption{Comparison of evolutionary progress across the original, medium, and heavy datasets 
     using the elitist algorithm with evolutionary ordering.}
@@ -334,7 +318,7 @@ The comparison between hill climbing and the elitist genetic algorithm on the or
 \begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{%
-        \includegraphics[width=1.3\textwidth]{img/hc-phc-volume.png}%
+        \includegraphics[width=1.2\textwidth]{img/hc-phc-volume.png}%
     }
     \caption{Comparison of probabilistic hill climbing and hill climbing with evolutionary and volume-based ordering.}
     \label{fig:hc-phc-volume}
@@ -365,7 +349,7 @@ At the same time, the heavy dataset imposes such a strong feasibility constraint
 \begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{%
-    \includegraphics[width=1.3\textwidth]{img/hc-weights.png}%
+    \includegraphics[width=1.2\textwidth]{img/hc-weights.png}%
     }
     \caption{Comparison of the evolutionary progress for hill climbing across the original, medium, and heavy datasets.}
     \label{fig:hc-weight-comparison}
@@ -374,7 +358,7 @@ At the same time, the heavy dataset imposes such a strong feasibility constraint
 \begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{%
-        \includegraphics[width=1.3\textwidth]{img/comparison-original.png}%
+        \includegraphics[width=1.2\textwidth]{img/comparison-original.png}%
     }
     \caption{Evolutionary progress for all four settings on the unweighted dataset 
     using the elitist algorithm, including the lower bound and the hill-climbing baseline.}
@@ -384,7 +368,7 @@ At the same time, the heavy dataset imposes such a strong feasibility constraint
 \begin{figure}[htbp]
     \centering
         \makebox[\textwidth][c]{%
-        \includegraphics[width=1.3\textwidth]{img/comparison-medium.png}%
+        \includegraphics[width=1.2\textwidth]{img/comparison-medium.png}%
     }
     \caption{Evolutionary progress for different ordering strategies on the medium dataset 
     using the elitist algorithm, including the lower bound and the hill-climbing baseline.}
@@ -394,7 +378,7 @@ At the same time, the heavy dataset imposes such a strong feasibility constraint
 \begin{figure}[htbp]
     \centering
     \makebox[\textwidth][c]{%
-        \includegraphics[width=1.3\textwidth]{img/comparison-heavy.png}%
+        \includegraphics[width=1.2\textwidth]{img/comparison-heavy.png}%
     }
     \caption{Evolutionary progress for different ordering strategies on the heavy dataset 
     using the elitist algorithm, including the lower bound and the hill-climbing baseline.}

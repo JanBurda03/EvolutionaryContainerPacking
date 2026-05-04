@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -26,7 +25,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--input-root",
-        default="C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\data\\mpv\\heavy",
+        default="C:\\Users\\Jan Burda\\Desktop\\EvolutionaryContainerPacking\\data\\original",
         help=(
             "Root folder containing class1/class2/class3/class4 directories. "
             "Each class folder must contain n50/n100/n150 subfolders with JSON inputs."
@@ -95,17 +94,8 @@ def compute_instance_lower_bound(data: dict) -> float:
     if container_volume <= 0 or max_weight <= 0:
         raise ValueError("Container volume and max weight must be positive.")
 
-    weight_num = total_weight * container_volume
-    volume_num = total_volume * max_weight
-    numerator = max(weight_num, volume_num)
-    denominator = max_weight * container_volume
-
-    quotient, remainder = divmod(numerator, denominator)
-
-    if remainder == 0:
-        return float(quotient)
-
-    return float(quotient + 1) + (remainder / denominator)
+    
+    return max(float(total_weight)/max_weight, float(total_volume)/container_volume) + 1
 
 
 def compute_folder_average(folder: Path) -> Optional[float]:

@@ -5,7 +5,7 @@ This chapter describes the repository structure, how to run the application, and
 
 \section{Repository structure}
 
-The repository consists of multiple folders. The main C# code is located in the \texttt{src} folder, 
+The repository consists of multiple folders. The main C\# code is located in the \texttt{src} folder, 
 unit tests are in \texttt{tests}, 
 Python scripts for dataset generation and experiment handling are in \texttt{scripts}, 
 JSON schemas for validating the program settings and packing input are in \texttt{schema}, 
@@ -33,16 +33,18 @@ The application can be executed either without command-line arguments, in which 
 allowing the user to manually configure input and output paths, algorithm selection, and hyperparameters, 
 or with a configuration file provided as a command-line argument, which is used to automatically load the application settings.
 
-To run the application:
+To run the application without arguments, the following command can be used from the root directory of the repository:
 
 \begin{verbatim}
 src/App/bin/Release/net8.0-windows/App.exe
 \end{verbatim}
 
-or with a configuration file:
+The application can also be executed with a configuration file.
+An example configuration file is available in the \texttt{examples/input} directory:
 
 \begin{verbatim}
-src/App/bin/Release/net8.0-windows/App.exe ProgramSetting.json
+src/App/bin/Release/net8.0-windows/App.exe \
+examples/input/ProgramSettingExample.json
 \end{verbatim}
 
 Alternatively, the application can be built and run directly from an IDE such as Visual Studio 2022. The build configuration should be set to Release and the App project selected before running.
@@ -68,7 +70,7 @@ ProgramSetting
     {
         SelectedPlacementHeuristics: string[],
         AllowRotations: bool,
-        PackingOrder: string? or null
+        PackingOrder: string?
     },
 
     EvolutionAlgorithmSetting:
@@ -125,7 +127,7 @@ Two derived configurations are implemented, corresponding to the Elitist Genetic
     
     \item \texttt{Individuals} -- number of individuals in the population, denoted as $M$ in the algorithm,
 
-    \item \texttt{UseIndividualsAsRelative} -- indicates whether \texttt{Individuals} is interpreted as a relative value; if \texttt{true}, the actual population size is scaled proportionally to the input size,
+    \item \texttt{UseIndividualsAsRelative} -- indicates whether \texttt{Individuals} is\\interpreted as a relative value; if \texttt{true}, the population size is multiplied by $N$,
 
     \item \texttt{NumberOfGenerations} -- maximum number of generations, corresponding to $G$.
 \end{itemize}
@@ -222,3 +224,18 @@ The program produces:
     \item a JSON file with the resulting packing solution,
     \item optionally a CSV file with evolution statistics.
 \end{itemize}
+
+\section{Python Scripts and Dependencies}
+
+The repository also contains Python scripts in the \texttt{scripts} directory. 
+These scripts are used for dataset generation, running experiments, and result visualization, 
+and are described in more detail in Section~\ref{app:scripts}.
+
+To run these scripts, Python (version 3.10 or newer) must be installed. 
+All required dependencies are listed in the \texttt{requirements.txt} file located in the \texttt{scripts} directory.
+
+The dependencies can be installed using the following command from the root directory of the repository:
+
+\begin{verbatim}
+pip install -r scripts/requirements.txt
+\end{verbatim}

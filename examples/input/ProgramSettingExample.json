@@ -1,7 +1,7 @@
 {
     "SourceFile": "examples/input/PackingInputExample.json",
     "OutputFile": "examples/output/PackintOutputExample.json",
-    "EvolutionStatisticsFile": "examples/output/EvolutionStatisticsExample.json",
+    "EvolutionStatisticsFile": "examples/output/EvolutionStatisticsExample.csv",
     "PackingSetting": {
         "SelectedPlacementHeuristics": [
             "Best Volume Fit",

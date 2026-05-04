@@ -278,7 +278,7 @@ and each box is assigned this heuristic directly.
 Given a list of ordered pending boxes, the algorithm iteratively attempts to place each box into one of the currently opened containers using a placement heuristic. 
 If the box cannot be placed using its current rotation, the algorithm automatically tries all possible rotations. 
 If no valid placement is found after considering all rotations, a new container is opened and the placement is attempted again. 
-The algorithm continues in this way for all boxes. 
+The algorithm continues in this way for all boxes.
 
 \begin{algorithm}[htbp]
 \centering
@@ -331,6 +331,7 @@ The algorithm continues in this way for all boxes.
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
 
+\Statex \textit{The procedure attempts to place a box into one of the opened containers using a selected placement heuristic. It returns true if a valid placement is found, otherwise false.}
 \State \textbf{Input:} Pending box $(b, \rho, h)$, list of opened containers $\mathcal{C}$
 \State \textbf{Output:} True if placement succeeds, otherwise False
 
@@ -350,7 +351,7 @@ The algorithm continues in this way for all boxes.
 
 \end{algorithmic}
 \end{minipage}
-\caption{TryPackBox Procedure}
+\caption{TryPackBox Algorithm Pseudocode}
 \end{algorithm}
 
 
@@ -361,6 +362,8 @@ The algorithm continues in this way for all boxes.
 \begin{minipage}{0.95\linewidth}
 \begin{algorithmic}[1]
 
+    
+\Statex \textit{This procedure iterates over all possible rotations of a box and attempts placement. It returns true if any placement succeeds, otherwise false.}
 \State \textbf{Input:} Pending box $(b, \rho, h)$, list of opened containers $\mathcal{C}$
 \State \textbf{Output:} True if placement succeeds for any rotation, otherwise False
 
@@ -376,7 +379,7 @@ The algorithm continues in this way for all boxes.
 
 \end{algorithmic}
 \end{minipage}
-\caption{TryPackWithAnyRotation Procedure}
+\caption{TryPackWithAnyRotation Algorithm Pseudocode}
 \end{algorithm}
 
 
